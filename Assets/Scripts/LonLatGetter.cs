@@ -30,12 +30,14 @@ public class LonLatGetter : MonoBehaviour
         while (true)
         {
             _locationServiceStatus = Input.location.status;
+            // GPSの許可
             if (Input.location.isEnabledByUser)
             {
                 switch (_locationServiceStatus)
                 {
                     case LocationServiceStatus.Stopped:
                         Input.location.Start();
+                        Input.compass.enabled = true;
                         break;
                     case LocationServiceStatus.Running:
                         Longitude = Input.location.lastData.longitude;
