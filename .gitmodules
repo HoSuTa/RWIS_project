@@ -1,0 +1,3 @@
+[submodule "Assets/mapbox-unity-sdk"]
+	path = Assets/mapbox-unity-sdk
+	url = https://github.com/mapbox/mapbox-unity-sdk
