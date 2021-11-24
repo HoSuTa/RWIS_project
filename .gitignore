@@ -52,3 +52,17 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+# Custom
+Assets/GoogleARCore
+Assets/GoogleARCore.meta
+Assets/Mapbox
+Assets/Mapbox.meta
+Assets/MapboxAR
+Assets/MapboxAR.meta
+Assets/ThirdPartyAssets
+Assets/ThirdPartyAssets.meta
+Assets/UnityARInterface
+Assets/UnityARInterface.meta
+Assets/UnityARKitPlugin
+Assets/UnityARKitPlugin.meta
