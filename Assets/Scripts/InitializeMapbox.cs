@@ -10,8 +10,7 @@ public class InitializeMapbox : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        
+    {  
         Vector2d lonlat_pos = new Vector2d();
         lonlat_pos.x = 35.5539161;
         lonlat_pos.y = 139.6470643;
