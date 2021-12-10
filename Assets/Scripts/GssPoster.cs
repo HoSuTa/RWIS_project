@@ -10,7 +10,8 @@ namespace GssDbManageWrapper
     {
         public static IEnumerator SaveUserData(string gasUrl, string userName, string message, Action feedbackHandler = null)
         {
-            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveUserData}\" , \"userName\" : \"{userName}\", \"message\" : \"{message}\"}}";
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveUserData}\" , \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            Debug.Log(jsonBody);
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
             yield return PostToGss(gasUrl, MethodNames.SaveUserData, payloadRaw, feedbackHandler);

@@ -22,7 +22,12 @@ namespace GssDbManageWrapper
         [SerializeField]
         private string _userName = "tester";
         [SerializeField]
-        private string _message = "tester Unity Post";
+        private int _areaId = 0;
+        [SerializeField]
+        private int _vertexId = 0;
+        [SerializeField]
+        private Vector2 _lonLat = new Vector2(0,0);
+
         [SerializeField]
         private MethodNames _requestMethod = MethodNames.GetUserNames;
         [SerializeField]
@@ -37,6 +42,8 @@ namespace GssDbManageWrapper
         {
             if (_sendRequest)
             {
+                Debug.Log($"<color=blue>[GssDbHub]</color> Sending data to GAS...");
+
                 if (_requestMethod == MethodNames.GetUserDatas)
                 {
                     StartCoroutine(GssGetter.GetUserDatas(_gasURL, _userName, response => GetUserDatasFeedback((PayloadData[])response)));
@@ -47,7 +54,12 @@ namespace GssDbManageWrapper
                 }
                 else if (_requestMethod == MethodNames.SaveUserData)
                 {
-                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _userName, _message));
+                    string message = $"{{" +
+                        $"\"areaId\" : {_areaId}, " +
+                        $"\"vertexId\" : {_vertexId}, " +
+                        $"\"lonLat\" : {JsonUtility.ToJson(_lonLat)}" +
+                        $"}}";
+                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _userName, message));
                 }
                 _sendRequest = false;
             }
@@ -68,7 +80,11 @@ namespace GssDbManageWrapper
             _uiText.text = "userName : message\n";
             for (int i = 0; i < datas.Length; i++)
             {
+                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
+                _uiText.text = string.Concat(_uiText.text, $"      areaId={messageJson.areaId}, " +
+                                                            $"vertexId={messageJson.vertexId}, " +
+                                                            $"lonLat={messageJson.lonLat}.\n");
             }
         }
     }

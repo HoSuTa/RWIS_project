@@ -5,8 +5,14 @@ using UnityEngine;
 [Serializable]
 public class PayloadData
 {
-    [SerializeField]
     public string userName;
-    [SerializeField]
     public string message;
+}
+
+[Serializable]
+public class MessageJson
+{
+    public int areaId;
+    public int vertexId;
+    public Vector2 lonLat;
 }

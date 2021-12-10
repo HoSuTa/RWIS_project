@@ -43,6 +43,7 @@ namespace GssDbManageWrapper
             else
             {
                 var request_result = request.downloadHandler.text;
+
                 if (request_result[0] == 'E')
                 {
                     Debug.Log(request_result);

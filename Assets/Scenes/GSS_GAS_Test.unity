@@ -646,8 +646,10 @@ MonoBehaviour:
   _uiText: {fileID: 1251452134}
   _gasURLjsonPos: gasUrl
   _userName: tester
-  _message: tester Unity Post
-  _requestMethod: 0
+  _areaId: 0
+  _vertexId: 0
+  _lonLat: {x: 1, y: 0}
+  _requestMethod: 2
   _sendRequest: 0
 --- !u!4 &2025085179
 Transform:
