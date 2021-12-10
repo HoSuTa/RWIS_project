@@ -54,6 +54,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Custom
+Assets/Resources/gasUrl.json
 Assets/GoogleARCore
 Assets/GoogleARCore.meta
 Assets/Mapbox
