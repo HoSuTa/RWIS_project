@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,15 +8,15 @@ namespace GssDbManageWrapper
 {
     public static class GssPoster
     {
-        public static IEnumerator SaveUserData(string gasUrl, string userName, string message)
+        public static IEnumerator SaveUserData(string gasUrl, string userName, string message, Action feedbackHandler = null)
         {
             var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveUserData}\" , \"userName\" : \"{userName}\", \"message\" : \"{message}\"}}";
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
-            yield return PostToGss(gasUrl, MethodNames.SaveUserData, payloadRaw);
+            yield return PostToGss(gasUrl, MethodNames.SaveUserData, payloadRaw, feedbackHandler);
         }
 
-        private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload)
+        private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload, Action feedbackHandler = null)
         {
             UnityWebRequest request =
                 (methodName == MethodNames.SaveUserData) ?
@@ -51,6 +51,7 @@ namespace GssDbManageWrapper
                 }
                 else
                 {
+                    feedbackHandler?.Invoke();
                     Debug.Log(request_result);
                     yield break;
                 }

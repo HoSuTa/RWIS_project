@@ -7,17 +7,17 @@ namespace GssDbManageWrapper
 {
     public class GssGetter
     {
-        public static IEnumerator GetUserDatas(string gasUrl, string userName)
+        public static IEnumerator GetUserDatas(string gasUrl, string userName, Action<object> feedbackHandler = null)
         {
-            yield return GetGssData(gasUrl, MethodNames.GetUserDatas, userName);
+            yield return GetGssData(gasUrl, MethodNames.GetUserDatas, userName, feedbackHandler);
         }
 
-        public static IEnumerator GetUserNames(string gasUrl)
+        public static IEnumerator GetUserNames(string gasUrl, Action<object> feedbackHandler = null)
         {
-            yield return GetGssData(gasUrl, MethodNames.GetUserNames, "");
+            yield return GetGssData(gasUrl, MethodNames.GetUserNames, "", feedbackHandler);
         }
 
-        private static IEnumerator GetGssData(string gasUrl, MethodNames methodName, string userName)
+        private static IEnumerator GetGssData(string gasUrl, MethodNames methodName, string userName, Action<object> feedbackHandler = null)
         {
             UnityWebRequest request = 
                 (methodName == MethodNames.GetUserNames) ?
@@ -54,6 +54,8 @@ namespace GssDbManageWrapper
 
                     if(methodName == MethodNames.GetUserNames)
                     {
+                        feedbackHandler?.Invoke(response);
+
                         for (int i = 0; i < response.Length; i++)
                         {
                             Debug.Log($"response[{i}].userName : {response[i].userName}");
@@ -61,6 +63,8 @@ namespace GssDbManageWrapper
                     }
                     else if (methodName == MethodNames.GetUserDatas)
                     {
+                        feedbackHandler?.Invoke(response);
+
                         for (int i = 0; i < response.Length; i++)
                         {
                             if(response[i].message == null)
