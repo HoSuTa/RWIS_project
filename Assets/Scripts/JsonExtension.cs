@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-
 public static class JsonExtension
 {
     public static T[] FromJson<T>(string json)

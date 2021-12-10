@@ -33,6 +33,8 @@ namespace GssDbManageWrapper
         [SerializeField]
         private bool _sendRequest = false;
 
+        private LocalGssDataManager _localGssData = new LocalGssDataManager();
+
         private void Start()
         {
             _gasURL = KeyManager.GetGasUrl(_gasURLjsonPos);
@@ -73,6 +75,7 @@ namespace GssDbManageWrapper
             {
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName}\n");
             }
+            _localGssData.RefreshUserNames(datas);
         }
 
         private void GetUserDatasFeedback(PayloadData[] datas)
@@ -83,9 +86,10 @@ namespace GssDbManageWrapper
                 var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
                 _uiText.text = string.Concat(_uiText.text, $"      areaId={messageJson.areaId}, " +
-                                                            $"vertexId={messageJson.vertexId}, " +
-                                                            $"lonLat={messageJson.lonLat}.\n");
+                    $"vertexId={messageJson.vertexId}, " +
+                    $"lonLat={messageJson.lonLat}.\n");
             }
+            _localGssData.RefreshUserDatas(datas);
         }
     }
 }
