@@ -9,7 +9,8 @@ namespace GssDbManageWrapper
     {
         GetUserNames,
         GetUserDatas,
-        SaveUserData,
+        SaveMessage,
+        SaveLonLat,
         RemoveData,
     }
 
@@ -55,7 +56,7 @@ namespace GssDbManageWrapper
                 {
                     StartCoroutine(GssGetter.GetUserNames(_gasURL, response => GetUserNamesFeedback((PayloadData[])response)));
                 }
-                else if (_requestMethod == MethodNames.SaveUserData)
+                else if (_requestMethod == MethodNames.SaveMessage)
                 {
                     string message = $"{{" +
                         $"\"areaId\" : {_areaId}, " +
@@ -67,11 +68,10 @@ namespace GssDbManageWrapper
                 else if (_requestMethod == MethodNames.RemoveData)
                 {
                     string message = $"{{" +
-                        $"\"userName\" : {_userName}, " +
                         $"\"areaId\" : {_areaId}, " +
-                        $"\"vertexId\" : {_vertexId}, " +
+                        $"\"vertexId\" : {_vertexId} " +
                         $"}}";
-                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _userName, message));
+                    StartCoroutine(GssPoster.RemoveData(_gasURL, _userName, message));
                 }
                 _sendRequest = false;
             }
