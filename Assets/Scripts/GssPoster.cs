@@ -17,6 +17,15 @@ namespace GssDbManageWrapper
             yield return PostToGss(gasUrl, MethodNames.SaveUserData, payloadRaw, feedbackHandler);
         }
 
+        public static IEnumerator RemoveData(string gasUrl, string userName, string message, Action feedbackHandler = null)
+        {
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.RemoveData}\" , \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            Debug.Log(jsonBody);
+            byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+            yield return PostToGss(gasUrl, MethodNames.RemoveData, payloadRaw, feedbackHandler);
+        }
+
         private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload, Action feedbackHandler = null)
         {
             UnityWebRequest request =

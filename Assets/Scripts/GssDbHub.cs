@@ -10,6 +10,7 @@ namespace GssDbManageWrapper
         GetUserNames,
         GetUserDatas,
         SaveUserData,
+        RemoveData,
     }
 
     public class GssDbHub : MonoBehaviour
@@ -63,6 +64,15 @@ namespace GssDbManageWrapper
                         $"}}";
                     StartCoroutine(GssPoster.SaveUserData(_gasURL, _userName, message));
                 }
+                else if (_requestMethod == MethodNames.RemoveData)
+                {
+                    string message = $"{{" +
+                        $"\"userName\" : {_userName}, " +
+                        $"\"areaId\" : {_areaId}, " +
+                        $"\"vertexId\" : {_vertexId}, " +
+                        $"}}";
+                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _userName, message));
+                }
                 _sendRequest = false;
             }
         }
@@ -76,6 +86,10 @@ namespace GssDbManageWrapper
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName}\n");
             }
             _localGssData.RefreshUserNames(datas);
+            foreach(var userName in _localGssData._userNames)
+            {
+                Debug.Log(userName);
+            }
         }
 
         private void GetUserDatasFeedback(PayloadData[] datas)
