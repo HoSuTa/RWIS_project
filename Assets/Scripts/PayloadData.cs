@@ -8,6 +8,11 @@ namespace GssDbManageWrapper
     {
         public string userName;
         public string message;
+
+        public override string ToString()
+        {
+            return $"userName : {this.userName}, message : {this.message}";
+        }
     }
 
     [Serializable]
@@ -16,5 +21,10 @@ namespace GssDbManageWrapper
         public int areaId;
         public int vertexId;
         public Vector2 lonLat;
+
+        public override string ToString()
+        {
+            return $"areaId={this.areaId}, vertexId={this.vertexId}, lonLat={this.lonLat}.";
+        }
     }
 }

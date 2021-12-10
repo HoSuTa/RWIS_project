@@ -85,11 +85,17 @@ namespace GssDbManageWrapper
             {
                 var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
-                _uiText.text = string.Concat(_uiText.text, $"      areaId={messageJson.areaId}, " +
-                    $"vertexId={messageJson.vertexId}, " +
-                    $"lonLat={messageJson.lonLat}.\n");
+                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
             }
             _localGssData.RefreshUserDatas(datas);
+            foreach(var t in _localGssData.GetNearLonLatDatas(Vector2.zero, null))
+            {
+                Debug.Log(t.Key);
+                foreach (var j in t.Value)
+                {
+                    Debug.Log(j);
+                }
+            }
         }
     }
 }
