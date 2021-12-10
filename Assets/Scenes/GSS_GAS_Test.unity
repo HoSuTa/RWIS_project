@@ -643,6 +643,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9063438f478e7334690549003ccaa3d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _uiText: {fileID: 1251452134}
+  _gasURLjsonPos: gasUrl
   _userName: tester
   _message: tester Unity Post
   _requestMethod: 0
