@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MainMenuUIManager : MonoBehaviour
 {
+    [SerializeField]
+    private InputField _gssKeyField;
     [SerializeField]
     private Text _savedGssKeyExistsText;
     [SerializeField]
@@ -16,20 +19,30 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private GameObject _playButton;
     [SerializeField]
-    private GssKeyManager _gssKeyManager;
+    private GssDbManageWrapper.GssDbHub _dbHub;
 
     private void Awake()
     {
+        if(_dbHub == null)
+        {
+            _dbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
+        }
         UpdateGssKeyRelatedUI();
     }
 
     public void UpdateGssKeyRelatedUI()
     {
-        if (_gssKeyManager.IsGssKeyAssigned())
+        if (!string.IsNullOrEmpty(_gssKeyField.text))
+        {
+            Debug.Log(_gssKeyField.text);
+            _dbHub.IsGssKeyValid( _ => GssKeyManager.SaveGssKey(_gssKeyField.text) );
+        }
+
+        if (GssKeyManager.IsGssUrlAssigned())
         {
             _savedGssKeyExistsText.text = "Saved GSS Key exists";
             _savedGssKeyExistsText.color = _plusColor;
-            _savedGssKey.text = "\nSaved GSS Key:\n" + _gssKeyManager.GetGssKey();
+            _savedGssKey.text = "\nSaved GSS Key:\n" + GssKeyManager.GetGssKey();
             _playButton.SetActive(true);
         }
         else

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,11 +13,14 @@ namespace GssDbManageWrapper
         SaveMessage,
         SaveLonLat,
         RemoveData,
+        IsGssKeyValid,
     }
 
     public class GssDbHub : MonoBehaviour
     {
+        private string _gssUrl;
         private string _gasURL;
+        private LocalGssDataManager _localGssData = new LocalGssDataManager();
 
         [SerializeField]
         private Text _uiText;
@@ -34,11 +38,13 @@ namespace GssDbManageWrapper
         [SerializeField]
         private bool _sendRequest = false;
 
-        private LocalGssDataManager _localGssData = new LocalGssDataManager();
+        private bool _isGssUrlValid = false;
+        private bool _isRequestInProcess = false;
 
         private void Start()
         {
             _gasURL = KeyManager.GetKeyData(KeyManager.GAS_URL_PATH);
+            _gssUrl = GssKeyManager.GetGssKey();
         }
 
         private void Update()
@@ -49,11 +55,15 @@ namespace GssDbManageWrapper
 
                 if (_requestMethod == MethodNames.GetUserDatas)
                 {
-                    StartCoroutine(GssGetter.GetUserDatas(_gasURL, _userName, response => GetUserDatasFeedback((PayloadData[])response)));
+                    StartCoroutine(GssGetter.GetUserDatas(_gasURL, _gssUrl, _userName, response => GetUserDatasFeedback((PayloadData[])response)));
                 }
                 else if (_requestMethod == MethodNames.GetUserNames)
                 {
-                    StartCoroutine(GssGetter.GetUserNames(_gasURL, response => GetUserNamesFeedback((PayloadData[])response)));
+                    StartCoroutine(GssGetter.GetUserNames(_gasURL, _gssUrl, response => GetUserNamesFeedback((PayloadData[])response)));
+                }
+                else if (_requestMethod == MethodNames.IsGssKeyValid)
+                {
+                    StartCoroutine(GssGetter.IsGssKeyValid(_gasURL, _gssUrl, response => IsGssKeyValidFeedback((string)response) ) );
                 }
                 else if (_requestMethod == MethodNames.SaveMessage)
                 {
@@ -62,7 +72,7 @@ namespace GssDbManageWrapper
                         $"\"vertexId\" : {_vertexId}, " +
                         $"\"lonLat\" : {JsonUtility.ToJson(_lonLat)}" +
                         $"}}";
-                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _userName, message));
+                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message));
                 }
                 else if (_requestMethod == MethodNames.RemoveData)
                 {
@@ -70,11 +80,12 @@ namespace GssDbManageWrapper
                         $"\"areaId\" : {_areaId}, " +
                         $"\"vertexId\" : {_vertexId} " +
                         $"}}";
-                    StartCoroutine(GssPoster.RemoveData(_gasURL, _userName, message));
+                    StartCoroutine(GssPoster.RemoveData(_gasURL, _gssUrl, _userName, message));
                 }
                 _sendRequest = false;
             }
         }
+
 
 
         private void GetUserNamesFeedback(PayloadData[] datas)
@@ -109,6 +120,25 @@ namespace GssDbManageWrapper
                     Debug.Log(j);
                 }
             }
+        }
+
+        //Updateに対してStartCoroutineしないと行けない.
+        public bool IsGssKeyValid(Action<object> feedback)
+        {
+            _isRequestInProcess = true;
+            StartCoroutine(GssGetter.IsGssKeyValid(_gasURL, _gssUrl, response => IsGssKeyValidFeedback((string)response, feedback)));
+            while (_isRequestInProcess) ;
+            return _isGssUrlValid;
+        }
+        private void IsGssKeyValidFeedback(string response, Action<object> feedback = null)
+        {
+            if (!response.Contains("Error"))
+            {
+                feedback?.Invoke(null);
+            }
+
+            Debug.Log(response);
+
         }
     }
 }

@@ -7,23 +7,30 @@ namespace GssDbManageWrapper
 {
     public class GssGetter
     {
-        public static IEnumerator GetUserDatas(string gasUrl, string userName, Action<object> feedbackHandler = null)
+        public static IEnumerator GetUserDatas(string gasUrl, string gssUrl, string userName, Action<object> feedbackHandler = null)
         {
-            yield return GetGssData(gasUrl, MethodNames.GetUserDatas, userName, feedbackHandler);
+            yield return GetGssData(gasUrl, gssUrl, MethodNames.GetUserDatas, userName, feedbackHandler);
         }
 
-        public static IEnumerator GetUserNames(string gasUrl, Action<object> feedbackHandler = null)
+        public static IEnumerator GetUserNames(string gasUrl, string gssUrl, Action<object> feedbackHandler = null)
         {
-            yield return GetGssData(gasUrl, MethodNames.GetUserNames, "", feedbackHandler);
+            yield return GetGssData(gasUrl, gssUrl, MethodNames.GetUserNames, "", feedbackHandler);
         }
 
-        private static IEnumerator GetGssData(string gasUrl, MethodNames methodName, string userName, Action<object> feedbackHandler = null)
+        public static IEnumerator IsGssKeyValid(string gasUrl, string gssUrl, Action<object> feedbackHandler = null)
+        {
+            yield return GetGssData(gasUrl, gssUrl, MethodNames.IsGssKeyValid, "", feedbackHandler);
+        }
+
+        private static IEnumerator GetGssData(string gasUrl, string gssUrl, MethodNames methodName, string userName, Action<object> feedbackHandler = null)
         {
             UnityWebRequest request = 
                 (methodName == MethodNames.GetUserNames) ?
-                    request = UnityWebRequest.Get($"{gasUrl}?method={methodName}") 
+                    request = UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}") 
                 : (methodName == MethodNames.GetUserDatas) ?
-                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(userName)}={userName}")
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(userName)}={userName}&{nameof(gssUrl)}={gssUrl}")
+                : (methodName == MethodNames.IsGssKeyValid) ?
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(userName)}={userName}&{nameof(gssUrl)}={gssUrl}")
                 : null;
             if(request == null)
             {
@@ -74,6 +81,11 @@ namespace GssDbManageWrapper
                             }
                             Debug.Log($"[{i}] {response[i].ToString()}");
                         }
+                    } 
+                    else if (methodName == MethodNames.IsGssKeyValid)
+                    {
+                        feedbackHandler?.Invoke(response);
+                        Debug.Log(request_result);
                     }
                 }
             }
