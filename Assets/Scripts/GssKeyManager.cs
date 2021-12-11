@@ -2,57 +2,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using GssDbManageWrapper;
 
-public class GssKeyManager : MonoBehaviour
+public static class GssKeyManager
 {
-    [SerializeField]
-    InputField _gssKeyField;
-
-    private bool _savingIsStillInProcess = false;
-
-    //OnClickで
-    public void SaveGssKey()
+    public static void SaveGssKey(string gssUrl)
     {
-        if (string.IsNullOrEmpty(_gssKeyField.text))
+        if (string.IsNullOrEmpty(gssUrl))
         {
             Debug.LogError($"<color=blue>[GssKeyManager]</color> field is empty.");
             return;
         }
-        //GASとの連携で確認とってからセーブしたりエラーを表示したほうが良いよね.
-        _savingIsStillInProcess = true;
-        if(IsGssKeyUsable())
-        {
-            KeyManager.SaveKey(KeyManager.GSS_KEY_PATH, _gssKeyField.text, EndedKeyManagerFunc);
-        }
-        else
-        {
-            Debug.LogError($"<color=blue>[GssKeyManager]</color> gssKey=\"{_gssKeyField.text}\" cannnot be recognised by GSS.");
-        }
+
+        KeyManager.SaveKey(KeyManager.GSS_URL_PATH, gssUrl);
+
+        //Debug.LogError($"<color=blue>[GssKeyManager]</color> gssUrl=\"{gssUrl}\" cannnot be recognised by GSS.");
     }
 
-    public string GetGssKey()
+    public static string GetGssKey()
     {
-        return KeyManager.GetKeyData(KeyManager.GSS_KEY_PATH, EndedKeyManagerFunc);
+        return KeyManager.GetKeyData(KeyManager.GSS_URL_PATH);
     }
 
-    private void EndedKeyManagerFunc()
+    public static bool IsGssUrlAssigned()
     {
-        _savingIsStillInProcess = false;
-        Debug.Log($"<color=blue>[GssKeyManager]</color> Process has ended.");
+        var gssUrl = GetGssKey();
+        return !string.IsNullOrEmpty(gssUrl);
     }
 
-    public bool IsStillInProcess()
-    {
-        return _savingIsStillInProcess;
-    }
-
-    public bool IsGssKeyAssigned()
-    {
-        var gssKey = GetGssKey();
-        return !string.IsNullOrEmpty(gssKey);
-    }
-
-    private bool IsGssKeyUsable()
+    private static bool IsGssUrlUsable()
     {
         return true;
     }
