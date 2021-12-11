@@ -6,8 +6,6 @@ public class LonLatGetter : MonoBehaviour
 {
     /// <summary>経緯度取得間隔（秒）</summary>
     private const float _intervalSeconds = 1.0f;
-   // public static float Lon;
-   // public static float Lat;
 
     /// <summary>ロケーションサービスのステータス</summary>
     private LocationServiceStatus _locationServiceStatus;
@@ -43,7 +41,6 @@ public class LonLatGetter : MonoBehaviour
                         break;
                     case LocationServiceStatus.Running:
                         Longitude = Input.location.lastData.longitude;
-                       
                         Latitude = Input.location.lastData.latitude;
                         break;
                     default:
