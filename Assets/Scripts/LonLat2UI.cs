@@ -32,7 +32,7 @@ public class LonLat2UI : MonoBehaviour
         }
         else
         {
-            lonLatInfo.text = string.Format(LonLatInfoTemplate, "測定不能", "測定不能", "測定不能");
+            lonLatInfo.text = string.Format(LonLatInfoTemplate, "Loading", "Loading", "Loading");
         }
     }
 }
