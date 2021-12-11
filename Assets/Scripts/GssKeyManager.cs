@@ -7,8 +7,9 @@ public class GssKeyManager : MonoBehaviour
 {
     [SerializeField]
     InputField _gssKeyField;
-    const string _gssKeyUrl = "Assets/Resources/gssKey.json";
-    public bool _savingIsStillInProcess = false;
+
+    private bool _savingIsStillInProcess = false;
+
     //OnClickで
     public void SaveGssKey()
     {
@@ -19,12 +20,40 @@ public class GssKeyManager : MonoBehaviour
         }
         //GASとの連携で確認とってからセーブしたりエラーを表示したほうが良いよね.
         _savingIsStillInProcess = true;
-        KeyManager.SaveKey(_gssKeyUrl, _gssKeyField.text, EndedKeyManagerFunc);
+        if(IsGssKeyUsable())
+        {
+            KeyManager.SaveKey(KeyManager.GSS_KEY_PATH, _gssKeyField.text, EndedKeyManagerFunc);
+        }
+        else
+        {
+            Debug.LogError($"<color=blue>[GssKeyManager]</color> gssKey=\"{_gssKeyField.text}\" cannnot be recognised by GSS.");
+        }
+    }
+
+    public string GetGssKey()
+    {
+        return KeyManager.GetKeyData(KeyManager.GSS_KEY_PATH, EndedKeyManagerFunc);
     }
 
     private void EndedKeyManagerFunc()
     {
         _savingIsStillInProcess = false;
         Debug.Log($"<color=blue>[GssKeyManager]</color> Process has ended.");
+    }
+
+    public bool IsStillInProcess()
+    {
+        return _savingIsStillInProcess;
+    }
+
+    public bool IsGssKeyAssigned()
+    {
+        var gssKey = GetGssKey();
+        return !string.IsNullOrEmpty(gssKey);
+    }
+
+    private bool IsGssKeyUsable()
+    {
+        return true;
     }
 }

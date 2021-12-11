@@ -55,7 +55,9 @@ crashlytics-build.properties
 
 # Custom
 Assets/Resources/gasUrl.json
+Assets/Resources/gasUrl.json.meta
 Assets/Resources/gssKey.json
+Assets/Resources/gssKey.json.meta
 Assets/GoogleARCore
 Assets/GoogleARCore.meta
 Assets/Mapbox
