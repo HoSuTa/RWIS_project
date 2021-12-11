@@ -27,12 +27,17 @@ public class WorldLineRenderer : MonoBehaviour
         if (lonLatsVertices.Count == 0){
             return;
         }
-        renderer.positionCount = lonLatsVertices.Count;
+        renderer.positionCount = lonLatsVertices.Count+1;
         for(var i=0;i<lonLatsVertices.Count;++i)
         {
             var worldPos = mapBoxMap.GeoToWorldPosition(new Vector2d(lonLatsVertices[i].x,lonLatsVertices[i].y));
             worldPos[1] += 10.0f;
             renderer.SetPosition(i,worldPos);
+        }
+        {
+            var worldPos = mapBoxMap.GeoToWorldPosition(new Vector2d(lonLatsVertices[0].x,lonLatsVertices[0].y));
+            worldPos[1] += 10.0f;
+            renderer.SetPosition(lonLatsVertices.Count,worldPos);
         }
     }
 }
