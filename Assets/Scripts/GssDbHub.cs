@@ -9,7 +9,9 @@ namespace GssDbManageWrapper
     {
         GetUserNames,
         GetUserDatas,
-        SaveUserData,
+        SaveMessage,
+        SaveLonLat,
+        RemoveData,
     }
 
     public class GssDbHub : MonoBehaviour
@@ -33,6 +35,8 @@ namespace GssDbManageWrapper
         [SerializeField]
         private bool _sendRequest = false;
 
+        private LocalGssDataManager _localGssData = new LocalGssDataManager();
+
         private void Start()
         {
             _gasURL = KeyManager.GetGasUrl(_gasURLjsonPos);
@@ -52,7 +56,7 @@ namespace GssDbManageWrapper
                 {
                     StartCoroutine(GssGetter.GetUserNames(_gasURL, response => GetUserNamesFeedback((PayloadData[])response)));
                 }
-                else if (_requestMethod == MethodNames.SaveUserData)
+                else if (_requestMethod == MethodNames.SaveMessage)
                 {
                     string message = $"{{" +
                         $"\"areaId\" : {_areaId}, " +
@@ -60,6 +64,14 @@ namespace GssDbManageWrapper
                         $"\"lonLat\" : {JsonUtility.ToJson(_lonLat)}" +
                         $"}}";
                     StartCoroutine(GssPoster.SaveUserData(_gasURL, _userName, message));
+                }
+                else if (_requestMethod == MethodNames.RemoveData)
+                {
+                    string message = $"{{" +
+                        $"\"areaId\" : {_areaId}, " +
+                        $"\"vertexId\" : {_vertexId} " +
+                        $"}}";
+                    StartCoroutine(GssPoster.RemoveData(_gasURL, _userName, message));
                 }
                 _sendRequest = false;
             }
@@ -73,6 +85,11 @@ namespace GssDbManageWrapper
             {
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName}\n");
             }
+            _localGssData.RefreshUserNames(datas);
+            foreach(var userName in _localGssData._userNames)
+            {
+                Debug.Log(userName);
+            }
         }
 
         private void GetUserDatasFeedback(PayloadData[] datas)
@@ -82,9 +99,16 @@ namespace GssDbManageWrapper
             {
                 var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
-                _uiText.text = string.Concat(_uiText.text, $"      areaId={messageJson.areaId}, " +
-                                                            $"vertexId={messageJson.vertexId}, " +
-                                                            $"lonLat={messageJson.lonLat}.\n");
+                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
+            }
+            _localGssData.RefreshUserDatas(datas);
+            foreach(var t in _localGssData.GetNearLonLatDatas(Vector2.zero, null))
+            {
+                Debug.Log(t.Key);
+                foreach (var j in t.Value)
+                {
+                    Debug.Log(j);
+                }
             }
         }
     }

@@ -10,18 +10,29 @@ namespace GssDbManageWrapper
     {
         public static IEnumerator SaveUserData(string gasUrl, string userName, string message, Action feedbackHandler = null)
         {
-            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveUserData}\" , \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveMessage}\" , \"userName\" : \"{userName}\", \"message\" : {message} }}";
             Debug.Log(jsonBody);
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
-            yield return PostToGss(gasUrl, MethodNames.SaveUserData, payloadRaw, feedbackHandler);
+            yield return PostToGss(gasUrl, MethodNames.SaveMessage, payloadRaw, feedbackHandler);
+        }
+
+        public static IEnumerator RemoveData(string gasUrl, string userName, string message, Action feedbackHandler = null)
+        {
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.RemoveData}\" , \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            Debug.Log(jsonBody);
+            byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+            yield return PostToGss(gasUrl, MethodNames.RemoveData, payloadRaw, feedbackHandler);
         }
 
         private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload, Action feedbackHandler = null)
         {
             UnityWebRequest request =
-                (methodName == MethodNames.SaveUserData) ?
-                    request = UnityWebRequest.Post($"{gasUrl}", "POST")
+                (methodName == MethodNames.SaveMessage) ?
+                    UnityWebRequest.Post($"{gasUrl}", "POST")
+                : (methodName == MethodNames.RemoveData) ?
+                    UnityWebRequest.Post($"{gasUrl}", "POST")
                 : null;
             if (request == null)
             {
