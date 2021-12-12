@@ -64,7 +64,6 @@ namespace GssDbManageWrapper
                 else
                 {
                     feedbackHandler?.Invoke();
-                    Debug.Log(request_result);
                     yield break;
                 }
             }
