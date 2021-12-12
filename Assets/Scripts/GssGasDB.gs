@@ -1,5 +1,4 @@
-let gssKey = 'YOUR KEY CHANGE THIS';
-let sheetName = 'sheet';
+const GssUrl = "For testing in GAS, type in the GSS URL that you are going to use.";
 // Constants used and shared within GAS and Unity.
 const CONSTS = {
   Payload: "actualPayload",
@@ -7,12 +6,16 @@ const CONSTS = {
   UserName: "userName",
   Message: "message",
   Time: "updateTime",
+  GssUrl: "gssUrl",
   Method : "method",
   SaveMessageMethod: "SaveMessage",
   SaveLonLatMethod: "SaveLonLat",
   RemoveDataMethod: "RemoveData",
-  GetDatasMethod: "GetUserDatas",
+  GetAllDatasMethod: "GetAllDatas",
+  GetUserDatasMethod: "GetUserDatas",
   GetUserNamesMethod: "GetUserNames",
+  CheckIfGssUrlValidMethod: "CheckIfGssUrlValid",
+  CheckIfGasUrlValidMethod: "CheckIfGasUrlValid",
   UpdateTimeColumn : 0,
   UserIdColumn : 1,
   UserNameColumn : 2,
@@ -22,27 +25,15 @@ const CONSTS = {
   LonLat : "lonLat",
 };
 
-function getSheet(key, name){
-  const gssSheet = SpreadsheetApp.openById(key).getSheetByName(name);
-  if(gssSheet == null) {
-    return ContentService.createTextOutput("Error: Invalid sheet name.");
+function getSheet(gssUrl){
+  try {
+    const gssSheet = SpreadsheetApp.openByUrl(gssUrl);
+    return gssSheet;
   }
-  return gssSheet;
-}
-
-function getUserNames(){
-  const gssSheet = getSheet(gssKey, sheetName);
-  const sheetData = gssSheet.getDataRange().getValues();
-
-  userIdsData = {
-    [CONSTS.Payload] : findUserNames(sheetData)
+  catch (e) {
+    throw new Error(`GssUrl \"${gssUrl}\" is not valid.`);
   }
-  sendingBackPayload = ContentService.createTextOutput(JSON.stringify(userIdsData));
-  Logger.log(sendingBackPayload.getContent());
-  return sendingBackPayload;
 }
-
-
 
 function findUserNames(sheetData)
 {
@@ -62,20 +53,68 @@ function findUserNames(sheetData)
   return userIdsArr;
 }
 
+function findUserRowsByUserId(sheetData, userId) {
+  let rows = [];
+  for(let i = 1; i < sheetData.length; i++){
+    if(sheetData[i][CONSTS.UserIdColumn] == userId){
+      rows.push(i);
+    }
+  }
+  return rows;
+}
 
 
-function getUserDatas(UserName){
-  const gssSheet = getSheet(gssKey, sheetName);
+function getAllDatas(request){
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
+  const sheetData = gssSheet.getDataRange().getValues();
+  const sheetHeader = sheetData[0];
+  sheetData.splice(0,1);
+
+  let returning_datas = {};
+  let datas = [];
+  for(let i = 0; i < sheetData.length; i++)
+  {
+    data = new Object();
+    for(let j = 2; j < sheetHeader.length; j++){
+      data[sheetHeader[j]]= sheetData[i][j] ;
+    }
+    datas[i] = data;
+  }
+  returning_datas[CONSTS.Payload] = datas;
+
+  const sendingBackPayload = ContentService.createTextOutput(JSON.stringify(returning_datas));
+  Logger.log(sendingBackPayload.getContent());
+  return sendingBackPayload;
+}
+
+function getUserNames(request){
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
+  const sheetData = gssSheet.getDataRange().getValues();
+
+  userIdsData = {
+    [CONSTS.Payload] : findUserNames(sheetData)
+  }
+  sendingBackPayload = ContentService.createTextOutput(JSON.stringify(userIdsData));
+  Logger.log(sendingBackPayload.getContent());
+  return sendingBackPayload;
+}
+
+function getUserDatas(request){
+  const userName = request[CONSTS.UserName];
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
   const sheetHeader = sheetData[0];
   
-  const userId = findUserId(sheetData, UserName);
+  const userId = findUserId(sheetData, userName);
   const user_rows = findUserRowsByUserId(sheetData, userId);
 
   if(user_rows.length == 0){
-    Logger.log(`Error: \"${UserName}\" does not exist in the sheet.`);
+    Logger.log(`Error: \"${userName}\" does not exist in the sheet.`);
 
-    return ContentService.createTextOutput(`Error: \"${UserName}\" does not exist in the sheet.`);
+    return ContentService.createTextOutput(`Error: \"${userName}\" does not exist in the sheet.`);
   }
 
   let returning_datas = {};
@@ -95,17 +134,22 @@ function getUserDatas(UserName){
   return sendingBackPayload;
 }
 
-function findUserRowsByUserId(sheetData, userId) {
-  let rows = [];
-  for(let i = 1; i < sheetData.length; i++){
-    if(sheetData[i][CONSTS.UserIdColumn] == userId){
-      rows.push(i);
-    }
+function isGssUrlValid(request){
+  const gssUrl = request[CONSTS.GssUrl];
+
+  try {
+    getSheet(gssUrl);
+    const log = `GssUrl is valid.`;
+    return ContentService.createTextOutput(log);
   }
-  return rows;
+  catch (e) {
+    return ContentService.createTextOutput(e);
+  }
 }
 
-
+function isGasUrlValid(){
+  return ContentService.createTextOutput(`GasUrl is valid.`);
+}
 
 // GAS's event function that will be called when https GET is requested.
 function doGet(e){
@@ -118,46 +162,54 @@ function doGet(e){
     return ContentService.createTextOutput("Error: payload was empty.");
   }
   
-  if(request[CONSTS.Method] == CONSTS.GetDatasMethod){
-    return getUserDatas(request[CONSTS.UserName]);
+  if(request[CONSTS.Method] == CONSTS.GetAllDatasMethod){
+    return getAllDatas(request);
   }
+  else if(request[CONSTS.Method] == CONSTS.GetUserDatasMethod){
+    return getUserDatas(request);
+  } 
   else if(request[CONSTS.Method] == CONSTS.GetUserNamesMethod){
     return getUserNames();
+  } 
+  else if(request[CONSTS.Method] == CONSTS.CheckIfGssUrlValidMethod){
+    return isGssUrlValid(request);
+  }
+  else if(request[CONSTS.Method] == CONSTS.CheckIfGasUrlValidMethod){
+    return isGasUrlValid();
+  }
+  else {
+    return ContentService.createTextOutput(`Error: \"${CONSTS.Method}\" is invalid.`);
   }
 }
 
 function generateDebugObjectForGET(){
   //[variable], [] makes the variable to expand.
   const fakePayload = {
-    [CONSTS.Method] : [CONSTS.GetDatasMethod],
+    [CONSTS.Method] : [CONSTS.CheckIfGasUrlValidMethod],
     [CONSTS.UserName] : "tester",
+    [CONSTS.GssUrl]   : GssUrl,
   };
   return fakePayload;
 }
 
 
-// GAS's event function that will be called when https POST is requested.
-function doPost(e){
-  const request = (e == null) ? generateDebugObjectForPOST() : JSON.parse(e.postData.getDataAsString());
-  //Logger.log(JSON.stringify(JSON.parse('{"userName":"aaa" , "message": { "vertexId": 0 } }')["message"]));
 
-  if(request == null ){
-    return ContentService.createTextOutput("Error: payload was empty.");
-  }
 
-  if(request[CONSTS.Method] == CONSTS.SaveMessageMethod){
-    return saveMessage(request);
-  }
-  else if(request[CONSTS.Method] == CONSTS.RemoveDataMethod){
-    return removeData(request);
-  }
-  else if(request[CONSTS.Method] == CONSTS.SaveLonLatMethod){
-    return saveLonLat(request);
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
 
 function saveMessage(request){
-  const gssSheet = getSheet(gssKey, sheetName);
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   const currentTime = Utilities.formatDate(new Date(), "GMT+9", "yyyy/MM/dd HH:mm:ss");
@@ -194,7 +246,8 @@ function saveMessage(request){
 }
 
 function saveLonLat(request){
-  const gssSheet = getSheet(gssKey, sheetName);
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   const currentTime = Utilities.formatDate(new Date(), "GMT+9", "yyyy/MM/dd HH:mm:ss");
@@ -229,7 +282,8 @@ function saveLonLat(request){
 }
 
 function removeData(request){
-  const gssSheet = getSheet(gssKey, sheetName);
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   const userName = request[CONSTS.UserName];
@@ -252,14 +306,7 @@ function removeData(request){
   }
 }
 
-function generateDebugObjectForPOST(){
-  const fakePayload = {
-    [CONSTS.Method] : [CONSTS.RemoveDataMethod],
-    [CONSTS.UserName] : "tester",
-    [CONSTS.Message] : {"areaId" : 0, "vertexId" : 0, "lonLat":{"x":0,"y":0} },
-  };
-  return fakePayload;
-}
+
 
 function findUserId(sheetData, userName){
   for(let i = 1; i < sheetData.length; i++){
@@ -300,4 +347,37 @@ function findMaxAreaId(sheetData){
   return maxId;
 }
 
+
+
+
+
+// GAS's event function that will be called when https POST is requested.
+function doPost(e){
+  const request = (e == null) ? generateDebugObjectForPOST() : JSON.parse(e.postData.getDataAsString());
+
+  if(request == null ){
+    return ContentService.createTextOutput("Error: payload was empty.");
+  }
+
+  if(request[CONSTS.Method] == CONSTS.SaveMessageMethod){
+    return saveMessage(request);
+  }
+  else if(request[CONSTS.Method] == CONSTS.RemoveDataMethod){
+    return removeData(request);
+  }
+  else if(request[CONSTS.Method] == CONSTS.SaveLonLatMethod){
+    return saveLonLat(request);
+  }
+  
+}
+
+function generateDebugObjectForPOST(){
+  const fakePayload = {
+    [CONSTS.Method]   : [CONSTS.CheckIfGssUrlValidMethod],
+    [CONSTS.UserName] : "tester",
+    [CONSTS.GssUrl]   : GssUrl,
+    [CONSTS.Message]  : {"areaId" : 0, "vertexId" : 0, "lonLat":{"x":0,"y":0} },
+  };
+  return fakePayload;
+}
 

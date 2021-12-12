@@ -8,18 +8,18 @@ namespace GssDbManageWrapper
 {
     public static class GssPoster
     {
-        public static IEnumerator SaveUserData(string gasUrl, string userName, string message, Action feedbackHandler = null)
+        public static IEnumerator SaveUserData(string gasUrl, string gssUrl, string userName, string message, Action feedbackHandler = null)
         {
-            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveMessage}\" , \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveMessage}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
             Debug.Log(jsonBody);
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
             yield return PostToGss(gasUrl, MethodNames.SaveMessage, payloadRaw, feedbackHandler);
         }
 
-        public static IEnumerator RemoveData(string gasUrl, string userName, string message, Action feedbackHandler = null)
+        public static IEnumerator RemoveData(string gasUrl, string gssUrl, string userName, string message, Action feedbackHandler = null)
         {
-            var jsonBody = $"{{ \"method\" : \"{MethodNames.RemoveData}\" , \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.RemoveData}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
             Debug.Log(jsonBody);
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
@@ -49,14 +49,13 @@ namespace GssDbManageWrapper
 
             if (request.isHttpError || request.isNetworkError)
             {
-                Debug.Log(request.error);
                 Debug.LogError($"<color=blue>[GssPoster]</color> Sending data to GAS failed. Error: {request.error}");
             }
             else
             {
                 var request_result = request.downloadHandler.text;
 
-                if (request_result[0] == 'E')
+                if (request_result.Contains("Error"))
                 {
                     Debug.Log($"<color=blue>[GssPoster]</color> {request_result}");
                     yield break;
@@ -64,7 +63,6 @@ namespace GssDbManageWrapper
                 else
                 {
                     feedbackHandler?.Invoke();
-                    Debug.Log(request_result);
                     yield break;
                 }
             }

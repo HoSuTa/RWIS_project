@@ -644,12 +644,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiText: {fileID: 1251452134}
-  _gasURLjsonPos: Assets/Resources/gasUrl.json
   _userName: tester
   _areaId: 0
   _vertexId: 0
   _lonLat: {x: 0, y: 0}
-  _requestMethod: 0
+  _requestMethod: 7
   _sendRequest: 0
 --- !u!4 &2025085179
 Transform:
