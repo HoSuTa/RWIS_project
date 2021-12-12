@@ -49,14 +49,13 @@ namespace GssDbManageWrapper
 
             if (request.isHttpError || request.isNetworkError)
             {
-                Debug.Log(request.error);
                 Debug.LogError($"<color=blue>[GssPoster]</color> Sending data to GAS failed. Error: {request.error}");
             }
             else
             {
                 var request_result = request.downloadHandler.text;
 
-                if (request_result[0] == 'E')
+                if (request_result.Contains("Error"))
                 {
                     Debug.Log($"<color=blue>[GssPoster]</color> {request_result}");
                     yield break;

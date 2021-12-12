@@ -7,9 +7,9 @@ using UnityEngine.UI;
 public class MainMenuUIManager : MonoBehaviour
 {
     [SerializeField]
-    private InputField _gssKeyField;
+    private InputField _keyField;
     [SerializeField]
-    private InputField _gasKeyField;
+    private Text _keyIsValidText;
     [SerializeField]
     private Text _savedGssKeyExistsText;
     [SerializeField]
@@ -32,39 +32,54 @@ public class MainMenuUIManager : MonoBehaviour
         {
             _dbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
         }
-        UpdateGssKeyRelatedUI();
+        UpdateKeyRelatedUI();
     }
 
     private void Update()
     {
         if (_runSaveGssKey)
         {
-            if (!string.IsNullOrEmpty(_gssKeyField.text))
+            if (!string.IsNullOrEmpty(_keyField.text))
             {
-                _dbHub.CheckIfGssUrlValid(_gssKeyField.text, () => GssUrlManager.SaveGssUrl(_gssKeyField.text), UpdateGssKeyRelatedUI);
+                _dbHub.CheckIfGssUrlValid
+                (
+                    _keyField.text, 
+                    () => GssUrlManager.SaveUrl(_keyField.text), 
+                    UpdateKeyRelatedUI,
+                    KeyNotValidFeedBack
+                );
             }
             _runSaveGssKey = false;
         }
 
         if (_runSaveGasKey)
         {
-            if (!string.IsNullOrEmpty(_gasKeyField.text))
+            if (!string.IsNullOrEmpty(_keyField.text))
             {
-                //_dbHub.CheckIfGssUrlValid(_gasKeyField.text, () => GasUrlManager.SaveGasUrl(_gasKeyField.text), UpdateGssKeyRelatedUI);
+                _dbHub.CheckIfGssUrlValid
+                 (
+                     _keyField.text,
+                     () => GasUrlManager.SaveUrl(_keyField.text),
+                     UpdateKeyRelatedUI,
+                     KeyNotValidFeedBack
+                 );
             }
             _runSaveGasKey = false;
         }
     }
 
-
-
-    public void UpdateGssKeyRelatedUI()
+    private void KeyNotValidFeedBack()
     {
-        if (GssUrlManager.IsGssUrlAssigned())
+        _keyIsValidText.text = "The input was invalid";
+    }
+
+    public void UpdateKeyRelatedUI()
+    {
+        if (GssUrlManager.IsUrlAssigned())
         {
             _savedGssKeyExistsText.text = "Saved GSS Key exists";
             _savedGssKeyExistsText.color = _plusColor;
-            _savedGssKey.text = "\nSaved GSS Key:\n" + GssUrlManager.GetGssUrl();
+            _savedGssKey.text = "\nSaved GSS Key:\n" + GssUrlManager.GetUrl();
             _playButton.SetActive(true);
         }
         else
@@ -77,14 +92,14 @@ public class MainMenuUIManager : MonoBehaviour
     }
     public void SaveGssUrl()
     {
-        if (!string.IsNullOrEmpty(_gssKeyField.text))
+        if (!string.IsNullOrEmpty(_keyField.text))
         {
             _runSaveGssKey = true;
         }
     }
     public void SaveGasUrl()
     {
-        if (!string.IsNullOrEmpty(_gasKeyField.text))
+        if (!string.IsNullOrEmpty(_keyField.text))
         {
             _runSaveGasKey = true;
         }
@@ -92,13 +107,13 @@ public class MainMenuUIManager : MonoBehaviour
 
     public void ResetGssUrl()
     {
-        GssUrlManager.ResetGssUrl();
-        UpdateGssKeyRelatedUI();
+        GssUrlManager.ResetUrl();
+        UpdateKeyRelatedUI();
     }
 
     public void ResetGasUrl()
     {
-        GasUrlManager.ResetGasUrl();
-        UpdateGssKeyRelatedUI();
+        GasUrlManager.ResetUrl();
+        UpdateKeyRelatedUI();
     }
 }

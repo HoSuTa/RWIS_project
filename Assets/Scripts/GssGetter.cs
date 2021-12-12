@@ -26,6 +26,11 @@ namespace GssDbManageWrapper
             yield return GetGssData(gasUrl, gssUrl, MethodNames.CheckIfGssUrlValid, "", feedbackHandler);
         }
 
+        public static IEnumerator CheckIfGasUrlValid(string gasUrl, Action<object> feedbackHandler = null)
+        {
+            yield return GetGssData(gasUrl, "", MethodNames.CheckIfGasUrlValid, "", feedbackHandler);
+        }
+
         private static IEnumerator GetGssData(string gasUrl, string gssUrl, MethodNames methodName, string userName, Action<object> feedbackHandler = null)
         {
             UnityWebRequest request =
@@ -37,7 +42,10 @@ namespace GssDbManageWrapper
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}") 
                 : (methodName == MethodNames.CheckIfGssUrlValid) ?
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
+                : (methodName == MethodNames.CheckIfGasUrlValid) ?
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}")
                 : null;
+
             if(request == null)
             {
                 Debug.LogError($"<color=blue>[GssGetter]</color> Behaviour for \"{methodName}\" is not implemented.");
@@ -48,9 +56,11 @@ namespace GssDbManageWrapper
 
             if (request.isHttpError || request.isNetworkError)
             {
-                Debug.Log(request.error);
                 Debug.LogError($"<color=blue>[GssGetter]</color> Sending data to GAS failed. Error: {request.error}.");
-                yield break;
+                if (methodName == MethodNames.CheckIfGasUrlValid)
+                {
+                    feedbackHandler?.Invoke(request.error);
+                }
             }
             else
             {
@@ -58,11 +68,14 @@ namespace GssDbManageWrapper
 
                 if (request_result.Contains("Error"))
                 {
-                    Debug.LogError($"<color=blue>[GssGetter]</color> {request_result} ");
-                    yield break;
+                    Debug.LogError($"<color=blue>[GssGetter]</color> {request_result}");
                 }
 
                 if (methodName == MethodNames.CheckIfGssUrlValid)
+                {
+                    feedbackHandler?.Invoke(request_result);
+                }
+                else if (methodName == MethodNames.CheckIfGasUrlValid)
                 {
                     feedbackHandler?.Invoke(request_result);
                 }
