@@ -38,7 +38,6 @@ namespace GssDbManageWrapper
                 yield break;
             }
 
-
             yield return request.SendWebRequest();
 
             if (request.isHttpError || request.isNetworkError)
@@ -51,10 +50,14 @@ namespace GssDbManageWrapper
             {
                 var request_result = request.downloadHandler.text;
 
-                if (request_result[0] == 'E')
+                if (request_result.Contains("Error"))
                 {
-                    Debug.Log(request_result);
+                    Debug.LogError($"<color=blue>[GssGetter]</color> {request_result} ");
                     yield break;
+                }
+                else if (methodName == MethodNames.IsGssKeyValid)
+                {
+                    feedbackHandler?.Invoke(request_result);
                 }
                 else
                 {
@@ -82,11 +85,6 @@ namespace GssDbManageWrapper
                             Debug.Log($"[{i}] {response[i].ToString()}");
                         }
                     } 
-                    else if (methodName == MethodNames.IsGssKeyValid)
-                    {
-                        feedbackHandler?.Invoke(response);
-                        Debug.Log(request_result);
-                    }
                 }
             }
         }

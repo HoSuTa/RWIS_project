@@ -123,18 +123,17 @@ namespace GssDbManageWrapper
         }
 
         //Updateに対してStartCoroutineしないと行けない.
-        public bool IsGssKeyValid(Action<object> feedback)
+        public void IsGssKeyValid(string gssUrl, Action saveKeyFeedBack, Action updateKeyRelatedUiFeedBack)
         {
             _isRequestInProcess = true;
-            StartCoroutine(GssGetter.IsGssKeyValid(_gasURL, _gssUrl, response => IsGssKeyValidFeedback((string)response, feedback)));
-            while (_isRequestInProcess) ;
-            return _isGssUrlValid;
+            StartCoroutine(GssGetter.IsGssKeyValid(_gasURL, gssUrl, response => IsGssKeyValidFeedback((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
         }
-        private void IsGssKeyValidFeedback(string response, Action<object> feedback = null)
+        private void IsGssKeyValidFeedback(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
         {
             if (!response.Contains("Error"))
             {
-                feedback?.Invoke(null);
+                saveKeyFeedBack?.Invoke();
+                updateKeyRelatedUiFeedBack?.Invoke();
             }
 
             Debug.Log(response);
