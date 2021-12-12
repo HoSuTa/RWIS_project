@@ -15,6 +15,7 @@ const CONSTS = {
   GetUserDatasMethod: "GetUserDatas",
   GetUserNamesMethod: "GetUserNames",
   CheckIfGssUrlValidMethod: "CheckIfGssUrlValid",
+  CheckIfGasUrlValidMethod: "CheckIfGasUrlValid",
   UpdateTimeColumn : 0,
   UserIdColumn : 1,
   UserNameColumn : 2,
@@ -138,7 +139,7 @@ function isGssUrlValid(request){
 
   try {
     getSheet(gssUrl);
-    const log = `GssUrl \"${gssUrl}\" is valid.`;
+    const log = `GssUrl is valid.`;
     return ContentService.createTextOutput(log);
   }
   catch (e) {
@@ -146,6 +147,9 @@ function isGssUrlValid(request){
   }
 }
 
+function isGasUrlValid(){
+  return ContentService.createTextOutput(`GasUrl is valid.`);
+}
 
 // GAS's event function that will be called when https GET is requested.
 function doGet(e){
@@ -170,6 +174,9 @@ function doGet(e){
   else if(request[CONSTS.Method] == CONSTS.CheckIfGssUrlValidMethod){
     return isGssUrlValid(request);
   }
+  else if(request[CONSTS.Method] == CONSTS.CheckIfGasUrlValidMethod){
+    return isGasUrlValid();
+  }
   else {
     return ContentService.createTextOutput(`Error: \"${CONSTS.Method}\" is invalid.`);
   }
@@ -178,7 +185,7 @@ function doGet(e){
 function generateDebugObjectForGET(){
   //[variable], [] makes the variable to expand.
   const fakePayload = {
-    [CONSTS.Method] : [CONSTS.GetUserDatasMethod],
+    [CONSTS.Method] : [CONSTS.CheckIfGasUrlValidMethod],
     [CONSTS.UserName] : "tester",
     [CONSTS.GssUrl]   : GssUrl,
   };

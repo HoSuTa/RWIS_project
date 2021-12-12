@@ -15,6 +15,7 @@ namespace GssDbManageWrapper
         SaveLonLat,
         RemoveData,
         CheckIfGssUrlValid,
+        CheckIfGasUrlValid,
     }
 
     public class GssDbHub : MonoBehaviour
@@ -44,8 +45,8 @@ namespace GssDbManageWrapper
 
         private void Start()
         {
-            _gasURL = GasUrlManager.GetGasUrl();
-            _gssUrl = GssUrlManager.GetGssUrl();
+            _gasURL = GasUrlManager.GetUrl();
+            _gssUrl = GssUrlManager.GetUrl();
         }
 
         private void Update()
@@ -69,6 +70,10 @@ namespace GssDbManageWrapper
                 else if (_requestMethod == MethodNames.CheckIfGssUrlValid)
                 {
                     StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, _gssUrl, response => GssUrlValidFeedBack((string)response) ) );
+                }
+                else if (_requestMethod == MethodNames.CheckIfGasUrlValid)
+                {
+                    StartCoroutine(GssGetter.CheckIfGasUrlValid(_gasURL, response => GasUrlValidFeedBack((string)response)));
                 }
                 else if (_requestMethod == MethodNames.SaveMessage)
                 {
@@ -156,20 +161,92 @@ namespace GssDbManageWrapper
 
 
 
-        public void CheckIfGssUrlValid(string gssUrl, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
+        public void CheckIfGssUrlValid
+        (
+            string gssUrl, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
         {
-            StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, gssUrl, response => GssUrlValidFeedBack((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
+            StartCoroutine
+            (
+                GssGetter.CheckIfGssUrlValid
+                (
+                    _gasURL, 
+                    gssUrl, 
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response, 
+                        saveKeyFeedBack, 
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    ) 
+                )
+            );
         }
-        private void GssUrlValidFeedBack(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
+
+        private void GssUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
         {
             if (!response.Contains("Error"))
             {
                 saveKeyFeedBack?.Invoke();
                 updateKeyRelatedUiFeedBack?.Invoke();
             }
+            else
+            {
+                invalidFeedback?.Invoke();
+            }
+        }
 
-            Debug.Log(response);
 
+        public void CheckIfGasUrlValid
+        (
+            string gasUrl,
+            Action saveKeyFeedBack = null,
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            StartCoroutine
+            (
+                GssGetter.CheckIfGasUrlValid
+                (
+                    gasUrl,
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response,
+                        saveKeyFeedBack,
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    )
+                )
+            );
+        }
+
+        private void GasUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            if (!response.Contains("Cannot"))
+            {
+                saveKeyFeedBack?.Invoke();
+                updateKeyRelatedUiFeedBack?.Invoke();
+            }
+            else
+            {
+                invalidFeedback?.Invoke();
+            }
         }
     }
 }
