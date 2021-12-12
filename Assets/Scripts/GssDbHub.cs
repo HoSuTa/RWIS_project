@@ -21,7 +21,7 @@ namespace GssDbManageWrapper
     {
         private string _gssUrl;
         private string _gasURL;
-        private LocalGssDataManager _localGssData = new LocalGssDataManager();
+        public LocalGssDataManager _localGssData = new LocalGssDataManager();
 
         [SerializeField]
         private Text _uiText;
@@ -41,12 +41,11 @@ namespace GssDbManageWrapper
         private bool _sendRequest = false;
 
         private bool _isGssUrlValid = false;
-        private bool _isRequestInProcess = false;
 
         private void Start()
         {
-            _gasURL = KeyManager.GetKeyData(KeyManager.GAS_URL_PATH);
-            _gssUrl = GssKeyManager.GetGssKey();
+            _gasURL = GasUrlManager.GetGasUrl();
+            _gssUrl = GssUrlManager.GetGssUrl();
         }
 
         private void Update()
@@ -92,7 +91,31 @@ namespace GssDbManageWrapper
             }
         }
 
-        private void GetAllDatasFeedback(PayloadData[] datas)
+        private void SaveData(string areaId, string vertexId, string lonLat)
+        {
+            string message = $"{{" +
+                        $"\"areaId\" : {areaId}, " +
+                        $"\"vertexId\" : {vertexId}, " +
+                        $"\"lonLat\" : {JsonUtility.ToJson(lonLat)}" +
+                        $"}}";
+            StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message));
+        }
+
+        private void RemoveData(string areaId, string vertexId)
+        {
+            string message = $"{{" +
+                        $"\"areaId\" : {areaId}, " +
+                        $"\"vertexId\" : {vertexId} " +
+                        $"}}";
+            StartCoroutine(GssPoster.RemoveData(_gasURL, _gssUrl, _userName, message));
+        }
+
+        private void GetAllDatas(Action<object> localySaveAllDatasFeedBack = null)
+        {
+            StartCoroutine(GssGetter.GetAllDatas(_gasURL, _gssUrl, response => GetAllDatasFeedback((PayloadData[])response, localySaveAllDatasFeedBack)));
+        }
+
+        private void GetAllDatasFeedback(PayloadData[] datas, Action<object> localySaveAllDatasFeedBack = null)
         {
             _uiText.text = "userName : message\n";
             for (int i = 0; i < datas.Length; i++)
@@ -102,6 +125,7 @@ namespace GssDbManageWrapper
                 _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
             }
             _localGssData.RefreshAllDatas(datas);
+            localySaveAllDatasFeedBack?.Invoke(_localGssData);
         }
 
         private void GetUserDatasFeedback(PayloadData[] datas)
@@ -134,7 +158,6 @@ namespace GssDbManageWrapper
 
         public void CheckIfGssUrlValid(string gssUrl, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
         {
-            _isRequestInProcess = true;
             StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, gssUrl, response => GssUrlValidFeedBack((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
         }
         private void GssUrlValidFeedBack(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
