@@ -29,9 +29,7 @@ function getSheet(gssUrl){
     return gssSheet;
   }
   catch (e) {
-    const errorLog = `Error : GssUrl \"${gssUrl}\" is not valid.`;
-    Logger.log(errorLog);
-    return ContentService.createTextOutput(errorLog);
+    throw new Error(`GssUrl \"${gssUrl}\" is not valid.`);
   }
 }
 
@@ -118,16 +116,12 @@ function isGssKeyValid(request){
 
   try {
     getSheet(gssUrl);
+    const log = `GssUrl \"${gssUrl}\" is valid.`;
+    return ContentService.createTextOutput(log);
   }
   catch (e) {
-    const errorLog = `Error : GssUrl \"${gssUrl}\" is not valid.`;
-    Logger.log(errorLog);
-    return ContentService.createTextOutput(errorLog);
+    return ContentService.createTextOutput(e);
   }
-
-  const succeededLog = `GssUrl \"${gssUrl}\" is valid.`;
-  Logger.log(succeededLog);
-  return ContentService.createTextOutput(succeededLog);
 }
 
 
@@ -158,7 +152,7 @@ function generateDebugObjectForGET(){
   const fakePayload = {
     [CONSTS.Method] : [CONSTS.IsGssKeyValidMethod],
     [CONSTS.UserName] : "tester",
-    [CONSTS.GssUrl]   : GssUrl,
+    [CONSTS.GssUrl]   : "",
   };
   return fakePayload;
 }
