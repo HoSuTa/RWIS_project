@@ -7,6 +7,10 @@ namespace GssDbManageWrapper
 {
     public class GssGetter
     {
+        public static IEnumerator GetAllDatas(string gasUrl, string gssUrl, Action<object> feedbackHandler = null)
+        {
+            yield return GetGssData(gasUrl, gssUrl, MethodNames.GetAllDatas, "", feedbackHandler);
+        }
         public static IEnumerator GetUserDatas(string gasUrl, string gssUrl, string userName, Action<object> feedbackHandler = null)
         {
             yield return GetGssData(gasUrl, gssUrl, MethodNames.GetUserDatas, userName, feedbackHandler);
@@ -17,20 +21,22 @@ namespace GssDbManageWrapper
             yield return GetGssData(gasUrl, gssUrl, MethodNames.GetUserNames, "", feedbackHandler);
         }
 
-        public static IEnumerator IsGssKeyValid(string gasUrl, string gssUrl, Action<object> feedbackHandler = null)
+        public static IEnumerator CheckIfGssUrlValid(string gasUrl, string gssUrl, Action<object> feedbackHandler = null)
         {
-            yield return GetGssData(gasUrl, gssUrl, MethodNames.IsGssKeyValid, "", feedbackHandler);
+            yield return GetGssData(gasUrl, gssUrl, MethodNames.CheckIfGssUrlValid, "", feedbackHandler);
         }
 
         private static IEnumerator GetGssData(string gasUrl, string gssUrl, MethodNames methodName, string userName, Action<object> feedbackHandler = null)
         {
-            UnityWebRequest request = 
-                (methodName == MethodNames.GetUserNames) ?
-                    request = UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}") 
+            UnityWebRequest request =
+                (methodName == MethodNames.GetAllDatas) ?
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.GetUserDatas) ?
-                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(userName)}={userName}&{nameof(gssUrl)}={gssUrl}")
-                : (methodName == MethodNames.IsGssKeyValid) ?
-                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(userName)}={userName}&{nameof(gssUrl)}={gssUrl}")
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}&{nameof(userName)}={userName}")
+                : (methodName == MethodNames.GetUserNames) ?
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}") 
+                : (methodName == MethodNames.CheckIfGssUrlValid) ?
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : null;
             if(request == null)
             {
@@ -55,35 +61,25 @@ namespace GssDbManageWrapper
                     Debug.LogError($"<color=blue>[GssGetter]</color> {request_result} ");
                     yield break;
                 }
-                else if (methodName == MethodNames.IsGssKeyValid)
+
+                if (methodName == MethodNames.CheckIfGssUrlValid)
                 {
                     feedbackHandler?.Invoke(request_result);
                 }
                 else
                 {
                     var response = JsonExtension.FromJson<PayloadData>(request_result);
-
-                    if(methodName == MethodNames.GetUserNames)
+                    if (methodName == MethodNames.GetAllDatas)
                     {
                         feedbackHandler?.Invoke(response);
-
-                        for (int i = 0; i < response.Length; i++)
-                        {
-                            Debug.Log($"response[{i}].userName : {response[i].userName}");
-                        }
+                    }
+                    else if(methodName == MethodNames.GetUserNames)
+                    {
+                        feedbackHandler?.Invoke(response);
                     }
                     else if (methodName == MethodNames.GetUserDatas)
                     {
                         feedbackHandler?.Invoke(response);
-
-                        for (int i = 0; i < response.Length; i++)
-                        {
-                            if(response[i].message == null)
-                            {
-                                Debug.LogError($"<color=blue>[GssGetter]</color> response[i].message is null.");
-                            }
-                            Debug.Log($"[{i}] {response[i].ToString()}");
-                        }
                     } 
                 }
             }

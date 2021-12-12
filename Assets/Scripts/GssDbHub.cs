@@ -10,10 +10,11 @@ namespace GssDbManageWrapper
     {
         GetUserNames,
         GetUserDatas,
+        GetAllDatas,
         SaveMessage,
         SaveLonLat,
         RemoveData,
-        IsGssKeyValid,
+        CheckIfGssUrlValid,
     }
 
     public class GssDbHub : MonoBehaviour
@@ -24,6 +25,7 @@ namespace GssDbManageWrapper
 
         [SerializeField]
         private Text _uiText;
+
         [SerializeField]
         private string _userName = "tester";
         [SerializeField]
@@ -53,7 +55,11 @@ namespace GssDbManageWrapper
             {
                 Debug.Log($"<color=blue>[GssDbHub]</color> Sending data to GAS...");
 
-                if (_requestMethod == MethodNames.GetUserDatas)
+                if (_requestMethod == MethodNames.GetAllDatas)
+                {
+                    StartCoroutine(GssGetter.GetAllDatas(_gasURL, _gssUrl, response => GetAllDatasFeedback((PayloadData[])response)));
+                }
+                else if (_requestMethod == MethodNames.GetUserDatas)
                 {
                     StartCoroutine(GssGetter.GetUserDatas(_gasURL, _gssUrl, _userName, response => GetUserDatasFeedback((PayloadData[])response)));
                 }
@@ -61,9 +67,9 @@ namespace GssDbManageWrapper
                 {
                     StartCoroutine(GssGetter.GetUserNames(_gasURL, _gssUrl, response => GetUserNamesFeedback((PayloadData[])response)));
                 }
-                else if (_requestMethod == MethodNames.IsGssKeyValid)
+                else if (_requestMethod == MethodNames.CheckIfGssUrlValid)
                 {
-                    StartCoroutine(GssGetter.IsGssKeyValid(_gasURL, _gssUrl, response => IsGssKeyValidFeedback((string)response) ) );
+                    StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, _gssUrl, response => GssUrlValidFeedBack((string)response) ) );
                 }
                 else if (_requestMethod == MethodNames.SaveMessage)
                 {
@@ -86,7 +92,29 @@ namespace GssDbManageWrapper
             }
         }
 
+        private void GetAllDatasFeedback(PayloadData[] datas)
+        {
+            _uiText.text = "userName : message\n";
+            for (int i = 0; i < datas.Length; i++)
+            {
+                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
+                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
+                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
+            }
+            _localGssData.RefreshAllDatas(datas);
+        }
 
+        private void GetUserDatasFeedback(PayloadData[] datas)
+        {
+            _uiText.text = "userName : message\n";
+            for (int i = 0; i < datas.Length; i++)
+            {
+                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
+                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
+                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
+            }
+            _localGssData.RefreshUserDatas(datas);
+        }
 
         private void GetUserNamesFeedback(PayloadData[] datas)
         {
@@ -102,33 +130,14 @@ namespace GssDbManageWrapper
             }
         }
 
-        private void GetUserDatasFeedback(PayloadData[] datas)
-        {
-            _uiText.text = "userName : message\n";
-            for (int i = 0; i < datas.Length; i++)
-            {
-                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
-                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
-                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
-            }
-            _localGssData.RefreshUserDatas(datas);
-            foreach(var t in _localGssData.GetNearLonLatDatas(Vector2.zero, null))
-            {
-                Debug.Log(t.Key);
-                foreach (var j in t.Value)
-                {
-                    Debug.Log(j);
-                }
-            }
-        }
 
-        //Updateに対してStartCoroutineしないと行けない.
-        public void IsGssKeyValid(string gssUrl, Action saveKeyFeedBack, Action updateKeyRelatedUiFeedBack)
+
+        public void CheckIfGssUrlValid(string gssUrl, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
         {
             _isRequestInProcess = true;
-            StartCoroutine(GssGetter.IsGssKeyValid(_gasURL, gssUrl, response => IsGssKeyValidFeedback((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
+            StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, gssUrl, response => GssUrlValidFeedBack((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
         }
-        private void IsGssKeyValidFeedback(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
+        private void GssUrlValidFeedBack(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
         {
             if (!response.Contains("Error"))
             {

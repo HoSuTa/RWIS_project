@@ -44,7 +44,7 @@ public class MainMenuUIManager : MonoBehaviour
             if (!string.IsNullOrEmpty(_gssKeyField.text))
             {
                 Debug.Log(_gssKeyField.text);
-                _dbHub.IsGssKeyValid(_gssKeyField.text, () => GssKeyManager.SaveGssKey(_gssKeyField.text), UpdateGssKeyRelatedUI);
+                _dbHub.CheckIfGssUrlValid(_gssKeyField.text, () => GssKeyManager.SaveGssKey(_gssKeyField.text), UpdateGssKeyRelatedUI);
             }
             _runSaveGssKey = false;
         }
