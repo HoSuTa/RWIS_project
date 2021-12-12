@@ -11,9 +11,10 @@ const CONSTS = {
   SaveMessageMethod: "SaveMessage",
   SaveLonLatMethod: "SaveLonLat",
   RemoveDataMethod: "RemoveData",
-  GetDatasMethod: "GetUserDatas",
+  GetAllDatasMethod: "GetAllDatas",
+  GetUserDatasMethod: "GetUserDatas",
   GetUserNamesMethod: "GetUserNames",
-  IsGssKeyValidMethod: "IsGssKeyValid",
+  CheckIfGssUrlValidMethod: "CheckIfGssUrlValid",
   UpdateTimeColumn : 0,
   UserIdColumn : 1,
   UserNameColumn : 2,
@@ -33,21 +34,6 @@ function getSheet(gssUrl){
   }
 }
 
-function getUserNames(request){
-  const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
-  const sheetData = gssSheet.getDataRange().getValues();
-
-  userIdsData = {
-    [CONSTS.Payload] : findUserNames(sheetData)
-  }
-  sendingBackPayload = ContentService.createTextOutput(JSON.stringify(userIdsData));
-  Logger.log(sendingBackPayload.getContent());
-  return sendingBackPayload;
-}
-
-
-
 function findUserNames(sheetData)
 {
   let userIdsSet = new Set();
@@ -66,7 +52,53 @@ function findUserNames(sheetData)
   return userIdsArr;
 }
 
+function findUserRowsByUserId(sheetData, userId) {
+  let rows = [];
+  for(let i = 1; i < sheetData.length; i++){
+    if(sheetData[i][CONSTS.UserIdColumn] == userId){
+      rows.push(i);
+    }
+  }
+  return rows;
+}
 
+
+function getAllDatas(request){
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
+  const sheetData = gssSheet.getDataRange().getValues();
+  const sheetHeader = sheetData[0];
+  sheetData.splice(0,1);
+
+  let returning_datas = {};
+  let datas = [];
+  for(let i = 0; i < sheetData.length; i++)
+  {
+    data = new Object();
+    for(let j = 2; j < sheetHeader.length; j++){
+      data[sheetHeader[j]]= sheetData[i][j] ;
+    }
+    datas[i] = data;
+  }
+  returning_datas[CONSTS.Payload] = datas;
+
+  const sendingBackPayload = ContentService.createTextOutput(JSON.stringify(returning_datas));
+  Logger.log(sendingBackPayload.getContent());
+  return sendingBackPayload;
+}
+
+function getUserNames(request){
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getSheet(gssUrl);
+  const sheetData = gssSheet.getDataRange().getValues();
+
+  userIdsData = {
+    [CONSTS.Payload] : findUserNames(sheetData)
+  }
+  sendingBackPayload = ContentService.createTextOutput(JSON.stringify(userIdsData));
+  Logger.log(sendingBackPayload.getContent());
+  return sendingBackPayload;
+}
 
 function getUserDatas(request){
   const userName = request[CONSTS.UserName];
@@ -101,17 +133,7 @@ function getUserDatas(request){
   return sendingBackPayload;
 }
 
-function findUserRowsByUserId(sheetData, userId) {
-  let rows = [];
-  for(let i = 1; i < sheetData.length; i++){
-    if(sheetData[i][CONSTS.UserIdColumn] == userId){
-      rows.push(i);
-    }
-  }
-  return rows;
-}
-
-function isGssKeyValid(request){
+function isGssUrlValid(request){
   const gssUrl = request[CONSTS.GssUrl];
 
   try {
@@ -136,23 +158,29 @@ function doGet(e){
     return ContentService.createTextOutput("Error: payload was empty.");
   }
   
-  if(request[CONSTS.Method] == CONSTS.GetDatasMethod){
-    return getUserDatas(request[CONSTS.UserName]);
+  if(request[CONSTS.Method] == CONSTS.GetAllDatasMethod){
+    return getAllDatas(request);
+  }
+  else if(request[CONSTS.Method] == CONSTS.GetUserDatasMethod){
+    return getUserDatas(request);
   } 
   else if(request[CONSTS.Method] == CONSTS.GetUserNamesMethod){
     return getUserNames();
   } 
-  else if(request[CONSTS.Method] == CONSTS.IsGssKeyValidMethod){
-    return isGssKeyValid(request);
+  else if(request[CONSTS.Method] == CONSTS.CheckIfGssUrlValidMethod){
+    return isGssUrlValid(request);
+  }
+  else {
+    return ContentService.createTextOutput(`Error: \"${CONSTS.Method}\" is invalid.`);
   }
 }
 
 function generateDebugObjectForGET(){
   //[variable], [] makes the variable to expand.
   const fakePayload = {
-    [CONSTS.Method] : [CONSTS.IsGssKeyValidMethod],
+    [CONSTS.Method] : [CONSTS.GetUserDatasMethod],
     [CONSTS.UserName] : "tester",
-    [CONSTS.GssUrl]   : "",
+    [CONSTS.GssUrl]   : GssUrl,
   };
   return fakePayload;
 }
@@ -338,7 +366,7 @@ function doPost(e){
 
 function generateDebugObjectForPOST(){
   const fakePayload = {
-    [CONSTS.Method]   : [CONSTS.IsGssKeyValidMethod],
+    [CONSTS.Method]   : [CONSTS.CheckIfGssUrlValidMethod],
     [CONSTS.UserName] : "tester",
     [CONSTS.GssUrl]   : GssUrl,
     [CONSTS.Message]  : {"areaId" : 0, "vertexId" : 0, "lonLat":{"x":0,"y":0} },
