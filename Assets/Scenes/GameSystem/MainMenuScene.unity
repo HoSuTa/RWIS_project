@@ -610,6 +610,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gssKeyField: {fileID: 1213429858}
+  _gasKeyField: {fileID: 0}
   _savedGssKeyExistsText: {fileID: 40806919}
   _plusColor: {r: 0.20784312, g: 0.74509805, b: 0.5215365, a: 0.83137256}
   _minusColor: {r: 0.74509805, g: 0.20784312, b: 0.4051003, a: 0.83137256}

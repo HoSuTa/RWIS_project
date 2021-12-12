@@ -9,6 +9,8 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private InputField _gssKeyField;
     [SerializeField]
+    private InputField _gasKeyField;
+    [SerializeField]
     private Text _savedGssKeyExistsText;
     [SerializeField]
     private Color _plusColor;
@@ -22,6 +24,7 @@ public class MainMenuUIManager : MonoBehaviour
     private GssDbManageWrapper.GssDbHub _dbHub;
 
     private bool _runSaveGssKey = false;
+    private bool _runSaveGasKey = false;
 
     private void Awake()
     {
@@ -34,37 +37,34 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void Update()
     {
-        if (_dbHub == null)
-        {
-            _dbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
-        }
-
         if (_runSaveGssKey)
         {
             if (!string.IsNullOrEmpty(_gssKeyField.text))
             {
-                Debug.Log(_gssKeyField.text);
-                _dbHub.CheckIfGssUrlValid(_gssKeyField.text, () => GssKeyManager.SaveGssKey(_gssKeyField.text), UpdateGssKeyRelatedUI);
+                _dbHub.CheckIfGssUrlValid(_gssKeyField.text, () => GssUrlManager.SaveGssUrl(_gssKeyField.text), UpdateGssKeyRelatedUI);
             }
             _runSaveGssKey = false;
         }
-    }
 
-    public void SaveGssKey()
-    {
-        if (!string.IsNullOrEmpty(_gssKeyField.text))
+        if (_runSaveGasKey)
         {
-            _runSaveGssKey = true;
+            if (!string.IsNullOrEmpty(_gasKeyField.text))
+            {
+                //_dbHub.CheckIfGssUrlValid(_gasKeyField.text, () => GasUrlManager.SaveGasUrl(_gasKeyField.text), UpdateGssKeyRelatedUI);
+            }
+            _runSaveGasKey = false;
         }
     }
 
+
+
     public void UpdateGssKeyRelatedUI()
     {
-        if (GssKeyManager.IsGssUrlAssigned())
+        if (GssUrlManager.IsGssUrlAssigned())
         {
             _savedGssKeyExistsText.text = "Saved GSS Key exists";
             _savedGssKeyExistsText.color = _plusColor;
-            _savedGssKey.text = "\nSaved GSS Key:\n" + GssKeyManager.GetGssKey();
+            _savedGssKey.text = "\nSaved GSS Key:\n" + GssUrlManager.GetGssUrl();
             _playButton.SetActive(true);
         }
         else
@@ -74,5 +74,31 @@ public class MainMenuUIManager : MonoBehaviour
             _savedGssKey.text = "\nSaved Gss Key does not exist.";
             _playButton.SetActive(false);
         }
+    }
+    public void SaveGssUrl()
+    {
+        if (!string.IsNullOrEmpty(_gssKeyField.text))
+        {
+            _runSaveGssKey = true;
+        }
+    }
+    public void SaveGasUrl()
+    {
+        if (!string.IsNullOrEmpty(_gasKeyField.text))
+        {
+            _runSaveGasKey = true;
+        }
+    }
+
+    public void ResetGssUrl()
+    {
+        GssUrlManager.ResetGssUrl();
+        UpdateGssKeyRelatedUI();
+    }
+
+    public void ResetGasUrl()
+    {
+        GasUrlManager.ResetGasUrl();
+        UpdateGssKeyRelatedUI();
     }
 }
