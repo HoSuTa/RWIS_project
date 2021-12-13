@@ -79,7 +79,8 @@ namespace GssDbManageWrapper
                 {
                     feedbackHandler?.Invoke(request_result);
                 }
-                else if (methodName == MethodNames.IsGssKeyValid)
+
+                if (methodName == MethodNames.CheckIfGssUrlValid)
                 {
                     feedbackHandler?.Invoke(request_result);
                 }

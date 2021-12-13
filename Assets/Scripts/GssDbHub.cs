@@ -148,16 +148,14 @@ namespace GssDbManageWrapper
 
         private void GetUserNamesFeedback(PayloadData[] datas)
         {
-            _uiText.text = "userNames\n";
+            _uiText.text = "userName : message\n";
             for (int i = 0; i < datas.Length; i++)
             {
-                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName}\n");
+                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
+                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
+                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
             }
-            _localGssData.RefreshUserNames(datas);
-            foreach(var userName in _localGssData._userNames)
-            {
-                Debug.Log(userName);
-            }
+            _localGssData.RefreshAllDatas(datas);
         }
 
 
@@ -250,13 +248,14 @@ namespace GssDbManageWrapper
             }
         }
 
-        //Updateに対してStartCoroutineしないと行けない.
-        public void IsGssKeyValid(string gssUrl, Action saveKeyFeedBack, Action updateKeyRelatedUiFeedBack)
+
+
+        public void CheckIfGssUrlValid(string gssUrl, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
         {
             _isRequestInProcess = true;
-            StartCoroutine(GssGetter.IsGssKeyValid(_gasURL, gssUrl, response => IsGssKeyValidFeedback((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
+            StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, gssUrl, response => GssUrlValidFeedBack((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
         }
-        private void IsGssKeyValidFeedback(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
+        private void GssUrlValidFeedBack(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
         {
             if (!response.Contains("Error"))
             {
