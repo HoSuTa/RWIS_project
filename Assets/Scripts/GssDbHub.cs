@@ -133,14 +133,45 @@ namespace GssDbManageWrapper
             localySaveAllDatasFeedBack?.Invoke(_localGssData);
         }
 
-        private void GetUserDatasFeedback(PayloadData[] datas)
+
+
+        public void CheckIfGssUrlValid
+        (
+            string gssUrl, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
         {
-            _uiText.text = "userName : message\n";
-            for (int i = 0; i < datas.Length; i++)
+            StartCoroutine
+            (
+                GssGetter.CheckIfGssUrlValid
+                (
+                    _gasURL, 
+                    gssUrl, 
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response, 
+                        saveKeyFeedBack, 
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    ) 
+                )
+            );
+        }
+
+        private void GssUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            if (!response.Contains("Error"))
             {
-                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
-                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
-                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
+                saveKeyFeedBack?.Invoke();
+                updateKeyRelatedUiFeedBack?.Invoke();
             }
             _localGssData.RefreshUserDatas(datas);
         }
