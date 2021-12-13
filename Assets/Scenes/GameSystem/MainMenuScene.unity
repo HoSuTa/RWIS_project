@@ -282,7 +282,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 314970433}
-        m_MethodName: UpdateGssKeyRelatedUI
+        m_MethodName: SaveGssKey
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

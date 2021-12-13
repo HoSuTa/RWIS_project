@@ -21,6 +21,8 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private GssDbManageWrapper.GssDbHub _dbHub;
 
+    private bool _runSaveGssKey = false;
+
     private void Awake()
     {
         if(_dbHub == null)
@@ -30,14 +32,34 @@ public class MainMenuUIManager : MonoBehaviour
         UpdateGssKeyRelatedUI();
     }
 
-    public void UpdateGssKeyRelatedUI()
+    private void Update()
+    {
+        if (_dbHub == null)
+        {
+            _dbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
+        }
+
+        if (_runSaveGssKey)
+        {
+            if (!string.IsNullOrEmpty(_gssKeyField.text))
+            {
+                Debug.Log(_gssKeyField.text);
+                _dbHub.IsGssKeyValid(_gssKeyField.text, () => GssKeyManager.SaveGssKey(_gssKeyField.text), UpdateGssKeyRelatedUI);
+            }
+            _runSaveGssKey = false;
+        }
+    }
+
+    public void SaveGssKey()
     {
         if (!string.IsNullOrEmpty(_gssKeyField.text))
         {
-            Debug.Log(_gssKeyField.text);
-            _dbHub.IsGssKeyValid( _ => GssKeyManager.SaveGssKey(_gssKeyField.text) );
+            _runSaveGssKey = true;
         }
+    }
 
+    public void UpdateGssKeyRelatedUI()
+    {
         if (GssKeyManager.IsGssUrlAssigned())
         {
             _savedGssKeyExistsText.text = "Saved GSS Key exists";
