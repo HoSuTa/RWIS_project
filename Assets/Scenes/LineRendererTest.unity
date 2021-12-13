@@ -141,8 +141,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lonLatsVertices:
   - {x: 37.78417, y: -122.40158}
-  - {x: 37.78418, y: -122.4018}
+  - {x: 37.78477, y: -122.4018}
   - {x: 37.78417, y: -122.4018}
+  - {x: 37.78477, y: -122.4016}
   mapBoxMap: {fileID: 0}
   renderer: {fileID: 0}
 --- !u!1 &560426018

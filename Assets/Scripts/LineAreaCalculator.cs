@@ -5,9 +5,9 @@ using UnityEngine;
 public class LineAreaCalculator : MonoBehaviour
 {
     [SerializeField]
-    private List<Vector2> vertices;
+    public List<Vector2> vertices;
     [SerializeField]
-    private List<uint>    indices;
+    public List<uint>    indices;
     // Start is called before the first frame update
     public float CalulateArea(){
         if (indices.Count< 3){
