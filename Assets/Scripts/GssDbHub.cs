@@ -250,20 +250,92 @@ namespace GssDbManageWrapper
 
 
 
-        public void CheckIfGssUrlValid(string gssUrl, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
+        public void CheckIfGssUrlValid
+        (
+            string gssUrl, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
         {
-            StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, gssUrl, response => GssUrlValidFeedBack((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
+            StartCoroutine
+            (
+                GssGetter.CheckIfGssUrlValid
+                (
+                    _gasURL, 
+                    gssUrl, 
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response, 
+                        saveKeyFeedBack, 
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    ) 
+                )
+            );
         }
-        private void GssUrlValidFeedBack(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
+
+        private void GssUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
         {
             if (!response.Contains("Error"))
             {
                 saveKeyFeedBack?.Invoke();
                 updateKeyRelatedUiFeedBack?.Invoke();
             }
+            else
+            {
+                invalidFeedback?.Invoke();
+            }
+        }
 
-            Debug.Log(response);
 
+        public void CheckIfGasUrlValid
+        (
+            string gasUrl,
+            Action saveKeyFeedBack = null,
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            StartCoroutine
+            (
+                GssGetter.CheckIfGasUrlValid
+                (
+                    gasUrl,
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response,
+                        saveKeyFeedBack,
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    )
+                )
+            );
+        }
+
+        private void GasUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            if (!response.Contains("Cannot"))
+            {
+                saveKeyFeedBack?.Invoke();
+                updateKeyRelatedUiFeedBack?.Invoke();
+            }
+            else
+            {
+                invalidFeedback?.Invoke();
+            }
         }
     }
 }

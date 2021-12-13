@@ -11,7 +11,7 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private Text _keyIsValidText;
     [SerializeField]
-    private InputField _gasKeyField;
+    private Text _keyIsValidText;
     [SerializeField]
     private Text _savedGssKeyExistsText;
     [SerializeField]
