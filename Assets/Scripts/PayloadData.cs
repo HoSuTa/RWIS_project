@@ -20,11 +20,11 @@ namespace GssDbManageWrapper
     {
         public int areaId;
         public int vertexId;
-        public Vector2 lonLat;
+        public Vector3 position;
 
         public override string ToString()
         {
-            return $"areaId={this.areaId}, vertexId={this.vertexId}, lonLat={this.lonLat}.";
+            return $"areaId={this.areaId}, vertexId={this.vertexId}, position={this.position}";
         }
     }
 }

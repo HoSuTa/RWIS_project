@@ -11,17 +11,17 @@ namespace GssDbManageWrapper
         public Dictionary<string, List<MessageJson>> _userDatas = new Dictionary<string, List<MessageJson>>();
         public Dictionary<string, List<MessageJson>> _alldatas = new Dictionary<string, List<MessageJson>>();
 
-        public List<Vector2> GetLonLatArrays(string userName, int areaId)
+        public List<Vector2> GetUserPositions(string userName, int areaId)
         {
             if (_alldatas.ContainsKey(userName))
             {
                 var filteredUserDatas = _alldatas[userName];
-                List<Vector2> lonLatArrays = new List<Vector2>();
+                List<Vector2> positions = new List<Vector2>();
                 for (int i = 0; i < filteredUserDatas.Count; i++)
                 {
-                    lonLatArrays.Add(filteredUserDatas[i].lonLat);
+                    positions.Add(filteredUserDatas[i].position);
                 }
-                return lonLatArrays;
+                return positions;
             }
             else
             {
@@ -29,17 +29,17 @@ namespace GssDbManageWrapper
             }
         }
 
-        public List<Vector2> GetAllLonLatArrays()
+        public List<Vector2> GetAllPositions()
         {
-            List<Vector2> lonLatArrays = new List<Vector2>();
+            List<Vector2> positions = new List<Vector2>();
             foreach (List<MessageJson> list in _alldatas.Values)
             {
                 foreach (MessageJson m in list)
                 {
-                    lonLatArrays.Add(m.lonLat);
+                    positions.Add(m.position);
                 }
             }
-            return lonLatArrays;
+            return positions;
         }
 
         public void AddUserName(string userName)
@@ -109,39 +109,41 @@ namespace GssDbManageWrapper
         {
             _alldatas = RefreshDatas(datas);
         }
-        private Dictionary<string, List<MessageJson>> GetNearLonLatDatas(
-             Dictionary<string, List<MessageJson>>  searchingDatas, Vector2 targetLonLat, Func<Vector2, Vector2, bool> nearConditionFunc)
+        private Dictionary<string, List<MessageJson>> GetNearPositionDatas(
+             Dictionary<string, List<MessageJson>>  searchingDatas, 
+             Vector3 targetPos, 
+             Func<Vector3, Vector3, bool> nearConditionFunc = null)
         {
             if (nearConditionFunc == null)
             {
                 nearConditionFunc = isTwoPositionCloseEnough;
             }
 
-            Dictionary<string, List<MessageJson>> nearLonLatDatas = new Dictionary<string, List<MessageJson>>();
+            Dictionary<string, List<MessageJson>> nearPositionDatas = new Dictionary<string, List<MessageJson>>();
             foreach (var key in searchingDatas.Keys)
             {
-                nearLonLatDatas.Add(key, searchingDatas[key].Where(v => nearConditionFunc(v.lonLat, targetLonLat)).ToList());
-                if (nearLonLatDatas[key].Count == 0)
+                nearPositionDatas.Add(key, searchingDatas[key].Where(v => nearConditionFunc(v.position, targetPos)).ToList());
+                if (nearPositionDatas[key].Count == 0)
                 {
-                    nearLonLatDatas.Remove(key);
+                    nearPositionDatas.Remove(key);
                 }
             }
-            return nearLonLatDatas;
+            return nearPositionDatas;
         }
-        public Dictionary<string, List<MessageJson>> GetNearLonLatDatasInUser(
-            Vector2 targetLonLat, Func<Vector2, Vector2, bool> nearConditionFunc)
+        public Dictionary<string, List<MessageJson>> GetUserNearPositionDatas(
+            Vector2 targetLonLat, Func<Vector3, Vector3, bool> nearConditionFunc)
         {
-            return GetNearLonLatDatas(_userDatas, targetLonLat, nearConditionFunc);
+            return GetNearPositionDatas(_userDatas, targetLonLat, nearConditionFunc);
         }
 
-        public Dictionary<string, List<MessageJson>> GetNearLonLatDatasInAll(
-            Vector2 targetLonLat, Func<Vector2, Vector2, bool> nearConditionFunc)
+        public Dictionary<string, List<MessageJson>> GetAllNearPositionDatas(
+            Vector2 targetLonLat, Func<Vector3, Vector3, bool> nearConditionFunc)
         {
-            return GetNearLonLatDatas(_alldatas, targetLonLat, nearConditionFunc);
+            return GetNearPositionDatas(_alldatas, targetLonLat, nearConditionFunc);
         }
 
 
-        private bool isTwoPositionCloseEnough(Vector2 a, Vector2 b)
+        private bool isTwoPositionCloseEnough(Vector3 a, Vector3 b)
         {
             return (a - b).magnitude < .4f;
         }

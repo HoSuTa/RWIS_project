@@ -644,11 +644,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiText: {fileID: 1251452134}
-  _userName: tester2
+  _userName: tester
   _areaId: 0
-  _vertexId: 1
-  _lonLat: {x: 2, y: 0}
-  _requestMethod: 4
+  _vertexId: 0
+  _position: {x: 0, y: 0, z: 0}
+  _requestMethod: 3
   _sendRequest: 0
 --- !u!4 &2025085179
 Transform:
