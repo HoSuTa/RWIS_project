@@ -187,7 +187,7 @@ function generateDebugObjectForGET(){
   const fakePayload = {
     [CONSTS.Method] : [CONSTS.CheckIfGasUrlValidMethod],
     [CONSTS.UserName] : "tester",
-    [CONSTS.GssUrl]   : "",
+    [CONSTS.GssUrl]   : GssUrl,
   };
   return fakePayload;
 }
