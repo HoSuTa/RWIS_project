@@ -66,10 +66,11 @@ public class ClosedLine : MonoBehaviour
     public List<Vector2> vertices;
     // 
     [SerializeField]
-    private double minLength = 1e-7;
+    public double minLength = 1e-7;
     public List<uint> GetClosedIndices(){
         bool isClosed =  Mathf.Abs(Vector2.Distance(vertices[vertices.Count-1],vertices[0]))<minLength;
         if (isClosed){
+            vertices[vertices.Count-1] = vertices[0];
             List<uint> indices = new List<uint>();
             for (var i = 0;i<vertices.Count;++i){
                 indices.Add((uint)i);
