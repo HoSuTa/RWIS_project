@@ -169,6 +169,7 @@ namespace GssDbManageWrapper
             string gssUrl, 
             Action saveKeyFeedBack = null, 
             Action updateKeyRelatedUiFeedBack = null,
+            Action validFeedback = null,
             Action invalidFeedback = null
         )
         {
@@ -183,6 +184,7 @@ namespace GssDbManageWrapper
                         (string)response, 
                         saveKeyFeedBack, 
                         updateKeyRelatedUiFeedBack,
+                        validFeedback,
                         invalidFeedback
                     ) 
                 )
@@ -194,6 +196,7 @@ namespace GssDbManageWrapper
             string response, 
             Action saveKeyFeedBack = null, 
             Action updateKeyRelatedUiFeedBack = null,
+            Action validFeedback = null,
             Action invalidFeedback = null
         )
         {
@@ -201,6 +204,7 @@ namespace GssDbManageWrapper
             {
                 saveKeyFeedBack?.Invoke();
                 updateKeyRelatedUiFeedBack?.Invoke();
+                validFeedback?.Invoke();
             }
             else
             {
@@ -214,6 +218,7 @@ namespace GssDbManageWrapper
             string gasUrl,
             Action saveKeyFeedBack = null,
             Action updateKeyRelatedUiFeedBack = null,
+            Action validFeedback = null,
             Action invalidFeedback = null
         )
         {
@@ -222,11 +227,12 @@ namespace GssDbManageWrapper
                 GssGetter.CheckIfGasUrlValid
                 (
                     gasUrl,
-                    response => GssUrlValidFeedBack
+                    response => GasUrlValidFeedBack
                     (
                         (string)response,
                         saveKeyFeedBack,
                         updateKeyRelatedUiFeedBack,
+                        validFeedback,
                         invalidFeedback
                     )
                 )
@@ -238,6 +244,7 @@ namespace GssDbManageWrapper
             string response, 
             Action saveKeyFeedBack = null, 
             Action updateKeyRelatedUiFeedBack = null,
+            Action validFeedback = null,
             Action invalidFeedback = null
         )
         {
@@ -245,6 +252,7 @@ namespace GssDbManageWrapper
             {
                 saveKeyFeedBack?.Invoke();
                 updateKeyRelatedUiFeedBack?.Invoke();
+                validFeedback?.Invoke();
             }
             else
             {

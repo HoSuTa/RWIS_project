@@ -9,7 +9,9 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private InputField _keyField;
     [SerializeField]
-    private Text _isKeyValidText;
+    private Text _keyValidationText;
+    [SerializeField]
+    private GameObject _keyValidationBG;
     [SerializeField]
     private Text _savedKeyExistsText;
     [SerializeField]
@@ -32,6 +34,7 @@ public class MainMenuUIManager : MonoBehaviour
     private bool _runSaveKey = false;
     private bool _runResetKey = false;
     private bool _runUpdateUI = false;
+    private bool _isKeyInvalid = false;
 
     private void Awake()
     {
@@ -39,7 +42,9 @@ public class MainMenuUIManager : MonoBehaviour
         {
             _dbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
         }
-        _isKeyValidText.text = "";
+
+        _keyValidationBG.SetActive(false);
+        _keyValidationText.text = "";
 
         _keySelectDropDown.ClearOptions();
         _keySelectDropDown.AddOptions(_keyList);
@@ -57,25 +62,17 @@ public class MainMenuUIManager : MonoBehaviour
     private void Update()
     {
         DecideEdittingKey(_keySelectDropDown);
-
-        if (_runUpdateUI)
+        if (_isKeyInvalid)
         {
-            if (_keySelectDropDown.options[_keySelectDropDown.value].text == _keyList[0])
-            {
-                UpdateKeyRelatedUI(GssUrlManager.IsUrlAssigned, GssUrlManager.GetUrl);
-            }
-            else if (_keySelectDropDown.options[_keySelectDropDown.value].text == _keyList[1])
-            {
-                UpdateKeyRelatedUI(GasUrlManager.IsUrlAssigned, GasUrlManager.GetUrl);
-            }
-            _runUpdateUI = false;
+            StartCoroutine(KeyValidationUIEffect());
+            _isKeyInvalid = false;
         }
-
-
     }
 
     private void DecideEdittingKey(Dropdown keySelectDropDown)
     {
+        if (!_runUpdateUI) return;
+
         if (keySelectDropDown.options[keySelectDropDown.value].text == _keyList[0])
         {
             if (_runSaveKey)
@@ -85,6 +82,8 @@ public class MainMenuUIManager : MonoBehaviour
                     GssUrlManager.SaveUrl,
                     () => UpdateKeyRelatedUI(GssUrlManager.IsUrlAssigned, GssUrlManager.GetUrl)
                     );
+                _runSaveKey = false;
+
             }
             if (_runResetKey)
             {
@@ -92,7 +91,11 @@ public class MainMenuUIManager : MonoBehaviour
                     GssUrlManager.ResetUrl,
                     () => UpdateKeyRelatedUI(GssUrlManager.IsUrlAssigned, GssUrlManager.GetUrl)
                     );
+                _runResetKey = false;
+
             }
+            UpdateKeyRelatedUI(GssUrlManager.IsUrlAssigned, GssUrlManager.GetUrl);
+
         }
         else if (keySelectDropDown.options[keySelectDropDown.value].text == _keyList[1])
         {
@@ -103,6 +106,7 @@ public class MainMenuUIManager : MonoBehaviour
                     GasUrlManager.SaveUrl,
                     () => UpdateKeyRelatedUI(GasUrlManager.IsUrlAssigned, GasUrlManager.GetUrl)
                     );
+                _runSaveKey = false;
             }
             if (_runResetKey)
             {
@@ -110,13 +114,37 @@ public class MainMenuUIManager : MonoBehaviour
                     GasUrlManager.ResetUrl,
                     () => UpdateKeyRelatedUI(GasUrlManager.IsUrlAssigned, GasUrlManager.GetUrl)
                     );
+                _runResetKey = false;
+
             }
+            UpdateKeyRelatedUI(GasUrlManager.IsUrlAssigned, GasUrlManager.GetUrl);
         }
+
+        _runUpdateUI = false;
     }
 
-    private void KeyNotValidFeedBack()
+    IEnumerator KeyValidationUIEffect()
     {
-        _isKeyValidText.text = "The key was invalid";
+        yield return new WaitForSeconds(3.0f);
+        _keyValidationText.text = "";
+        _keyValidationBG.SetActive(false);
+
+    }
+
+    private void KeyValidFeedBack()
+    {
+        _keyValidationBG.SetActive(true);
+        _keyValidationText.text = "The key is valid";
+        _keyValidationText.color = _plusColor;
+        _isKeyInvalid = true;
+    }
+
+    private void KeyInvalidFeedBack()
+    {
+        _keyValidationBG.SetActive(true);
+        _keyValidationText.text = "The key is invalid";
+        _keyValidationText.color = _minusColor;
+        _isKeyInvalid = true;
     }
 
     public void RunUpdateUI()
@@ -131,7 +159,6 @@ public class MainMenuUIManager : MonoBehaviour
             _savedKeyExistsText.text = "Saved Key exists";
             _savedKeyExistsText.color = _plusColor;
             _savedKey.text = "\nSaved Key:\n" + getKey();
-            _isKeyValidText.text = "";
         }
         else
         {
@@ -154,11 +181,12 @@ public class MainMenuUIManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(_keyField.text))
         {
+            RunUpdateUI();
             _runSaveKey = true;
         }
     }
 
-    private void SaveKey(Action<string, Action, Action, Action> checkIfKeyIsValid, Action<string> saveKey, Action updateUI)
+    private void SaveKey(Action<string, Action, Action, Action, Action> checkIfKeyIsValid, Action<string> saveKey, Action updateUI)
     {
         if (!string.IsNullOrEmpty(_keyField.text))
         {
@@ -167,14 +195,15 @@ public class MainMenuUIManager : MonoBehaviour
                 _keyField.text,
                 () => saveKey(_keyField.text),
                 updateUI,
-                KeyNotValidFeedBack
+                KeyValidFeedBack,
+                KeyInvalidFeedBack
             );
         }
-        _runSaveKey = false;
     }
 
     public void RunResetKey()
     {
+        RunUpdateUI();
         _runResetKey = true;
     }
 
@@ -182,7 +211,6 @@ public class MainMenuUIManager : MonoBehaviour
     {
         resetKey();
         resetUI();
-        _runResetKey = false;
     }
 
 }

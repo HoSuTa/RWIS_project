@@ -24,7 +24,7 @@ public static class KeyManager
         }
         catch
         {
-            Debug.LogError($"<color=blue>[KeyManager]</color> could not load the file.");
+            //Debug.LogError($"<color=blue>[KeyManager]</color> could not load the file.");
             return null;
         }
 

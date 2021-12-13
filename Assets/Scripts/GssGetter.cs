@@ -69,7 +69,6 @@ namespace GssDbManageWrapper
                 if (request_result.Contains("Error"))
                 {
                     Debug.LogError($"<color=blue>[GssGetter]</color> {request_result}");
-                    yield break;
                 }
 
                 if (methodName == MethodNames.CheckIfGssUrlValid)
