@@ -22,7 +22,7 @@ const CONSTS = {
   MessageColumn : 3,
   AreaId : "areaId",
   VertexId : "vertexId",
-  LonLat : "lonLat",
+  Position : "position",
 };
 
 function getSheet(gssUrl){
@@ -249,36 +249,8 @@ function saveLonLat(request){
   const gssUrl = request[CONSTS.GssUrl];
   const gssSheet = getSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
-
-  const currentTime = Utilities.formatDate(new Date(), "GMT+9", "yyyy/MM/dd HH:mm:ss");
-
-  const userId = findUserId(sheetData, request[CONSTS.UserName]);
-  const lonLat = request[CONSTS.Message][CONSTS.LonLat];
   
-  //まだ実装終わってない．
-  if(userId != null){
-    const userRows = findUserRowsByUserId(sheetData, userId);
-
-    for(let userRow of userRows){
-      if(JSON.parse(sheetData[userRow][CONSTS.MessageColumn])[CONSTS.AreaId] == areaId){
-        if(JSON.parse(sheetData[userRow][CONSTS.MessageColumn])[CONSTS.VertexId] == vertexId){
-          gssSheet.getRange(1 + Number(userRow), CONSTS.UpdateTimeColumn+1).setValue(currentTime);
-          gssSheet.getRange(1 + Number(userRow), CONSTS.MessageColumn   +1).setValue(message);
-          return ContentService.createTextOutput(`areaId and vertexId already existed for userId. Updated lonLat`);
-        }
-      }
-    }
-
-  }
-
-  let addingData = [];
-  addingData[CONSTS.UserIdColumn] = (userId == null) ? findMaxUserId(sheetData) + 1 : userId;
-  addingData[CONSTS.UpdateTimeColumn] = currentTime;
-  addingData[CONSTS.UserNameColumn] = request[CONSTS.UserName];
-  addingData[CONSTS.MessageColumn] = message;
-  gssSheet.appendRow(addingData);
-  
-  return ContentService.createTextOutput("Save data succeeded.");
+  return ContentService.createTextOutput("Not implemented.");
 }
 
 function removeData(request){
