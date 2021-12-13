@@ -14,15 +14,16 @@ public class WorldLineRenderer : MonoBehaviour
     private AbstractMap  mapBoxMap;
     private GameObject   gameObject;
     [SerializeField]
-    private LineRenderer   renderer;
+    private LineRenderer renderer;
     // Start is called before the first frame update
     void Start()
     {
-        gameObject= new GameObject();
-        mapBoxMap = GetComponent<AbstractMap>();
-        renderer  = gameObject.AddComponent<LineRenderer>();
+        gameObject = new GameObject();
+        mapBoxMap  = GetComponent<AbstractMap>();
+        renderer   = gameObject.AddComponent<LineRenderer>();
+        renderer.useWorldSpace = false;
+        gameObject.transform.position = new Vector3(0.0f,0.0f,-10.0f);
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -30,7 +31,7 @@ public class WorldLineRenderer : MonoBehaviour
             return;
         }
         renderer.positionCount = lonLatsVertices.Count;
-        worldVertices          = mapBoxMap.GeoToWorldPositions(lonLatsVertices);
-        renderer.SetPositions (worldVertices.ToArray());
+        worldVertices = mapBoxMap.GeoToWorldPositions(lonLatsVertices);
+        renderer.SetPositions(worldVertices.ToArray());
     }
 }
