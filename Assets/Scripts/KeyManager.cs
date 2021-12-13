@@ -59,6 +59,26 @@ public static class KeyManager
         feedbackHandler?.Invoke();
     }
 
+    public static void RemoveKeyFile(string filePath, Action feedbackHandler = null)
+    {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            Debug.LogError($"<color=blue>[KeyManager]</color> {nameof(filePath)} is empty.");
+            return;
+        }
+
+        try
+        {
+            File.Delete(filePath);
+        }
+        catch
+        {
+            Debug.LogError($"<color=blue>[KeyManager]</color> could delete the file: {filePath}.");
+        }
+
+        feedbackHandler?.Invoke();
+    }
+
     [Serializable]
     private class Keys
     {
