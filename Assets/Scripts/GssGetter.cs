@@ -79,6 +79,15 @@ namespace GssDbManageWrapper
                 {
                     feedbackHandler?.Invoke(request_result);
                 }
+
+                if (methodName == MethodNames.CheckIfGssUrlValid)
+                {
+                    feedbackHandler?.Invoke(request_result);
+                }
+                else if (methodName == MethodNames.CheckIfGasUrlValid)
+                {
+                    feedbackHandler?.Invoke(request_result);
+                }
                 else
                 {
                     var response = JsonExtension.FromJson<PayloadData>(request_result);

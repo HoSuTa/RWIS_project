@@ -133,7 +133,51 @@ namespace GssDbManageWrapper
             localySaveAllDatasFeedBack?.Invoke(_localGssData);
         }
 
-        private void GetUserDatasFeedback(PayloadData[] datas)
+
+
+        public void CheckIfGssUrlValid
+        (
+            string gssUrl, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            StartCoroutine
+            (
+                GssGetter.CheckIfGssUrlValid
+                (
+                    _gasURL, 
+                    gssUrl, 
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response, 
+                        saveKeyFeedBack, 
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    ) 
+                )
+            );
+        }
+
+        private void GssUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            if (!response.Contains("Error"))
+            {
+                saveKeyFeedBack?.Invoke();
+                updateKeyRelatedUiFeedBack?.Invoke();
+            }
+            _localGssData.RefreshUserDatas(datas);
+        }
+
+
+        private void GetUserNamesFeedback(PayloadData[] datas)
         {
             _uiText.text = "userName : message\n";
             for (int i = 0; i < datas.Length; i++)
@@ -142,20 +186,96 @@ namespace GssDbManageWrapper
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
                 _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
             }
-            _localGssData.RefreshUserDatas(datas);
+            _localGssData.RefreshAllDatas(datas);
         }
 
-        private void GetUserNamesFeedback(PayloadData[] datas)
+
+
+        public void CheckIfGssUrlValid
+        (
+            string gssUrl, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
         {
-            _uiText.text = "userNames\n";
-            for (int i = 0; i < datas.Length; i++)
+            StartCoroutine
+            (
+                GssGetter.CheckIfGssUrlValid
+                (
+                    _gasURL, 
+                    gssUrl, 
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response, 
+                        saveKeyFeedBack, 
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    ) 
+                )
+            );
+        }
+
+        private void GssUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            if (!response.Contains("Error"))
             {
-                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName}\n");
+                saveKeyFeedBack?.Invoke();
+                updateKeyRelatedUiFeedBack?.Invoke();
             }
-            _localGssData.RefreshUserNames(datas);
-            foreach(var userName in _localGssData._userNames)
+            else
             {
-                Debug.Log(userName);
+                invalidFeedback?.Invoke();
+            }
+        }
+
+
+        public void CheckIfGasUrlValid
+        (
+            string gasUrl,
+            Action saveKeyFeedBack = null,
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            StartCoroutine
+            (
+                GssGetter.CheckIfGasUrlValid
+                (
+                    gasUrl,
+                    response => GssUrlValidFeedBack
+                    (
+                        (string)response,
+                        saveKeyFeedBack,
+                        updateKeyRelatedUiFeedBack,
+                        invalidFeedback
+                    )
+                )
+            );
+        }
+
+        private void GasUrlValidFeedBack
+        (
+            string response, 
+            Action saveKeyFeedBack = null, 
+            Action updateKeyRelatedUiFeedBack = null,
+            Action invalidFeedback = null
+        )
+        {
+            if (!response.Contains("Cannot"))
+            {
+                saveKeyFeedBack?.Invoke();
+                updateKeyRelatedUiFeedBack?.Invoke();
+            }
+            else
+            {
+                invalidFeedback?.Invoke();
             }
         }
 

@@ -110,7 +110,6 @@ public class MainMenuUIManager : MonoBehaviour
                     );
             }
         }
-    }
 
     private void KeyNotValidFeedBack()
     {
