@@ -37,7 +37,7 @@ namespace GssDbManageWrapper
                 (methodName == MethodNames.GetAllDatas) ?
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.GetUserDatas) ?
-                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}&{nameof(userName)}={userName}")
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(userName)}={userName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.GetUserNames) ?
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}") 
                 : (methodName == MethodNames.CheckIfGssUrlValid) ?
@@ -46,7 +46,7 @@ namespace GssDbManageWrapper
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}")
                 : null;
 
-            if(request == null)
+            if (request == null)
             {
                 Debug.LogError($"<color=blue>[GssGetter]</color> Behaviour for \"{methodName}\" is not implemented.");
                 yield break;
@@ -69,15 +69,6 @@ namespace GssDbManageWrapper
                 if (request_result.Contains("Error"))
                 {
                     Debug.LogError($"<color=blue>[GssGetter]</color> {request_result}");
-                }
-
-                if (methodName == MethodNames.CheckIfGssUrlValid)
-                {
-                    feedbackHandler?.Invoke(request_result);
-                }
-                else if (methodName == MethodNames.CheckIfGasUrlValid)
-                {
-                    feedbackHandler?.Invoke(request_result);
                 }
 
                 if (methodName == MethodNames.CheckIfGssUrlValid)

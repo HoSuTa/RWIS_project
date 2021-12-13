@@ -82,7 +82,7 @@ namespace GssDbManageWrapper
                         $"\"vertexId\" : {_vertexId}, " +
                         $"\"lonLat\" : {JsonUtility.ToJson(_lonLat)}" +
                         $"}}";
-                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message));
+                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message, response => PostFeedBack((string)response) ));
                 }
                 else if (_requestMethod == MethodNames.RemoveData)
                 {
@@ -90,10 +90,14 @@ namespace GssDbManageWrapper
                         $"\"areaId\" : {_areaId}, " +
                         $"\"vertexId\" : {_vertexId} " +
                         $"}}";
-                    StartCoroutine(GssPoster.RemoveData(_gasURL, _gssUrl, _userName, message));
+                    StartCoroutine(GssPoster.RemoveData(_gasURL, _gssUrl, _userName, message, response => PostFeedBack((string)response)));
                 }
                 _sendRequest = false;
             }
+        }
+        private void PostFeedBack(string response)
+        {
+            Debug.Log(response);
         }
 
         private void SaveData(string areaId, string vertexId, string lonLat)
@@ -133,51 +137,7 @@ namespace GssDbManageWrapper
             localySaveAllDatasFeedBack?.Invoke(_localGssData);
         }
 
-
-
-        public void CheckIfGssUrlValid
-        (
-            string gssUrl, 
-            Action saveKeyFeedBack = null, 
-            Action updateKeyRelatedUiFeedBack = null,
-            Action invalidFeedback = null
-        )
-        {
-            StartCoroutine
-            (
-                GssGetter.CheckIfGssUrlValid
-                (
-                    _gasURL, 
-                    gssUrl, 
-                    response => GssUrlValidFeedBack
-                    (
-                        (string)response, 
-                        saveKeyFeedBack, 
-                        updateKeyRelatedUiFeedBack,
-                        invalidFeedback
-                    ) 
-                )
-            );
-        }
-
-        private void GssUrlValidFeedBack
-        (
-            string response, 
-            Action saveKeyFeedBack = null, 
-            Action updateKeyRelatedUiFeedBack = null,
-            Action invalidFeedback = null
-        )
-        {
-            if (!response.Contains("Error"))
-            {
-                saveKeyFeedBack?.Invoke();
-                updateKeyRelatedUiFeedBack?.Invoke();
-            }
-            _localGssData.RefreshUserDatas(datas);
-        }
-
-
-        private void GetUserNamesFeedback(PayloadData[] datas)
+        private void GetUserDatasFeedback(PayloadData[] datas)
         {
             _uiText.text = "userName : message\n";
             for (int i = 0; i < datas.Length; i++)
@@ -186,100 +146,19 @@ namespace GssDbManageWrapper
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
                 _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
             }
+            _localGssData.RefreshUserDatas(datas);
+        }
+
+        private void GetUserNamesFeedback(PayloadData[] datas)
+        {
+            _uiText.text = "userName : message\n";
+            for (int i = 0; i < datas.Length; i++)
+            {
+                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
+                _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName} : \"{datas[i].message}\"\n");
+            }
             _localGssData.RefreshAllDatas(datas);
         }
-
-
-
-        public void CheckIfGssUrlValid
-        (
-            string gssUrl, 
-            Action saveKeyFeedBack = null, 
-            Action updateKeyRelatedUiFeedBack = null,
-            Action invalidFeedback = null
-        )
-        {
-            StartCoroutine
-            (
-                GssGetter.CheckIfGssUrlValid
-                (
-                    _gasURL, 
-                    gssUrl, 
-                    response => GssUrlValidFeedBack
-                    (
-                        (string)response, 
-                        saveKeyFeedBack, 
-                        updateKeyRelatedUiFeedBack,
-                        invalidFeedback
-                    ) 
-                )
-            );
-        }
-
-        private void GssUrlValidFeedBack
-        (
-            string response, 
-            Action saveKeyFeedBack = null, 
-            Action updateKeyRelatedUiFeedBack = null,
-            Action invalidFeedback = null
-        )
-        {
-            if (!response.Contains("Error"))
-            {
-                saveKeyFeedBack?.Invoke();
-                updateKeyRelatedUiFeedBack?.Invoke();
-            }
-            else
-            {
-                invalidFeedback?.Invoke();
-            }
-        }
-
-
-        public void CheckIfGasUrlValid
-        (
-            string gasUrl,
-            Action saveKeyFeedBack = null,
-            Action updateKeyRelatedUiFeedBack = null,
-            Action invalidFeedback = null
-        )
-        {
-            StartCoroutine
-            (
-                GssGetter.CheckIfGasUrlValid
-                (
-                    gasUrl,
-                    response => GssUrlValidFeedBack
-                    (
-                        (string)response,
-                        saveKeyFeedBack,
-                        updateKeyRelatedUiFeedBack,
-                        invalidFeedback
-                    )
-                )
-            );
-        }
-
-        private void GasUrlValidFeedBack
-        (
-            string response, 
-            Action saveKeyFeedBack = null, 
-            Action updateKeyRelatedUiFeedBack = null,
-            Action invalidFeedback = null
-        )
-        {
-            if (!response.Contains("Cannot"))
-            {
-                saveKeyFeedBack?.Invoke();
-                updateKeyRelatedUiFeedBack?.Invoke();
-            }
-            else
-            {
-                invalidFeedback?.Invoke();
-            }
-        }
-
-
 
         public void CheckIfGssUrlValid
         (

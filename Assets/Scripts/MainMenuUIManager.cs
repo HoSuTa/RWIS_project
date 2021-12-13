@@ -70,6 +70,8 @@ public class MainMenuUIManager : MonoBehaviour
             }
             _runUpdateUI = false;
         }
+
+
     }
 
     private void DecideEdittingKey(Dropdown keySelectDropDown)
@@ -110,6 +112,7 @@ public class MainMenuUIManager : MonoBehaviour
                     );
             }
         }
+    }
 
     private void KeyNotValidFeedBack()
     {

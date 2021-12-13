@@ -8,25 +8,23 @@ namespace GssDbManageWrapper
 {
     public static class GssPoster
     {
-        public static IEnumerator SaveUserData(string gasUrl, string gssUrl, string userName, string message, Action feedbackHandler = null)
+        public static IEnumerator SaveUserData(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
         {
             var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveMessage}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
-            Debug.Log(jsonBody);
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
             yield return PostToGss(gasUrl, MethodNames.SaveMessage, payloadRaw, feedbackHandler);
         }
 
-        public static IEnumerator RemoveData(string gasUrl, string gssUrl, string userName, string message, Action feedbackHandler = null)
+        public static IEnumerator RemoveData(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
         {
             var jsonBody = $"{{ \"method\" : \"{MethodNames.RemoveData}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
-            Debug.Log(jsonBody);
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
             yield return PostToGss(gasUrl, MethodNames.RemoveData, payloadRaw, feedbackHandler);
         }
 
-        private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload, Action feedbackHandler = null)
+        private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload, Action<object> feedbackHandler = null)
         {
             UnityWebRequest request =
                 (methodName == MethodNames.SaveMessage) ?
@@ -62,7 +60,7 @@ namespace GssDbManageWrapper
                 }
                 else
                 {
-                    feedbackHandler?.Invoke();
+                    feedbackHandler?.Invoke(request_result);
                     yield break;
                 }
             }
