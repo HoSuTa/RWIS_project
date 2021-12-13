@@ -24,9 +24,9 @@ namespace GssDbManageWrapper
         private string _gasURL;
         public LocalGssDataManager _localGssData = new LocalGssDataManager();
 
+        [Header("テスト用のパラメータ")]
         [SerializeField]
         private Text _uiText;
-
         [SerializeField]
         private string _userName = "tester";
         [SerializeField]
@@ -35,13 +35,11 @@ namespace GssDbManageWrapper
         private int _vertexId = 0;
         [SerializeField]
         private Vector3 _position = new Vector3(0,0,0);
-
         [SerializeField]
         private MethodNames _requestMethod = MethodNames.GetUserNames;
         [SerializeField]
         private bool _sendRequest = false;
 
-        private bool _isGssUrlValid = false;
 
         private void Start()
         {
@@ -50,6 +48,11 @@ namespace GssDbManageWrapper
         }
 
         private void Update()
+        {
+            ForTesting();
+        }
+
+        private void ForTesting()
         {
             if (_sendRequest)
             {
@@ -69,7 +72,7 @@ namespace GssDbManageWrapper
                 }
                 else if (_requestMethod == MethodNames.CheckIfGssUrlValid)
                 {
-                    StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, _gssUrl, response => GssUrlValidFeedBack((string)response) ) );
+                    StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, _gssUrl, response => GssUrlValidFeedBack((string)response)));
                 }
                 else if (_requestMethod == MethodNames.CheckIfGasUrlValid)
                 {
@@ -82,7 +85,7 @@ namespace GssDbManageWrapper
                         $"\"vertexId\" : {_vertexId}, " +
                         $"\"position\" : {JsonUtility.ToJson(_position)}" +
                         $"}}";
-                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message, response => PostFeedBack((string)response) ));
+                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message, response => PostFeedBack((string)response)));
                 }
                 else if (_requestMethod == MethodNames.RemoveData)
                 {
@@ -95,6 +98,7 @@ namespace GssDbManageWrapper
                 _sendRequest = false;
             }
         }
+
         private void PostFeedBack(string response)
         {
             Debug.Log(response);
