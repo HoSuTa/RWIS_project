@@ -16,7 +16,6 @@ namespace GssDbManageWrapper
 
     public class GssDbHub : MonoBehaviour
     {
-        private const string _gasURLjsonPos = "Assets/Resources/gasUrl.json";
         private string _gasURL;
 
         [SerializeField]
@@ -39,7 +38,7 @@ namespace GssDbManageWrapper
 
         private void Start()
         {
-            _gasURL = KeyManager.GetKeyData(_gasURLjsonPos);
+            _gasURL = KeyManager.GetKeyData(KeyManager.GAS_URL_PATH);
         }
 
         private void Update()
