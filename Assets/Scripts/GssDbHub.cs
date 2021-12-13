@@ -252,7 +252,6 @@ namespace GssDbManageWrapper
 
         public void CheckIfGssUrlValid(string gssUrl, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)
         {
-            _isRequestInProcess = true;
             StartCoroutine(GssGetter.CheckIfGssUrlValid(_gasURL, gssUrl, response => GssUrlValidFeedBack((string)response, saveKeyFeedBack, updateKeyRelatedUiFeedBack) ));
         }
         private void GssUrlValidFeedBack(string response, Action saveKeyFeedBack = null, Action updateKeyRelatedUiFeedBack = null)

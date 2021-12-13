@@ -11,6 +11,8 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private Text _keyIsValidText;
     [SerializeField]
+    private InputField _gasKeyField;
+    [SerializeField]
     private Text _savedGssKeyExistsText;
     [SerializeField]
     private Color _plusColor;
@@ -66,7 +68,6 @@ public class MainMenuUIManager : MonoBehaviour
             }
             _runSaveGasKey = false;
         }
-    }
 
     private void KeyNotValidFeedBack()
     {
