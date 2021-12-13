@@ -79,6 +79,10 @@ namespace GssDbManageWrapper
                 {
                     feedbackHandler?.Invoke(request_result);
                 }
+                else if (methodName == MethodNames.IsGssKeyValid)
+                {
+                    feedbackHandler?.Invoke(request_result);
+                }
                 else
                 {
                     var response = JsonExtension.FromJson<PayloadData>(request_result);
