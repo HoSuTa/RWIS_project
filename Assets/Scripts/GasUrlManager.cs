@@ -2,7 +2,7 @@
 
 public static class GasUrlManager
 {
-    public static void SaveGasUrl(string gasUrl)
+    public static void SaveUrl(string gasUrl)
     {
         if (string.IsNullOrEmpty(gasUrl))
         {
@@ -13,18 +13,18 @@ public static class GasUrlManager
         KeyManager.SaveKey(KeyManager.GAS_URL_PATH, gasUrl);
     }
 
-    public static string GetGasUrl()
+    public static string GetUrl()
     {
         return KeyManager.GetKeyData(KeyManager.GAS_URL_PATH);
     }
 
-    public static bool IsGasUrlAssigned()
+    public static bool IsUrlAssigned()
     {
-        var gasUrl = GetGasUrl();
+        var gasUrl = GetUrl();
         return !string.IsNullOrEmpty(gasUrl);
     }
 
-    public static void ResetGasUrl()
+    public static void ResetUrl()
     {
         KeyManager.RemoveKeyFile(KeyManager.GSS_URL_PATH);
     }

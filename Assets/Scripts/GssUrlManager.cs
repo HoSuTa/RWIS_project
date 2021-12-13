@@ -2,7 +2,7 @@
 
 public static class GssUrlManager
 {
-    public static void SaveGssUrl(string gssUrl)
+    public static void SaveUrl(string gssUrl)
     {
         if (string.IsNullOrEmpty(gssUrl))
         {
@@ -13,18 +13,18 @@ public static class GssUrlManager
         KeyManager.SaveKey(KeyManager.GSS_URL_PATH, gssUrl);
     }
 
-    public static string GetGssUrl()
+    public static string GetUrl()
     {
         return KeyManager.GetKeyData(KeyManager.GSS_URL_PATH);
     }
 
-    public static bool IsGssUrlAssigned()
+    public static bool IsUrlAssigned()
     {
-        var gssUrl = GetGssUrl();
+        var gssUrl = GetUrl();
         return !string.IsNullOrEmpty(gssUrl);
     }
 
-    public static void ResetGssUrl()
+    public static void ResetUrl()
     {
         KeyManager.RemoveKeyFile(KeyManager.GSS_URL_PATH);
     }
