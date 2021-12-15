@@ -34,6 +34,13 @@
 
         Vector2d LL_2 = new Vector2d(0, 0);
 
+        [SerializeField] static private GameObject newLine = new GameObject("Line");
+        LineRenderer lRend = newLine.AddComponent<LineRenderer>();
+
+
+        static int i = 0;
+
+
         private void Awake()
         {
             // Prevent double initialization of the map. 
@@ -41,23 +48,6 @@
 
 
         }
-
-        /*
-        void Start()
-        {
-            var abstractMap = GetComponent<AbstractMap>();
-            abstractMap.Initialize(new Vector2d(initialLonLats[0], initialLonLats[1]), initialZoom);
-
-            var lineRenderer = GetComponent<WorldLineRenderer>();
-            lineRenderer.lonLatsVertices = lonLatsVertices;
-            var areaCalculator = GetComponent<LineAreaCalculator>();
-            areaCalculator.vertices = lonLatsVertices;
-            var closedLine = GetComponent<ClosedLine>();
-            closedLine.vertices = lonLatsVertices;
-            closedLine.minLength = minLength;
-        }
-
-*/
 
         void Update()
         {
@@ -88,9 +78,13 @@
             closedLine.vertices = lonLatsVertices;
             closedLine.minLength = minLength;
 
+            
+
+            // lRend.SetVertexCount(2);
+            //lRend.SetWidth(0.2f, 0.2f);
+
             StartCoroutine(Map_Location());
             StartCoroutine(Save_Location());
-            // StopAllCoroutines();
         }
 
         protected IEnumerator Save_Location()
@@ -100,12 +94,19 @@
                 if (lonLatGetter.CanGetLonLat())
                 {
                     Vector2d LL = new Vector2d(lonLatGetter.Latitude, lonLatGetter.Longitude);
-                   
-                   Vector3 LL_3 = _map.GeoToWorldPosition(LL);
+
+                     Vector3 LL_3 = _map.GeoToWorldPosition(LL);
 
                     list.Add(LL_3);
-                    //Instantiate( GameObject.CreatePrimitive(PrimitiveType.Capsule), LL_3, Quaternion.identity);
                     Debug.Log(LL_3);
+
+                    //LineRenderer lRend = newLine.AddComponent<LineRenderer>();
+                    //lRend.SetPosition(i, list[i]);
+
+                    i++;
+
+                    //Instantiate( GameObject.CreatePrimitive(PrimitiveType.Capsule), LL_3, Quaternion.identity);
+                    
 
                 }
                 yield return new WaitForSeconds(5.0f);
@@ -121,8 +122,7 @@
                 if (lonLatGetter.CanGetLonLat())
                 {
                     Vector2d LL = new Vector2d(lonLatGetter.Latitude, lonLatGetter.Longitude);
-                   // LL_2 = LL;
-                   // Vector3 LL_3 = new Vector3(0, 0, 0);
+                  
                     _map.Initialize(LL, _map.AbsoluteZoom);
 
                     //_map.Initialize(new Vector2d(lonLatGetter.Latitude, lonLatGetter.Longitude), _map.AbsoluteZoom);
@@ -133,14 +133,10 @@
 
                     writer.WriteLine(LL);
 
-                    writer.Close();
-
-                    list.Add(LL_3);*/
+                    writer.Close();*/
                     break;
                 }
                 yield return new WaitForSeconds(1.0f);
-                //yield return null;
-               // Debug.Log("TEST");
             }
         }
 
