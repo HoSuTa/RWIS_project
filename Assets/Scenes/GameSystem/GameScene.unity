@@ -593,7 +593,7 @@ MonoBehaviour:
   _options:
     locationOptions:
       latitudeLongitude: 37.784179, -122.401583
-      zoom: 12
+      zoom: 18.5
     extentOptions:
       extentType: 1
       defaultExtents:
@@ -745,7 +745,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47f73a23074768644bdef141735231e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vertices: []
+  vertices:
+  - {x: 0, y: 0}
   minLength: 0.001
 --- !u!114 &1356327589
 MonoBehaviour:
@@ -779,16 +780,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1356327583}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f46823d16ffefbc41a0182e86547668f, type: 3}
+  m_Script: {fileID: 11500000, guid: 088235aa5f94f634f9b5c978d53a9853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 1251452134}
-  initialLonLats: []
-  initialZoom: 12
-  minLength: 0.001
-  lonLatsVertices: []
   _map: {fileID: 1356327584}
+  text: {fileID: 0}
   lonLatGetter: {fileID: 7962732}
+  initialLonLats: []
+  initialZoom: 0
+  minLength: 0
+  lonLatsVertices: []
+  list: []
 --- !u!1 &1434385707
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,7 +1018,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1811819948}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 3, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1072,11 +1074,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '1
-
-    2
-
-    3'
+  m_Text: 
 --- !u!222 &1999180258
 CanvasRenderer:
   m_ObjectHideFlags: 0
