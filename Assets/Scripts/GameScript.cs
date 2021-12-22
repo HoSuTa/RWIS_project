@@ -29,7 +29,7 @@ public class GameScript : MonoBehaviour
         var areaCalculator           = GetComponent<LineAreaCalculator>();
         areaCalculator.vertices      = lonLatsVertices;
         var closedLine               = GetComponent<ClosedLine>();
-        closedLine.vertices          = lonLatsVertices;
+        //closedLine.vertices          = lonLatsVertices;
         closedLine.minLength         = minLength;
     }
 
