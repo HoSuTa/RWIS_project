@@ -32,13 +32,14 @@
         [SerializeField]
         private List<Vector3> list;
 
-        Vector2d LL_2 = new Vector2d(0, 0);
+        // Vector2d LL_2 = new Vector2d(0, 0);
 
-        [SerializeField] static private GameObject newLine = new GameObject("Line");
-        LineRenderer lRend = newLine.AddComponent<LineRenderer>();
+        // [SerializeField] static private GameObject newLine = new GameObject("Line");
+        //LineRenderer lRend = newLine.AddComponent<LineRenderer>();
+        private LineRenderer lineRend;
+        private int positionCount;
 
-
-        static int i = 0;
+        
 
 
         private void Awake()
@@ -52,14 +53,14 @@
         void Update()
         {
         
-          var indices = GetComponent<ClosedLine>().GetClosedIndices();
+        /*  var indices = GetComponent<ClosedLine>().GetClosedIndices();
             if (indices != null && indices.Count >= 3)
             {
                 GetComponent<LineAreaCalculator>().indices = indices;
                 text.text = $"Score: {GetComponent<LineAreaCalculator>().CalulateArea()}";
             }
 
-
+            */
         }
 
 
@@ -78,7 +79,9 @@
             closedLine.vertices = lonLatsVertices;
             closedLine.minLength = minLength;
 
-            
+            lineRend = gameObject.AddComponent<LineRenderer>();
+            lineRend.useWorldSpace = false;
+            positionCount = 0;
 
             // lRend.SetVertexCount(2);
             //lRend.SetWidth(0.2f, 0.2f);
@@ -98,15 +101,17 @@
                      Vector3 LL_3 = _map.GeoToWorldPosition(LL);
 
                     list.Add(LL_3);
-                    Debug.Log(LL_3);
+                    //Debug.Log(LL_3);
 
                     //LineRenderer lRend = newLine.AddComponent<LineRenderer>();
                     //lRend.SetPosition(i, list[i]);
-
-                    i++;
+                    positionCount++;
+                    lineRend.positionCount = positionCount;
+                    lineRend.SetPosition(positionCount - 1, list[positionCount - 1]);
+                    Debug.Log(positionCount - 1);
 
                     //Instantiate( GameObject.CreatePrimitive(PrimitiveType.Capsule), LL_3, Quaternion.identity);
-                    
+
 
                 }
                 yield return new WaitForSeconds(5.0f);
