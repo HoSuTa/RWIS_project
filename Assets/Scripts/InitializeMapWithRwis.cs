@@ -32,7 +32,6 @@
         [SerializeField]
         private List<Vector3> list;
 
-        // Vector2d LL_2 = new Vector2d(0, 0);
 
         private LineRenderer lineRend;
         private int positionCount;
@@ -68,10 +67,6 @@
         void Start()
         {
 
-            /*
-            var abstractMap = GetComponent<AbstractMap>();
-            abstractMap.Initialize(new Vector2d(initialLonLats[0], initialLonLats[1]), initialZoom);
-            */
             var lineRenderer = GetComponent<WorldLineRenderer>();
             lineRenderer.lonLatsVertices = lonLatsVertices;
             var areaCalculator = GetComponent<LineAreaCalculator>();
@@ -134,12 +129,6 @@
                     //_map.Initialize(new Vector2d(lonLatGetter.Latitude, lonLatGetter.Longitude), _map.AbsoluteZoom);
                     // LL_3 =_map.GeoToWorldPosition(LL);
 
-                    /*
-                    StreamWriter writer = new StreamWriter("RWIS.txt");
-
-                    writer.WriteLine(LL);
-
-                    writer.Close();*/
                     break;
                 }
                 yield return new WaitForSeconds(1.0f);
