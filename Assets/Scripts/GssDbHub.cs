@@ -53,25 +53,29 @@ namespace GssDbManageWrapper
         }
 
 
-        public void SaveData(string userName, int areaId, int vertexId, Vector3 position)
+        public void SaveData(string userName, int areaId, int vertexId, Vector3 position, Action<string> localDataFeedback = null)
         {
+            if (localDataFeedback == null) localDataFeedback = DefaultPostFeedBack;
+
             string message = $"{{" +
                         $"\"areaId\" : {areaId}, " +
                         $"\"vertexId\" : {vertexId}, " +
                         $"\"position\" : {JsonUtility.ToJson(position)}" +
                         $"}}";
             StartCoroutine(
-                GssPoster.SaveUserData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => DefaultPostFeedBack((string)response)));
+                GssPoster.SaveUserData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
         }
 
-        public void RemoveData(string userName, int areaId, int vertexId)
+        public void RemoveData(string userName, int areaId, int vertexId, Action<string> localDataFeedback = null)
         {
+            if (localDataFeedback == null) localDataFeedback = DefaultPostFeedBack;
+
             string message = $"{{" +
                         $"\"areaId\" : {areaId}, " +
                         $"\"vertexId\" : {vertexId} " +
                         $"}}";
             StartCoroutine(
-                GssPoster.RemoveData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => DefaultPostFeedBack((string)response)));
+                GssPoster.RemoveData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
         }
 
 

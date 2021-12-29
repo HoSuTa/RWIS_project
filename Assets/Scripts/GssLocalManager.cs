@@ -7,6 +7,8 @@ using System.Linq;
 
 
 [RequireComponent(typeof(GssDbHub))]
+[RequireComponent(typeof(LocalDataHub))]
+[RequireComponent(typeof(UserDataManager))]
 
 public class GssLocalManager : MonoBehaviour
 {
@@ -24,42 +26,39 @@ public class GssLocalManager : MonoBehaviour
 
     private void Awake()
     {
-        if(_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
-        if(_localDataHub == null) _localDataHub = new LocalDataHub();
-        if(_userDataManager == null) _userDataManager = new UserDataManager(_playerName);
+        if (_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
+        if (_localDataHub == null) _localDataHub = GetComponent<LocalDataHub>();
+        if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
+        _userDataManager._localPlayerName = _playerName;
     }
 
     private void Update()
     {
-        if(_updateRequest)
+        if (_updateRequest)
         {
-            UpdateLocalUserNames();
+            UpdateLocalAllDatas();
             _updateRequest = false;
         }
     }
 
-    private void TempUIVisualizeAllDatas ()
+    public void UploadNewData(string userName, int areaId, int vertexId, Vector3 position)
     {
-        var datas = _localDataHub.GetAllDatas();
-        _uiText.text = "";
-        for (int i = 0; i < datas.Count; i++)
-        {
-            _uiText.text = string.Concat(_uiText.text, $"Data[{i}]:\n");
-            _uiText.text = string.Concat(_uiText.text, $"areaId: {datas[i].areaId} ");
-            _uiText.text = string.Concat(_uiText.text, $"vertexId: {datas[i].vertexId}\n");
-            _uiText.text = string.Concat(_uiText.text, $"position: {datas[i].position.ToString()}\n");
-        }
+        _gssDbHub.SaveData(userName, areaId, vertexId, position, PostFeedback);
     }
-    private void TempUIVisualizeAllNames()
+    public void RemoveData(string userName, int areaId, int vertexId)
     {
-        var datas = _userDataManager.GetUserNames().ToArray();
-        _uiText.text = "";
-        for (int i = 0; i < datas.Length; i++)
-        {
-            _uiText.text = string.Concat(_uiText.text, $"Data[{i}]:\n");
-            _uiText.text = string.Concat(_uiText.text, $"userName: {datas[i]}\n");
-        }
+        _gssDbHub.RemoveData(userName, areaId, vertexId, PostFeedback);
     }
+
+
+    private void PostFeedback(string response)
+    {
+        UpdateLocalAllDatas();
+        UpdateLocalUserNames();
+    }
+
+
+
 
 
     private void UpdateLocalAllDatas()
@@ -81,5 +80,31 @@ public class GssLocalManager : MonoBehaviour
     {
         _userDataManager.RefreshUserNames(datas);
         TempUIVisualizeAllNames();
+    }
+
+
+
+
+    private void TempUIVisualizeAllDatas()
+    {
+        var datas = _localDataHub.GetAllDatas();
+        _uiText.text = "";
+        for (int i = 0; i < datas.Count; i++)
+        {
+            _uiText.text = string.Concat(_uiText.text, $"Data[{i}]:\n");
+            _uiText.text = string.Concat(_uiText.text, $"areaId: {datas[i].areaId} ");
+            _uiText.text = string.Concat(_uiText.text, $"vertexId: {datas[i].vertexId}\n");
+            _uiText.text = string.Concat(_uiText.text, $"position: {datas[i].position.ToString()}\n");
+        }
+    }
+    private void TempUIVisualizeAllNames()
+    {
+        var datas = _userDataManager.GetUserNames().ToArray();
+        _uiText.text = "";
+        for (int i = 0; i < datas.Length; i++)
+        {
+            _uiText.text = string.Concat(_uiText.text, $"Data[{i}]:\n");
+            _uiText.text = string.Concat(_uiText.text, $"userName: {datas[i]}\n");
+        }
     }
 }

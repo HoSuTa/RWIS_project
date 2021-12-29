@@ -1189,8 +1189,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2025085179}
-  - component: {fileID: 2025085180}
   - component: {fileID: 2025085178}
+  - component: {fileID: 2025085182}
+  - component: {fileID: 2025085181}
+  - component: {fileID: 2025085180}
   m_Layer: 0
   m_Name: GSS_LOCAL_MANAGER
   m_TagString: Untagged
@@ -1238,4 +1240,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _updateRequest: 0
   _playerName: tester
-  _uiText: {fileID: 1251452134}
+  _uiText: {fileID: 0}
+--- !u!114 &2025085181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025085177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6c127e4985ccc47b26e28a9bf19a94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _localPlayerName: 
+--- !u!114 &2025085182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025085177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2cbcb75edfd32a459d42c9324856835, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

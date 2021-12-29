@@ -4,16 +4,10 @@ using UnityEngine;
 
 namespace GssDbManageWrapper
 {
-    public class UserDataManager
+    public class UserDataManager : MonoBehaviour
     {
-        public string _localPlayerName;
-        public HashSet<string> _userNames;
-
-        public UserDataManager(string localPlayerName)
-        {
-            _localPlayerName = localPlayerName;
-            _userNames = new HashSet<string>();
-        }
+        public string _localPlayerName = "";
+        public HashSet<string> _userNames = new HashSet<string>();
 
         public void AddUserName(string userName)
         {

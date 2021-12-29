@@ -5,14 +5,9 @@ using System.Linq;
 
 namespace GssDbManageWrapper
 {
-    public class LocalDataHub
+    public class LocalDataHub : MonoBehaviour
     {
         public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
-
-        public LocalDataHub()
-        {
-            _allDatas = new Dictionary<string, List<MessageJson>>();
-        }
 
         public List<MessageJson> GetUserDatas(string userName)
         {
