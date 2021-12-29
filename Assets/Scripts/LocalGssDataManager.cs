@@ -7,21 +7,15 @@ namespace GssDbManageWrapper
 {
     public class LocalGssDataManager
     {
-        public HashSet<string> _userNames = new HashSet<string>(); 
         public Dictionary<string, List<MessageJson>> _userDatas = new Dictionary<string, List<MessageJson>>();
-        public Dictionary<string, List<MessageJson>> _alldatas = new Dictionary<string, List<MessageJson>>();
+        public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
 
-        public List<Vector2> GetUserPositions(string userName, int areaId)
+        public List<MessageJson> GetUserDatas(string userName)
         {
-            if (_alldatas.ContainsKey(userName))
+            if (_allDatas.ContainsKey(userName))
             {
-                var filteredUserDatas = _alldatas[userName];
-                List<Vector2> positions = new List<Vector2>();
-                for (int i = 0; i < filteredUserDatas.Count; i++)
-                {
-                    positions.Add(filteredUserDatas[i].position);
-                }
-                return positions;
+                var filteredUserDatas = _allDatas[userName];
+                return filteredUserDatas;
             }
             else
             {
@@ -29,53 +23,34 @@ namespace GssDbManageWrapper
             }
         }
 
-        public List<Vector2> GetAllPositions()
+        public List<MessageJson> GetAllDatas()
         {
-            List<Vector2> positions = new List<Vector2>();
-            foreach (List<MessageJson> list in _alldatas.Values)
+            List<MessageJson> datas = new List<MessageJson>();
+            foreach (List<MessageJson> list in _allDatas.Values)
             {
                 foreach (MessageJson m in list)
                 {
-                    positions.Add(m.position);
+                    datas.Add(m);
                 }
             }
-            return positions;
+            return datas;
         }
 
-        public void AddUserName(string userName)
+       
+        public void AddData(string userName, MessageJson data)
         {
-            _userNames.Add(userName);
-        }
-        public void AddOneData(string userName, MessageJson data)
-        {
-            if(_alldatas.ContainsKey(userName))
+            if(_allDatas.ContainsKey(userName))
             {
-                _alldatas[userName].Add(data);
+                _allDatas[userName].Add(data);
             }
             else
             {
                 var dataList = new List<MessageJson>();
                 dataList.Add(data);
-                _alldatas.Add(userName, dataList);
+                _allDatas.Add(userName, dataList);
             }
         }
-        public void RefreshUserNames(string[] userNames)
-        {
-            _userNames = new HashSet<string>(userNames);
-        }
-        public void RefreshUserNames(HashSet<string> userNames)
-        {
-            _userNames = userNames;
-        }
-        public void RefreshUserNames(PayloadData[] datas)
-        {
-            var userNames = new HashSet<string>();
-            foreach (var data in datas)
-            {
-                userNames.Add(data.userName);
-            }
-            _userNames = userNames;
-        }
+
         public void RefreshUserDatas(Dictionary<string, List<MessageJson>> userDatas)
         {
             _userDatas = userDatas;
@@ -107,7 +82,7 @@ namespace GssDbManageWrapper
         }
         public void RefreshAllDatas(PayloadData[] datas)
         {
-            _alldatas = RefreshDatas(datas);
+            _allDatas = RefreshDatas(datas);
         }
         private Dictionary<string, List<MessageJson>> GetNearPositionDatas(
              Dictionary<string, List<MessageJson>>  searchingDatas, 
@@ -139,7 +114,7 @@ namespace GssDbManageWrapper
         public Dictionary<string, List<MessageJson>> GetAllNearPositionDatas(
             Vector2 targetLonLat, Func<Vector3, Vector3, bool> nearConditionFunc)
         {
-            return GetNearPositionDatas(_alldatas, targetLonLat, nearConditionFunc);
+            return GetNearPositionDatas(_allDatas, targetLonLat, nearConditionFunc);
         }
 
 
