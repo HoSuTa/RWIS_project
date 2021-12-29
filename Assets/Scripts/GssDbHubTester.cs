@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace GssDbManageWrapper
 {
+    [RequireComponent(typeof(GssDbHub))]
     public class GssDbHubTester : MonoBehaviour
     {
         [Header("テスト用のパラメータ")]
@@ -24,11 +25,15 @@ namespace GssDbManageWrapper
         [SerializeField]
         private bool _sendRequest = false;
 
+        [SerializeField]
         private GssDbHub _gssDbHub;
 
         private void Start()
         {
-            _gssDbHub = new GssDbHub();
+            if (_gssDbHub == null)
+            {
+                _gssDbHub = GetComponent<GssDbHub>();
+            }
         }
 
         private void Update()

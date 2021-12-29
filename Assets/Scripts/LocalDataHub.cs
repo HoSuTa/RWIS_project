@@ -7,7 +7,7 @@ namespace GssDbManageWrapper
 {
     public class LocalDataHub
     {
-        public Dictionary<string, List<MessageJson>> _allDatas;
+        public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
 
         public LocalDataHub()
         {

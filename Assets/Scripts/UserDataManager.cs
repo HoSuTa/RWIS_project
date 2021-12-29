@@ -6,22 +6,8 @@ namespace GssDbManageWrapper
 {
     public class UserDataManager
     {
-        public string _localPlayerName
-        {
-            get { return _localPlayerName; }
-            private set { _localPlayerName = value; }
-        }
-        public HashSet<string> _userNames
-        {
-            get
-            {
-                return _userNames;
-            }
-            private set
-            {
-                _userNames = value;
-            }
-        }
+        public string _localPlayerName;
+        public HashSet<string> _userNames;
 
         public UserDataManager(string localPlayerName)
         {
@@ -35,23 +21,32 @@ namespace GssDbManageWrapper
         }
         public void RefreshUserNames(string[] userNames)
         {
-            _userNames.Clear();
+            ClearUserNames();
             _userNames = new HashSet<string>(userNames);
         }
         public void RefreshUserNames(HashSet<string> userNames)
         {
-            _userNames.Clear();
+            ClearUserNames();
             _userNames = userNames;
         }
         public void RefreshUserNames(PayloadData[] datas)
         {
-            _userNames.Clear();
+            ClearUserNames();
             foreach (var d in datas)
             {
-                _userNames.Add(d.userName);
+                AddUserName(d.userName);
             }
         }
 
+        public void ClearUserNames()
+        {
+            _userNames.Clear();
+        }
+
+        public HashSet<string> GetUserNames()
+        {
+            return _userNames;
+        }
     }
 }
 
