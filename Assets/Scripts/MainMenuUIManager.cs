@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(GssDbManageWrapper.GssDbHub))]
 public class MainMenuUIManager : MonoBehaviour
 {
     [SerializeField]
@@ -25,7 +26,7 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private Dropdown _keySelectDropDown;
     [SerializeField]
-    private GssDbManageWrapper.GssDbHub _dbHub;
+    private GssDbManageWrapper.GssDbHub _gssDbHub;
 
     private List<string> _keyList = new List<string>() { "Edit Gss Url", "Edit Gas Url" };
 
@@ -38,9 +39,9 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (_dbHub == null)
+        if (_gssDbHub == null)
         {
-            _dbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
+            _gssDbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
         }
 
         _keyValidationBG.SetActive(false);
@@ -78,7 +79,7 @@ public class MainMenuUIManager : MonoBehaviour
             if (_runSaveKey)
             {
                 SaveKey(
-                    _dbHub.CheckIfGssUrlValid,
+                    _gssDbHub.CheckIfGssUrlValid,
                     GssUrlManager.SaveUrl,
                     () => UpdateKeyRelatedUI(GssUrlManager.IsUrlAssigned, GssUrlManager.GetUrl)
                     );
@@ -102,7 +103,7 @@ public class MainMenuUIManager : MonoBehaviour
             if (_runSaveKey)
             {
                 SaveKey(
-                    _dbHub.CheckIfGasUrlValid,
+                    _gssDbHub.CheckIfGasUrlValid,
                     GasUrlManager.SaveUrl,
                     () => UpdateKeyRelatedUI(GasUrlManager.IsUrlAssigned, GasUrlManager.GetUrl)
                     );

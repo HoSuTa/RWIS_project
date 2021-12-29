@@ -19,17 +19,7 @@ namespace GssDbManageWrapper
 
     public class GssDbHub : MonoBehaviour
     {
-        private string _gssUrl;
-        private string _gasURL;
-
-
-        public GssDbHub()
-        {
-            _gasURL = GasUrlManager.GetUrl();
-            _gssUrl = GssUrlManager.GetUrl();
-        }
-
-
+        
         private void DefaultGetFeedBack(PayloadData[] datas)
         {
             foreach(var d in datas) Debug.Log(d);
@@ -45,21 +35,21 @@ namespace GssDbManageWrapper
         {
             if (localDataFeedback == null) localDataFeedback = DefaultGetFeedBack;
             StartCoroutine(
-                GssGetter.GetAllDatas(_gasURL, _gssUrl, response => localDataFeedback((PayloadData[])response)));
+                GssGetter.GetAllDatas(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), response => localDataFeedback((PayloadData[])response)));
         }
 
         public void GetUserNames(Action<PayloadData[]> localDataFeedback = null)
         {
             if (localDataFeedback == null) localDataFeedback = DefaultGetFeedBack;
             StartCoroutine(
-                GssGetter.GetUserNames(_gasURL, _gssUrl, response => localDataFeedback((PayloadData[])response)));
+                GssGetter.GetUserNames(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), response => localDataFeedback((PayloadData[])response)));
         }
 
         public void GetUserDatas(string userNames, Action<PayloadData[]> localDataFeedback = null)
         {
             if (localDataFeedback == null) localDataFeedback = DefaultGetFeedBack;
             StartCoroutine(
-                GssGetter.GetUserDatas(_gasURL, _gssUrl, userNames, response => localDataFeedback((PayloadData[])response)));
+                GssGetter.GetUserDatas(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userNames, response => localDataFeedback((PayloadData[])response)));
         }
 
 
@@ -71,7 +61,7 @@ namespace GssDbManageWrapper
                         $"\"position\" : {JsonUtility.ToJson(position)}" +
                         $"}}";
             StartCoroutine(
-                GssPoster.SaveUserData(_gasURL, _gssUrl, userName, message, response => DefaultPostFeedBack((string)response)));
+                GssPoster.SaveUserData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => DefaultPostFeedBack((string)response)));
         }
 
         public void RemoveData(string userName, int areaId, int vertexId)
@@ -81,7 +71,7 @@ namespace GssDbManageWrapper
                         $"\"vertexId\" : {vertexId} " +
                         $"}}";
             StartCoroutine(
-                GssPoster.RemoveData(_gasURL, _gssUrl, userName, message, response => DefaultPostFeedBack((string)response)));
+                GssPoster.RemoveData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => DefaultPostFeedBack((string)response)));
         }
 
 
@@ -102,7 +92,7 @@ namespace GssDbManageWrapper
             (
                 GssGetter.CheckIfGssUrlValid
                 (
-                    _gasURL,
+                    GasUrlManager.GetUrl(),
                     gssUrl,
                     response => GssUrlValidFeedBack
                     (
