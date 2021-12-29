@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace GssDbManageWrapper
 {
-    public class LocalGssDataManager
+    public class LocalDataHub
     {
         public Dictionary<string, List<MessageJson>> _allDatas;
 
-        public LocalGssDataManager()
+        public LocalDataHub()
         {
             _allDatas = new Dictionary<string, List<MessageJson>>();
         }

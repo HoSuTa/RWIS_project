@@ -640,16 +640,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 314970432}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9063438f478e7334690549003ccaa3d2, type: 3}
+  m_Script: {fileID: 11500000, guid: 31e31a4aef2f8c3439de72f6ddc14d12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiText: {fileID: 0}
-  _userName: tester
-  _areaId: 0
-  _vertexId: 0
-  _position: {x: 0, y: 0, z: 0}
-  _requestMethod: 0
-  _sendRequest: 0
 --- !u!4 &314970436
 Transform:
   m_ObjectHideFlags: 0
