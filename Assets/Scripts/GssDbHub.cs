@@ -12,7 +12,6 @@ namespace GssDbManageWrapper
         GetUserDatas,
         GetAllDatas,
         SaveMessage,
-        SaveLonLat,
         RemoveData,
         CheckIfGssUrlValid,
         CheckIfGasUrlValid,
@@ -80,20 +79,11 @@ namespace GssDbManageWrapper
                 }
                 else if (_requestMethod == MethodNames.SaveMessage)
                 {
-                    string message = $"{{" +
-                        $"\"areaId\" : {_areaId}, " +
-                        $"\"vertexId\" : {_vertexId}, " +
-                        $"\"position\" : {JsonUtility.ToJson(_position)}" +
-                        $"}}";
-                    StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message, response => PostFeedBack((string)response)));
+                    SaveData(_userName, _areaId, _vertexId, _position);
                 }
                 else if (_requestMethod == MethodNames.RemoveData)
                 {
-                    string message = $"{{" +
-                        $"\"areaId\" : {_areaId}, " +
-                        $"\"vertexId\" : {_vertexId} " +
-                        $"}}";
-                    StartCoroutine(GssPoster.RemoveData(_gasURL, _gssUrl, _userName, message, response => PostFeedBack((string)response)));
+                    RemoveData(_userName, _areaId, _vertexId);
                 }
                 _sendRequest = false;
             }
@@ -104,23 +94,25 @@ namespace GssDbManageWrapper
             Debug.Log(response);
         }
 
-        private void SaveData(string areaId, string vertexId, string position)
+        public void SaveData(string userName, int areaId, int vertexId, Vector3 position)
         {
             string message = $"{{" +
                         $"\"areaId\" : {areaId}, " +
                         $"\"vertexId\" : {vertexId}, " +
                         $"\"position\" : {JsonUtility.ToJson(position)}" +
                         $"}}";
-            StartCoroutine(GssPoster.SaveUserData(_gasURL, _gssUrl, _userName, message));
+            StartCoroutine(
+                GssPoster.SaveUserData(_gasURL, _gssUrl, userName, message, response => PostFeedBack((string)response)));
         }
 
-        private void RemoveData(string areaId, string vertexId)
+        public void RemoveData(string userName, int areaId, int vertexId)
         {
             string message = $"{{" +
                         $"\"areaId\" : {areaId}, " +
                         $"\"vertexId\" : {vertexId} " +
                         $"}}";
-            StartCoroutine(GssPoster.RemoveData(_gasURL, _gssUrl, _userName, message));
+            StartCoroutine(
+                GssPoster.RemoveData(_gasURL, _gssUrl, userName, message, response => PostFeedBack((string)response)));
         }
 
         private void GetAllDatas(Action<object> useLocalDataFeedBack = null)
@@ -150,7 +142,6 @@ namespace GssDbManageWrapper
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName}:\n");
                 _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
             }
-            _localGssData.RefreshUserDatas(datas);
         }
 
         private void GetUserNamesFeedback(PayloadData[] datas)

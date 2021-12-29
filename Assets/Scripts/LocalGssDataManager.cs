@@ -9,7 +9,7 @@ namespace GssDbManageWrapper
     {
         public Dictionary<string, List<MessageJson>> _allDatas;
 
-        public LocalGssDataManager(UserDataManager userDataManager)
+        public LocalGssDataManager()
         {
             _allDatas = new Dictionary<string, List<MessageJson>>();
         }
