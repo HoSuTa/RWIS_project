@@ -7,8 +7,12 @@ namespace GssDbManageWrapper
 {
     public class LocalGssDataManager
     {
-        public Dictionary<string, List<MessageJson>> _userDatas = new Dictionary<string, List<MessageJson>>();
-        public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
+        public Dictionary<string, List<MessageJson>> _allDatas;
+
+        public LocalGssDataManager(UserDataManager userDataManager)
+        {
+            _allDatas = new Dictionary<string, List<MessageJson>>();
+        }
 
         public List<MessageJson> GetUserDatas(string userName)
         {
@@ -37,52 +41,36 @@ namespace GssDbManageWrapper
         }
 
        
-        public void AddData(string userName, MessageJson data)
+        private void AddData(ref Dictionary<string, List<MessageJson>> dataList, string userName, MessageJson data)
         {
-            if(_allDatas.ContainsKey(userName))
+            if(dataList.ContainsKey(userName))
             {
-                _allDatas[userName].Add(data);
+                dataList[userName].Add(data);
             }
             else
             {
-                var dataList = new List<MessageJson>();
-                dataList.Add(data);
-                _allDatas.Add(userName, dataList);
+                var newData = new List<MessageJson>();
+                newData.Add(data);
+                dataList.Add(userName, newData);
             }
         }
 
-        public void RefreshUserDatas(Dictionary<string, List<MessageJson>> userDatas)
+        private void RefreshDatas(ref Dictionary<string, List<MessageJson>> dataList, PayloadData[] datas)
         {
-            _userDatas = userDatas;
-        }
-        private Dictionary<string, List<MessageJson>> RefreshDatas(PayloadData[] datas)
-        {
-            var newDatas = new Dictionary<string, List<MessageJson>>();
-            for (int i = 0; i < datas.Length; i++)
+            dataList.Clear();
+            foreach (var (userName, messageJson) in from d in datas
+                        let userName = d.userName
+                        let messageJson = d.ExtractMessageJson()
+                        select (userName, messageJson))
             {
-                var userName = datas[i].userName;
-                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
-
-                if (newDatas.ContainsKey(userName))
-                {
-                    newDatas[userName].Add(messageJson);
-                }
-                else
-                {
-                    var dataList = new List<MessageJson>();
-                    dataList.Add(messageJson);
-                    newDatas.Add(userName, dataList);
-                }
+                AddData(ref dataList, userName, messageJson);
             }
-            return newDatas;
         }
-        public void RefreshUserDatas(PayloadData[] datas)
-        {
-            _userDatas = RefreshDatas(datas);
-        }
+
         public void RefreshAllDatas(PayloadData[] datas)
         {
-            _allDatas = RefreshDatas(datas);
+            RefreshDatas(ref _allDatas, datas);
+
         }
         private Dictionary<string, List<MessageJson>> GetNearPositionDatas(
              Dictionary<string, List<MessageJson>>  searchingDatas, 
@@ -105,14 +93,9 @@ namespace GssDbManageWrapper
             }
             return nearPositionDatas;
         }
-        public Dictionary<string, List<MessageJson>> GetUserNearPositionDatas(
-            Vector2 targetLonLat, Func<Vector3, Vector3, bool> nearConditionFunc)
-        {
-            return GetNearPositionDatas(_userDatas, targetLonLat, nearConditionFunc);
-        }
 
         public Dictionary<string, List<MessageJson>> GetAllNearPositionDatas(
-            Vector2 targetLonLat, Func<Vector3, Vector3, bool> nearConditionFunc)
+            Vector2 targetLonLat, Func<Vector3, Vector3, bool> nearConditionFunc = null)
         {
             return GetNearPositionDatas(_allDatas, targetLonLat, nearConditionFunc);
         }

@@ -46,9 +46,9 @@ namespace GssDbManageWrapper
         public void RefreshUserNames(PayloadData[] datas)
         {
             _userNames.Clear();
-            foreach (var data in datas)
+            foreach (var d in datas)
             {
-                _userNames.Add(data.userName);
+                _userNames.Add(d.userName);
             }
         }
 

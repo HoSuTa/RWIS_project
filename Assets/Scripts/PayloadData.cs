@@ -13,6 +13,11 @@ namespace GssDbManageWrapper
         {
             return $"userName : {this.userName}, message : {this.message}";
         }
+
+        public MessageJson ExtractMessageJson()
+        {
+            return JsonUtility.FromJson<MessageJson>(this.message);
+        }
     }
 
     [Serializable]
