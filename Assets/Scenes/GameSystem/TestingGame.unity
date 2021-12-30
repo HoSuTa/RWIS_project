@@ -1240,7 +1240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _updateRequest: 0
   _playerName: tester
-  _uiText: {fileID: 0}
+  _uiText: {fileID: 1251452134}
 --- !u!114 &2025085181
 MonoBehaviour:
   m_ObjectHideFlags: 0

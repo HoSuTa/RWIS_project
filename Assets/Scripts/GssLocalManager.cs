@@ -36,12 +36,12 @@ public class GssLocalManager : MonoBehaviour
     {
         if (_updateRequest)
         {
-            UpdateLocalAllDatas();
+            RemoveData(_userDataManager._localPlayerName, 3, 3);
             _updateRequest = false;
         }
     }
 
-    public void UploadNewData(string userName, int areaId, int vertexId, Vector3 position)
+    public void SaveData(string userName, int areaId, int vertexId, Vector3 position)
     {
         _gssDbHub.SaveData(userName, areaId, vertexId, position, PostFeedback);
     }
@@ -53,8 +53,15 @@ public class GssLocalManager : MonoBehaviour
 
     private void PostFeedback(string response)
     {
-        UpdateLocalAllDatas();
-        UpdateLocalUserNames();
+        if (response.Contains("succeeded") || !response.Contains("Error"))
+        {
+            UpdateLocalAllDatas();
+            UpdateLocalUserNames();
+        }
+        else
+        {
+            Debug.LogError($"<color=red>[GssLocalManager]</color> " + response);
+        }
     }
 
 

@@ -53,16 +53,8 @@ namespace GssDbManageWrapper
             {
                 var request_result = request.downloadHandler.text;
 
-                if (request_result.Contains("Error"))
-                {
-                    Debug.Log($"<color=blue>[GssPoster]</color> {request_result}");
-                    yield break;
-                }
-                else
-                {
-                    feedbackHandler?.Invoke(request_result);
-                    yield break;
-                }
+                feedbackHandler?.Invoke(request_result);
+                yield break;
             }
         }
 
