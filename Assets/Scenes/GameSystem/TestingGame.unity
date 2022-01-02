@@ -1280,7 +1280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiText: {fileID: 1251452134}
-  _userName: tester2
+  _userName: tester3
   _areaId: 0
   _vertexId: 0
   _position: {x: 0, y: 0, z: 0}
@@ -1291,6 +1291,9 @@ MonoBehaviour:
   - areaId: 1
     vertexId: 1
     position: {x: 10, y: 0, z: 0}
+  - areaId: 1
+    vertexId: 2
+    position: {x: 15, y: 0, z: 0}
   _requestMethod: 4
   _sendRequest: 0
   _gssDbHub: {fileID: 2025085178}

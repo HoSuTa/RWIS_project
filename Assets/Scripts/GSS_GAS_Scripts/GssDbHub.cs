@@ -12,7 +12,7 @@ namespace GssDbManageWrapper
         GetUserDatas,
         GetAllDatas,
         SaveData,
-        SaveMultiple,
+        UpdateMultiple,
         RemoveData,
         CheckIfGssUrlValid,
         CheckIfGasUrlValid,
@@ -67,7 +67,7 @@ namespace GssDbManageWrapper
                 GssPoster.SaveUserData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
         }
 
-        public void SaveMultiple(string userName, MessageJson[] datas, Action<string> localDataFeedback = null)
+        public void UpdateMultiple(string userName, MessageJson[] datas, Action<string> localDataFeedback = null)
         {
             if (localDataFeedback == null) localDataFeedback = DefaultPostFeedBack;
 
@@ -81,7 +81,7 @@ namespace GssDbManageWrapper
             print(message);
 
             StartCoroutine(
-                GssPoster.SaveMultipleDatas(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
+                GssPoster.UpdateMultipleDatas(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
         }
 
         public void RemoveData(string userName, int areaId, int vertexId, Action<string> localDataFeedback = null)

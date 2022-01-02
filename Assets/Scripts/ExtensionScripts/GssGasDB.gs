@@ -10,7 +10,7 @@ const CONSTS = {
   GssUrl: "gssUrl",
   Method: "method",
   SaveDataMethod: "SaveData",
-  SaveMultipleMethod: "SaveMultiple",
+  UpdateMultipleDataMethod: "UpdateMultiple",
   RemoveDataMethod: "RemoveData",
   GetAllDatasMethod: "GetAllDatas",
   GetUserDatasMethod: "GetUserDatas",
@@ -243,9 +243,9 @@ function saveData(request) {
   return ContentService.createTextOutput("Save data succeeded.");
 }
 
-function saveMultiple(request) {
+function updateMultiple(request) {
   const supposedPayload = {
-    [CONSTS.Method]: [CONSTS.SaveMultipleMethod],
+    [CONSTS.Method]: [CONSTS.UpdateMultipleDataMethod],
     [CONSTS.GssUrl]: GssUrl,
     [CONSTS.UserName]: "tester3",
     [CONSTS.Message]: [
@@ -270,45 +270,32 @@ function saveMultiple(request) {
   const userId = findUserId(sheetData, request[CONSTS.UserName]);
   const messageDatas = request[CONSTS.Message];
 
-  for (const data of messageDatas) {
-    const areaId = data[CONSTS.AreaId];
-    const vertexId = data[CONSTS.VertexId];
+  if (userId != null) {
+    const userRows = findUserRowsByUserId(sheetData, userId);
+    const areaId = messageDatas[0][CONSTS.AreaId];
 
-    let dataExists = false;
-
-    if (userId != null) {
-      const userRows = findUserRowsByUserId(sheetData, userId);
-
-      for (let userRow of userRows) {
-        const gssMessageObj = JSON.parse(
-          sheetData[userRow][CONSTS.MessageColumn]
-        );
-        if (gssMessageObj[CONSTS.AreaId] == areaId) {
-          if (gssMessageObj[CONSTS.VertexId] == vertexId) {
-            gssSheet
-              .getRange(1 + Number(userRow), 1 + CONSTS.UpdateTimeColumn)
-              .setValue(currentTime);
-            gssSheet
-              .getRange(1 + Number(userRow), 1 + CONSTS.MessageColumn)
-              .setValue(JSON.stringify(data));
-            dataExists = true;
-          }
-        }
+    userRows.reverse();
+    for (let userRow of userRows) {
+      const gssMessageObj = JSON.parse(
+        sheetData[userRow][CONSTS.MessageColumn]
+      );
+      if (gssMessageObj[CONSTS.AreaId] == areaId) {
+        gssSheet.deleteRows(1 + Number(userRow));
       }
-    }
-
-    if (!dataExists) {
-      let addingData = [];
-      addingData[CONSTS.UserIdColumn] =
-        userId == null ? findMaxUserId(sheetData) + 1 : userId;
-      addingData[CONSTS.UpdateTimeColumn] = currentTime;
-      addingData[CONSTS.UserNameColumn] = request[CONSTS.UserName];
-      addingData[CONSTS.MessageColumn] = JSON.stringify(data);
-      gssSheet.appendRow(addingData);
     }
   }
 
-  return ContentService.createTextOutput("Save data succeeded.");
+  for (const data of messageDatas) {
+    let addingData = [];
+    addingData[CONSTS.UserIdColumn] =
+      userId == null ? findMaxUserId(sheetData) + 1 : userId;
+    addingData[CONSTS.UpdateTimeColumn] = currentTime;
+    addingData[CONSTS.UserNameColumn] = request[CONSTS.UserName];
+    addingData[CONSTS.MessageColumn] = JSON.stringify(data);
+    gssSheet.appendRow(addingData);
+  }
+
+  return ContentService.createTextOutput("Updating datas succeeded.");
 }
 
 function removeData(request) {
@@ -402,8 +389,8 @@ function doPost(e) {
 
   if (request[CONSTS.Method] == CONSTS.SaveDataMethod) {
     return saveData(request);
-  } else if (request[CONSTS.Method] == CONSTS.SaveMultipleMethod) {
-    return saveMultiple(request);
+  } else if (request[CONSTS.Method] == CONSTS.UpdateMultipleDataMethod) {
+    return updateMultiple(request);
   } else if (request[CONSTS.Method] == CONSTS.RemoveDataMethod) {
     return removeData(request);
   }
@@ -411,7 +398,7 @@ function doPost(e) {
 
 function generateDebugObjectForPOST() {
   const fakePayload = {
-    [CONSTS.Method]: [CONSTS.SaveMultipleMethod],
+    [CONSTS.Method]: [CONSTS.UpdateMultipleDataMethod],
     [CONSTS.GssUrl]: GssUrl,
     [CONSTS.UserName]: "tester3",
     [CONSTS.Message]: [
