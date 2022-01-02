@@ -21,9 +21,12 @@ namespace GssDbManageWrapper
         [SerializeField]
         private Vector3 _position = new Vector3(0,0,0);
         [SerializeField]
+        private MessageJson[] _messageJsons;
+        [SerializeField]
         private MethodNames _requestMethod = MethodNames.GetUserNames;
         [SerializeField]
         private bool _sendRequest = false;
+
 
         [SerializeField]
         private GssDbHub _gssDbHub;
@@ -59,9 +62,13 @@ namespace GssDbManageWrapper
                 {
                     _gssDbHub.GetUserDatas(_userName, GetUserDatasFeedback);
                 }
-                else if (_requestMethod == MethodNames.SaveMessage)
+                else if (_requestMethod == MethodNames.SaveData)
                 {
                     _gssDbHub.SaveData(_userName, _areaId, _vertexId, _position);
+                }
+                else if (_requestMethod == MethodNames.SaveMultiple)
+                {
+                    _gssDbHub.SaveMultiple(_userName, _messageJsons);
                 }
                 else if (_requestMethod == MethodNames.RemoveData)
                 {
