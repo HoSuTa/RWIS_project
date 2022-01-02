@@ -66,9 +66,9 @@ namespace GssDbManageWrapper
                 {
                     _gssDbHub.SaveData(_userName, _areaId, _vertexId, _position);
                 }
-                else if (_requestMethod == MethodNames.UpdateMultiple)
+                else if (_requestMethod == MethodNames.UpdateDatas)
                 {
-                    _gssDbHub.UpdateMultiple(_userName, _messageJsons);
+                    _gssDbHub.UpdateDatas(_userName, _messageJsons);
                 }
                 else if (_requestMethod == MethodNames.RemoveData)
                 {

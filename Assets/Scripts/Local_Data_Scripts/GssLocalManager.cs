@@ -41,11 +41,11 @@ public class GssLocalManager : MonoBehaviour
         }
     }
 
-    public void SaveData(string userName, int areaId, int vertexId, Vector3 position)
+    private void SaveData(string userName, int areaId, int vertexId, Vector3 position)
     {
         _gssDbHub.SaveData(userName, areaId, vertexId, position, PostFeedback);
     }
-    public void RemoveData(string userName, int areaId, int vertexId)
+    private void RemoveData(string userName, int areaId, int vertexId)
     {
         _gssDbHub.RemoveData(userName, areaId, vertexId, PostFeedback);
     }

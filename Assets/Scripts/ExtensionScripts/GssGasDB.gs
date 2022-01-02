@@ -10,7 +10,7 @@ const CONSTS = {
   GssUrl: "gssUrl",
   Method: "method",
   SaveDataMethod: "SaveData",
-  UpdateMultipleDataMethod: "UpdateMultiple",
+  UpdateDatasMethod: "UpdateDatas",
   RemoveDataMethod: "RemoveData",
   GetAllDatasMethod: "GetAllDatas",
   GetUserDatasMethod: "GetUserDatas",
@@ -243,9 +243,9 @@ function saveData(request) {
   return ContentService.createTextOutput("Save data succeeded.");
 }
 
-function updateMultiple(request) {
+function updateDatas(request) {
   const supposedPayload = {
-    [CONSTS.Method]: [CONSTS.UpdateMultipleDataMethod],
+    [CONSTS.Method]: [CONSTS.UpdateDatasMethod],
     [CONSTS.GssUrl]: GssUrl,
     [CONSTS.UserName]: "tester3",
     [CONSTS.Message]: [
@@ -389,8 +389,8 @@ function doPost(e) {
 
   if (request[CONSTS.Method] == CONSTS.SaveDataMethod) {
     return saveData(request);
-  } else if (request[CONSTS.Method] == CONSTS.UpdateMultipleDataMethod) {
-    return updateMultiple(request);
+  } else if (request[CONSTS.Method] == CONSTS.UpdateDatasMethod) {
+    return updateDatas(request);
   } else if (request[CONSTS.Method] == CONSTS.RemoveDataMethod) {
     return removeData(request);
   }
@@ -398,7 +398,7 @@ function doPost(e) {
 
 function generateDebugObjectForPOST() {
   const fakePayload = {
-    [CONSTS.Method]: [CONSTS.UpdateMultipleDataMethod],
+    [CONSTS.Method]: [CONSTS.UpdateDatasMethod],
     [CONSTS.GssUrl]: GssUrl,
     [CONSTS.UserName]: "tester3",
     [CONSTS.Message]: [

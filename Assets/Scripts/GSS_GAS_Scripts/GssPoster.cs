@@ -15,12 +15,12 @@ namespace GssDbManageWrapper
 
             yield return PostToGss(gasUrl, MethodNames.SaveData, payloadRaw, feedbackHandler);
         }
-        public static IEnumerator UpdateMultipleDatas(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
+        public static IEnumerator UpdateDatas(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
         {
-            var jsonBody = $"{{ \"method\" : \"{MethodNames.UpdateMultiple}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.UpdateDatas}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
-            yield return PostToGss(gasUrl, MethodNames.UpdateMultiple, payloadRaw, feedbackHandler);
+            yield return PostToGss(gasUrl, MethodNames.UpdateDatas, payloadRaw, feedbackHandler);
         }
 
         public static IEnumerator RemoveData(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
@@ -36,7 +36,7 @@ namespace GssDbManageWrapper
             UnityWebRequest request =
                 (methodName == MethodNames.SaveData) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
-                : (methodName == MethodNames.UpdateMultiple) ?
+                : (methodName == MethodNames.UpdateDatas) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
                 : (methodName == MethodNames.RemoveData) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
