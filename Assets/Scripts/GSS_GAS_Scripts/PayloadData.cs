@@ -23,13 +23,22 @@ namespace GssDbManageWrapper
     [Serializable]
     public class MessageJson
     {
+        public bool isClosed;
         public int areaId;
         public int vertexId;
         public Vector3 position;
 
+        public MessageJson(bool isClosed, int areaId, int vertexId, Vector3 position)
+        {
+            this.isClosed = isClosed;
+            this.areaId = areaId;
+            this.vertexId = vertexId;
+            this.position = position;
+        }
+
         public override string ToString()
         {
-            return $"areaId={this.areaId}, vertexId={this.vertexId}, position={this.position}";
+            return $"isClosed={isClosed}, areaId={this.areaId}, vertexId={this.vertexId}, position={this.position}";
         }
     }
 }

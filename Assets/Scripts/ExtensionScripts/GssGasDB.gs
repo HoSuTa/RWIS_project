@@ -21,6 +21,7 @@ const CONSTS = {
   UserIdColumn: 1,
   UserNameColumn: 2,
   MessageColumn: 3,
+  IsClosed: "isClosed",
   AreaId: "areaId",
   VertexId: "vertexId",
   Position: "position",
@@ -184,7 +185,7 @@ function doGet(e) {
 function generateDebugObjectForGET() {
   //[variable], [] makes the variable to expand.
   const fakePayload = {
-    [CONSTS.Method]: [CONSTS.GetUserDatasMethod],
+    [CONSTS.Method]: [CONSTS.GetAllDatasMethod],
     [CONSTS.UserName]: "tester",
     [CONSTS.GssUrl]: GssUrl,
   };
@@ -354,7 +355,7 @@ function findUserRowsByUserName(sheetData, userName) {
 }
 
 function findMaxUserId(sheetData) {
-  let maxId = 0;
+  let maxId = -1;
   for (let i = 1; i < sheetData.length; i++) {
     if (maxId < sheetData[i][CONSTS.UserIdColumn]) {
       maxId = sheetData[i][CONSTS.UserIdColumn];
@@ -364,16 +365,16 @@ function findMaxUserId(sheetData) {
 }
 
 function findMaxAreaId(sheetData) {
-  let maxId = 0;
+  let maxAreaId = 0;
   for (let i = 1; i < sheetData.length; i++) {
     if (
-      maxId <
+      maxAreaId <
       JSON.parse(sheetData[userRow][CONSTS.MessageColumn])[CONSTS.AreaId]
     ) {
-      maxId = sheetData[i][CONSTS.UserIdColumn];
+      maxAreaId = sheetData[i][CONSTS.UserIdColumn];
     }
   }
-  return maxId;
+  return maxAreaId;
 }
 
 // GAS's event function that will be called when https POST is requested.

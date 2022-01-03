@@ -1189,6 +1189,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2025085179}
+  - component: {fileID: 2025085184}
   - component: {fileID: 2025085178}
   - component: {fileID: 2025085182}
   - component: {fileID: 2025085181}
@@ -1239,9 +1240,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae1afc69224561047b8f27d220522727, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _updateRequest: 0
-  _playerName: tester
-  _uiText: {fileID: 1251452134}
+  _saveInterval: 5
+  _distanceUntilUpdate: 0.2
 --- !u!114 &2025085181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1254,7 +1254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c6c127e4985ccc47b26e28a9bf19a94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localPlayerName: 
+  _localPlayerName: tester
 --- !u!114 &2025085182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1280,20 +1280,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiText: {fileID: 1251452134}
-  _userName: tester3
+  _userName: tester2
   _areaId: 0
   _vertexId: 0
-  _position: {x: 0, y: 0, z: 0}
+  _position: {x: 5, y: 0, z: 0}
   _messageJsons:
-  - areaId: 1
+  - isClosed: 0
+    areaId: 0
     vertexId: 0
     position: {x: 5, y: 0, z: 0}
-  - areaId: 1
+  - isClosed: 0
+    areaId: 0
     vertexId: 1
     position: {x: 10, y: 0, z: 0}
-  - areaId: 1
-    vertexId: 2
-    position: {x: 15, y: 0, z: 0}
   _requestMethod: 4
   _sendRequest: 0
   _gssDbHub: {fileID: 2025085178}
+--- !u!114 &2025085184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025085177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eec417b2dcb24c74faddce6448cd1aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

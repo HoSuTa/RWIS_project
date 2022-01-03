@@ -15,12 +15,28 @@ namespace GssDbManageWrapper
             set => _currentAreaId = value;
         }
 
-        
+        public bool IsAreaIdClosed(string userName, int areaId)
+        {
+            var areaIdData = GetAreaDatas(userName, areaId);
+            return areaIdData[0].isClosed;
+        }
+        public bool IsCurrentAreaClosed(string userName)
+        {
+            var areaIdData = GetAreaDatas(userName, _currentAreaId);
+            return areaIdData[0].isClosed;
+        }
+
         public int GetNextVertexId(string userName, int areaId)
+        {
+            var areaIdData = GetAreaDatas(userName, areaId);
+            return areaIdData.Max(x => x.vertexId) + 1;
+        }
+
+        public List<MessageJson> GetAreaDatas(string userName, int areaId)
         {
             var userDatas = GetUserDatas(userName);
             var areaIdData = userDatas.Where(x => x.areaId == areaId);
-            return areaIdData.Max(x => x.vertexId) + 1;
+            return areaIdData.ToList();
         }
 
         public List<MessageJson> GetUserDatas(string userName)
@@ -91,19 +107,17 @@ namespace GssDbManageWrapper
             RefreshAllDatas(datas);
         }
         private Dictionary<string, List<MessageJson>> GetNearPositionDatas(
-             Dictionary<string, List<MessageJson>> searchingDatas,
-             Vector3 targetPos,
-             Func<Vector3, Vector3, bool> nearConditionFunc = null)
+            Vector3 targetPos,Func<Vector3, Vector3, bool> nearConditionFunc = null)
         {
             if (nearConditionFunc == null)
             {
-                nearConditionFunc = isTwoPositionCloseEnough;
+                nearConditionFunc = IsTwoPositionsCloseEnough;
             }
 
-            Dictionary<string, List<MessageJson>> nearPositionDatas = new Dictionary<string, List<MessageJson>>();
-            foreach (var key in searchingDatas.Keys)
+            var nearPositionDatas = new Dictionary<string, List<MessageJson>>();
+            foreach (var key in _allDatas.Keys)
             {
-                nearPositionDatas.Add(key, searchingDatas[key].Where(v => nearConditionFunc(v.position, targetPos)).ToList());
+                nearPositionDatas.Add(key, _allDatas[key].Where(v => nearConditionFunc(v.position, targetPos)).ToList());
                 if (nearPositionDatas[key].Count == 0)
                 {
                     nearPositionDatas.Remove(key);
@@ -113,15 +127,15 @@ namespace GssDbManageWrapper
         }
 
         public Dictionary<string, List<MessageJson>> GetAllNearPositionDatas(
-            Vector2 targetLonLat, Func<Vector3, Vector3, bool> nearConditionFunc = null)
+            Vector3 targetPos, Func<Vector3, Vector3, bool> nearConditionFunc = null)
         {
-            return GetNearPositionDatas(_allDatas, targetLonLat, nearConditionFunc);
+            return GetNearPositionDatas(targetPos, nearConditionFunc);
         }
 
 
-        private bool isTwoPositionCloseEnough(Vector3 a, Vector3 b)
+        private bool IsTwoPositionsCloseEnough(Vector3 a, Vector3 b)
         {
-            return (a - b).magnitude < .4f;
+            return (a - b).magnitude < .8f;
         }
     }
 }

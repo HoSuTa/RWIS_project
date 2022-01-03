@@ -39,10 +39,10 @@ public class GpsDataManager : MonoBehaviour
         if (_areaDataManager == null) _areaDataManager = GetComponent<AreaDataManager>();
         if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
 
-        StartCoroutine(SaveGpsData());
+        StartCoroutine(SaveGpsDataPeriodically());
     }
 
-    private IEnumerator SaveGpsData()
+    private IEnumerator SaveGpsDataPeriodically()
     {
         while (true)
         {
@@ -54,6 +54,7 @@ public class GpsDataManager : MonoBehaviour
                 //Updates when the user moved far enough
                 if( (gpsUnityPos - _lastUnityPos).magnitude > _distanceUntilUpdate)
                 {
+                    var isClosed = _areaDataManager.IsCurrentAreaClosed(_userDataManager.LocalPlayerName);
                     var updatingAreaId = _areaDataManager.CurrentAreaId;
                     var savingVertexId = _areaDataManager.GetNextVertexId(
                         _userDataManager.LocalPlayerName, updatingAreaId);
@@ -66,7 +67,8 @@ public class GpsDataManager : MonoBehaviour
 
                     //No closed line, just need to add the position to GSS (and update local datas).
                     _gssDbHub.SaveData(
-                        _userDataManager.LocalPlayerName, updatingAreaId, savingVertexId, gpsUnityPos,
+                        _userDataManager.LocalPlayerName,
+                        new MessageJson(isClosed, updatingAreaId, savingVertexId, gpsUnityPos),
                         _ => _areaDataManager.UpdateAllDatasToGss(_gssDbHub) );
                     _lastUnityPos = gpsUnityPos;
                 }

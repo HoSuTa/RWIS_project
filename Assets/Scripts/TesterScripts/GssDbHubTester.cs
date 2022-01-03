@@ -24,7 +24,7 @@ namespace GssDbManageWrapper
         [SerializeField]
         private Vector3 _position = new Vector3(0,0,0);
         [SerializeField]
-        private MessageJson[] _messageJsons;
+        private List<MessageJson> _messageJsons;
         [SerializeField]
         private MethodNames _requestMethod = MethodNames.GetUserNames;
         [SerializeField]
@@ -33,7 +33,7 @@ namespace GssDbManageWrapper
 
         [SerializeField]
         private GssDbHub _gssDbHub;
-        AreaDataManager _localDataHub;
+        AreaDataManager _areaDataManager;
         UserDataManager _userDataManager;
 
         private void Start()
@@ -69,7 +69,7 @@ namespace GssDbManageWrapper
                 }
                 else if (_requestMethod == MethodNames.SaveData)
                 {
-                    _gssDbHub.SaveData(_userName, _areaId, _vertexId, _position);
+                    _gssDbHub.SaveData(_userName, new MessageJson(false, _areaId, _vertexId, _position));
                 }
                 else if (_requestMethod == MethodNames.UpdateDatas)
                 {
@@ -116,18 +116,6 @@ namespace GssDbManageWrapper
         }
 
 
-
-
-        private void SaveData(string userName, int areaId, int vertexId, Vector3 position)
-        {
-            _gssDbHub.SaveData(userName, areaId, vertexId, position, PostFeedback);
-        }
-        private void RemoveData(string userName, int areaId, int vertexId)
-        {
-            _gssDbHub.RemoveData(userName, areaId, vertexId, PostFeedback);
-        }
-
-
         private void PostFeedback(string response)
         {
             if (response.Contains("succeeded") || !response.Contains("Error"))
@@ -153,7 +141,7 @@ namespace GssDbManageWrapper
 
         private void LocalAllDatasSetFeedBack(PayloadData[] datas)
         {
-            _localDataHub.RefreshAllDatas(datas);
+            _areaDataManager.RefreshAllDatas(datas);
             TempUIVisualizeAllDatas();
         }
         private void LocalUserNamesSetFeedBack(PayloadData[] datas)
@@ -164,7 +152,7 @@ namespace GssDbManageWrapper
 
         private void TempUIVisualizeAllDatas()
         {
-            var datas = _localDataHub.GetAllDatas();
+            var datas = _areaDataManager.GetAllDatas();
             _uiText.text = "";
             for (int i = 0; i < datas.Count; i++)
             {

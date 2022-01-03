@@ -54,15 +54,12 @@ namespace GssDbManageWrapper
         }
 
 
-        public void SaveData(string userName, int areaId, int vertexId, Vector3 position, Action<string> localDataFeedback = null)
+        public void SaveData(
+            string userName, MessageJson data, Action<string> localDataFeedback = null)
         {
             if (localDataFeedback == null) localDataFeedback = DefaultPostFeedBack;
 
-            string message = $"{{" +
-                        $"\"areaId\" : {areaId}, " +
-                        $"\"vertexId\" : {vertexId}, " +
-                        $"\"position\" : {JsonUtility.ToJson(position)}" +
-                        $"}}";
+            string message = JsonUtility.ToJson(data);
             StartCoroutine(
                 GssPoster.SaveUserData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
         }
