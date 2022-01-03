@@ -20,9 +20,9 @@ namespace GssDbManageWrapper
             set => _userNames = value;  
         }
 
-        private void Awake()
+        private void Start()
         {
-            if (_localPlayerName == null || _localPlayerName == "")
+            if ( _localPlayerName == "")
             {
                 Debug.Log($"<color=red>[UserDataManager]</color> " +
                     $"{nameof(_localPlayerName)} is {_localPlayerName}.");

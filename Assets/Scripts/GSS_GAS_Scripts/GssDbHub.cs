@@ -16,14 +16,15 @@ namespace GssDbManageWrapper
         RemoveData,
         CheckIfGssUrlValid,
         CheckIfGasUrlValid,
+        CheckIfPlayerNameValid,
     }
 
     public class GssDbHub : MonoBehaviour
     {
-        
+
         private void DefaultGetFeedBack(PayloadData[] datas)
         {
-            foreach(var d in datas) Debug.Log(d);
+            foreach (var d in datas) Debug.Log(d);
         }
         private void DefaultPostFeedBack(string response)
         {
@@ -94,8 +95,27 @@ namespace GssDbManageWrapper
 
 
 
+        public void CheckIfPlayerNameValid(
+            string playerName, Action<bool, string> updatePlayerNameRelatedUI)
+        {
+            StartCoroutine(
+                GssGetter.CheckIfPlayerNameValid(
+                    GasUrlManager.GetUrl(),
+                    GssUrlManager.GetUrl(),
+                    playerName,
+                    response => PlayerNameValidFeedBack(
+                        (string)response, playerName, updatePlayerNameRelatedUI)
+                    ));
+        }
 
-
+        private void PlayerNameValidFeedBack(
+            string response,
+            string playerName,
+            Action<bool,string> updatePlayerNameRelatedUI = null)
+        {
+            bool isValid = !response.Contains("Invalid");
+            updatePlayerNameRelatedUI?.Invoke(isValid, playerName);
+        }
 
         public void CheckIfGssUrlValid
         (

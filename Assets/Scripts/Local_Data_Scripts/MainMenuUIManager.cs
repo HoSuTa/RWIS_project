@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using GssDbManageWrapper;
 
-[RequireComponent(typeof(GssDbManageWrapper.GssDbHub))]
+[RequireComponent(typeof(GssDbHub))]
 public class MainMenuUIManager : MonoBehaviour
 {
     [SerializeField]
@@ -22,11 +23,11 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField]
     private Text _savedKey;
     [SerializeField]
-    private GameObject _playButton;
+    private GameObject _nextSceneButton;
     [SerializeField]
     private Dropdown _keySelectDropDown;
     [SerializeField]
-    private GssDbManageWrapper.GssDbHub _gssDbHub;
+    private GssDbHub _gssDbHub;
 
     private List<string> _keyList = new List<string>() { "Edit Gss Url", "Edit Gas Url" };
 
@@ -35,13 +36,13 @@ public class MainMenuUIManager : MonoBehaviour
     private bool _runSaveKey = false;
     private bool _runResetKey = false;
     private bool _runUpdateUI = false;
-    private bool _isKeyInvalid = false;
+    private bool _keyValidanceCheck = false;
 
     private void Awake()
     {
         if (_gssDbHub == null)
         {
-            _gssDbHub = GetComponent<GssDbManageWrapper.GssDbHub>();
+            _gssDbHub = GetComponent<GssDbHub>();
         }
 
         _keyValidationBG.SetActive(false);
@@ -63,10 +64,10 @@ public class MainMenuUIManager : MonoBehaviour
     private void Update()
     {
         DecideEdittingKey(_keySelectDropDown);
-        if (_isKeyInvalid)
+        if (_keyValidanceCheck)
         {
             StartCoroutine(KeyValidationUIEffect());
-            _isKeyInvalid = false;
+            _keyValidanceCheck = false;
         }
     }
 
@@ -137,7 +138,7 @@ public class MainMenuUIManager : MonoBehaviour
         _keyValidationBG.SetActive(true);
         _keyValidationText.text = "The key is valid";
         _keyValidationText.color = _plusColor;
-        _isKeyInvalid = true;
+        _keyValidanceCheck = true;
     }
 
     private void KeyInvalidFeedBack()
@@ -145,10 +146,10 @@ public class MainMenuUIManager : MonoBehaviour
         _keyValidationBG.SetActive(true);
         _keyValidationText.text = "The key is invalid";
         _keyValidationText.color = _minusColor;
-        _isKeyInvalid = true;
+        _keyValidanceCheck = true;
     }
 
-    public void RunUpdateUI()
+    public void RunValidationAndCheckUI()
     {
         _runUpdateUI = true;
     }
@@ -170,11 +171,11 @@ public class MainMenuUIManager : MonoBehaviour
 
         if (GssUrlManager.IsUrlAssigned() && GasUrlManager.IsUrlAssigned())
         {
-            _playButton.SetActive(true);
+            _nextSceneButton.SetActive(true);
         }
         else
         {
-            _playButton.SetActive(false);
+            _nextSceneButton.SetActive(false);
         }
     }
 
@@ -182,7 +183,7 @@ public class MainMenuUIManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(_keyField.text))
         {
-            RunUpdateUI();
+            RunValidationAndCheckUI();
             _runSaveKey = true;
         }
     }
@@ -204,7 +205,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     public void RunResetKey()
     {
-        RunUpdateUI();
+        RunValidationAndCheckUI();
         _runResetKey = true;
     }
 
