@@ -5,9 +5,22 @@ using System.Linq;
 
 namespace GssDbManageWrapper
 {
-    public class LocalDataHub : MonoBehaviour
+    public class AreaDataManager : MonoBehaviour
     {
         public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
+        private int _currentAreaId = 0;
+        private int _nextVertexId = 0;
+
+        public int GetCurrentAreaId()
+        {
+            return _currentAreaId;
+        }
+        public int GetNextVertexId(string userName, int areaId)
+        {
+            var userDatas = GetUserDatas(userName);
+            var areaIdData = userDatas.Where(x => x.areaId == areaId);
+            return areaIdData.Max(x => x.vertexId) + 1;
+        }
 
         public List<MessageJson> GetUserDatas(string userName)
         {

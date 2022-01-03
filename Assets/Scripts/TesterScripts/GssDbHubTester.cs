@@ -8,7 +8,7 @@ using System.Linq;
 namespace GssDbManageWrapper
 {
     [RequireComponent(typeof(GssDbHub))]
-    [RequireComponent(typeof(LocalDataHub))]
+    [RequireComponent(typeof(AreaDataManager))]
     [RequireComponent(typeof(UserDataManager))]
     public class GssDbHubTester : MonoBehaviour
     {
@@ -33,7 +33,7 @@ namespace GssDbManageWrapper
 
         [SerializeField]
         private GssDbHub _gssDbHub;
-        LocalDataHub _localDataHub;
+        AreaDataManager _localDataHub;
         UserDataManager _userDataManager;
 
         private void Start()
