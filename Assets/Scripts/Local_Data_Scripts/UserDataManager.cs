@@ -8,11 +8,21 @@ namespace GssDbManageWrapper
     {
         [SerializeField]
         private string _localPlayerName = "";
-        public HashSet<string> _userNames = new HashSet<string>();
+        public string LocalPlayerName
+        {
+            get => _localPlayerName;
+            set => _localPlayerName = value;
+        }
+        private HashSet<string> _userNames = new HashSet<string>();
+        public HashSet<string> UserNames
+        {
+            get => _userNames;
+            set => _userNames = value;  
+        }
 
         private void Awake()
         {
-            if(_localPlayerName == null || _localPlayerName == "")
+            if (_localPlayerName == null || _localPlayerName == "")
             {
                 Debug.Log($"<color=red>[UserDataManager]</color> " +
                     $"{nameof(_localPlayerName)} is {_localPlayerName}.");
@@ -42,20 +52,21 @@ namespace GssDbManageWrapper
             }
         }
 
+        public void UpdateAllUserNamesToGss(GssDbHub gssDbHub)
+        {
+            gssDbHub.GetUserNames(GetUserNamesFeedBack);
+        }
+        private void GetUserNamesFeedBack(PayloadData[] datas)
+        {
+            RefreshUserNames(datas);
+        }
+
         public void ClearUserNames()
         {
             _userNames.Clear();
         }
 
-        public HashSet<string> GetUserNames()
-        {
-            return _userNames;
-        }
 
-        public string GetPlayerName()
-        {
-            return _localPlayerName;
-        }
     }
 }
 

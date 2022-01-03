@@ -67,7 +67,7 @@ namespace GssDbManageWrapper
                 GssPoster.SaveUserData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
         }
 
-        public void UpdateDatas(string userName, MessageJson[] datas, Action<string> localDataFeedback = null)
+        public void UpdateDatas(string userName, List<MessageJson> datas, Action<string> localDataFeedback = null)
         {
             if (localDataFeedback == null) localDataFeedback = DefaultPostFeedBack;
 
@@ -78,7 +78,6 @@ namespace GssDbManageWrapper
             }
             message = message.Remove(message.Length - 1);
             message += " ]";
-            print(message);
 
             StartCoroutine(
                 GssPoster.UpdateDatas(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));

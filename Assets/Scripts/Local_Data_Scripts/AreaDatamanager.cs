@@ -9,12 +9,13 @@ namespace GssDbManageWrapper
     {
         public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
         private int _currentAreaId = 0;
-        private int _nextVertexId = 0;
-
-        public int GetCurrentAreaId()
+        public int CurrentAreaId
         {
-            return _currentAreaId;
+            get => _currentAreaId;
+            set => _currentAreaId = value;
         }
+
+        
         public int GetNextVertexId(string userName, int areaId)
         {
             var userDatas = GetUserDatas(userName);
@@ -48,10 +49,10 @@ namespace GssDbManageWrapper
             return datas;
         }
 
-       
+
         private void AddData(ref Dictionary<string, List<MessageJson>> dataList, string userName, MessageJson data)
         {
-            if(dataList.ContainsKey(userName))
+            if (dataList.ContainsKey(userName))
             {
                 dataList[userName].Add(data);
             }
@@ -67,9 +68,9 @@ namespace GssDbManageWrapper
         {
             dataList.Clear();
             foreach (var (userName, messageJson) in from d in datas
-                        let userName = d.userName
-                        let messageJson = d.ExtractMessageJson()
-                        select (userName, messageJson))
+                                                    let userName = d.userName
+                                                    let messageJson = d.ExtractMessageJson()
+                                                    select (userName, messageJson))
             {
                 AddData(ref dataList, userName, messageJson);
             }
@@ -80,9 +81,18 @@ namespace GssDbManageWrapper
             RefreshDatas(ref _allDatas, datas);
 
         }
+
+        public void UpdateAllDatasToGss(GssDbHub gssDbHub)
+        {
+            gssDbHub.GetAllDatas(GetAllDatasFeedBack);
+        }
+        private void GetAllDatasFeedBack(PayloadData[] datas)
+        {
+            RefreshAllDatas(datas);
+        }
         private Dictionary<string, List<MessageJson>> GetNearPositionDatas(
-             Dictionary<string, List<MessageJson>>  searchingDatas, 
-             Vector3 targetPos, 
+             Dictionary<string, List<MessageJson>> searchingDatas,
+             Vector3 targetPos,
              Func<Vector3, Vector3, bool> nearConditionFunc = null)
         {
             if (nearConditionFunc == null)
