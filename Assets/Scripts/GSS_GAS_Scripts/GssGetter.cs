@@ -31,6 +31,13 @@ namespace GssDbManageWrapper
             yield return GetGssData(gasUrl, "", MethodNames.CheckIfGasUrlValid, "", feedbackHandler);
         }
 
+        public static IEnumerator CheckIfPlayerNameValid(
+            string gasUrl, string gssUrl, string playerName, Action<object> feedbackHandler = null)
+        {
+            yield return GetGssData(
+                gasUrl, gssUrl, MethodNames.CheckIfPlayerNameValid, playerName, feedbackHandler);
+        }
+
         private static IEnumerator GetGssData(string gasUrl, string gssUrl, MethodNames methodName, string userName, Action<object> feedbackHandler = null)
         {
             UnityWebRequest request =
@@ -43,6 +50,8 @@ namespace GssDbManageWrapper
                 : (methodName == MethodNames.CheckIfGssUrlValid) ?
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.CheckIfGasUrlValid) ?
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}")
+                : (methodName == MethodNames.CheckIfPlayerNameValid) ?
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}")
                 : null;
 
@@ -76,6 +85,10 @@ namespace GssDbManageWrapper
                     feedbackHandler?.Invoke(request_result);
                 }
                 else if (methodName == MethodNames.CheckIfGasUrlValid)
+                {
+                    feedbackHandler?.Invoke(request_result);
+                }
+                else if (methodName == MethodNames.CheckIfPlayerNameValid)
                 {
                     feedbackHandler?.Invoke(request_result);
                 }

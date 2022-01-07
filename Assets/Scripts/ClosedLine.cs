@@ -63,17 +63,27 @@ public class ClosedLine : MonoBehaviour
     //
     // bool AddPoint(const Vector2 newPoint, out List<UINT> indices){}
     [SerializeField]
-    public List<Vector2> vertices;
+    public List<Vector3> vertices = new List<Vector3>();
     // 
     [SerializeField]
-    private double minLength = 1e-7;
+    public double minLength = 1e-7;
     public List<uint> GetClosedIndices(){
-        bool isClosed =  Mathf.Abs(Vector2.Distance(vertices[vertices.Count-1],vertices[0]))<minLength;
+
+        if(vertices == null) {
+            return null;
+        }
+        if (vertices.Count == 0) {
+            return null;
+        }
+        bool isClosed =  Mathf.Abs(Vector3.Distance(vertices[vertices.Count-1],vertices[0])) < minLength;
+        
         if (isClosed){
+            vertices[vertices.Count-1] = vertices[0];
             List<uint> indices = new List<uint>();
-            for (var i = 0;i<vertices.Count;++i){
+            for (var i = 0; i < vertices.Count; ++i){
                 indices.Add((uint)i);
             }
+
             indices.Add(0);
             return indices;
         }

@@ -10,10 +10,17 @@ namespace GssDbManageWrapper
     {
         public static IEnumerator SaveUserData(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
         {
-            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveMessage}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.SaveData}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
             byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
 
-            yield return PostToGss(gasUrl, MethodNames.SaveMessage, payloadRaw, feedbackHandler);
+            yield return PostToGss(gasUrl, MethodNames.SaveData, payloadRaw, feedbackHandler);
+        }
+        public static IEnumerator UpdateDatas(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
+        {
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.UpdateDatas}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+            yield return PostToGss(gasUrl, MethodNames.UpdateDatas, payloadRaw, feedbackHandler);
         }
 
         public static IEnumerator RemoveData(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
@@ -27,7 +34,9 @@ namespace GssDbManageWrapper
         private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload, Action<object> feedbackHandler = null)
         {
             UnityWebRequest request =
-                (methodName == MethodNames.SaveMessage) ?
+                (methodName == MethodNames.SaveData) ?
+                    UnityWebRequest.Post($"{gasUrl}", "POST")
+                : (methodName == MethodNames.UpdateDatas) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
                 : (methodName == MethodNames.RemoveData) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
@@ -53,16 +62,8 @@ namespace GssDbManageWrapper
             {
                 var request_result = request.downloadHandler.text;
 
-                if (request_result.Contains("Error"))
-                {
-                    Debug.Log($"<color=blue>[GssPoster]</color> {request_result}");
-                    yield break;
-                }
-                else
-                {
-                    feedbackHandler?.Invoke(request_result);
-                    yield break;
-                }
+                feedbackHandler?.Invoke(request_result);
+                yield break;
             }
         }
 

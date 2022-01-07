@@ -10,6 +10,9 @@ public class LineAreaCalculator : MonoBehaviour
     public List<uint>    indices;
     // Start is called before the first frame update
     public float CalulateArea(){
+        if (indices == null){
+            return 0.0f;
+        }
         if (indices.Count< 3){
             return 0.0f;
         }

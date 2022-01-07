@@ -28,11 +28,11 @@ public class LonLat2UI : MonoBehaviour
         // 経緯度の値を取得できるか判定
         if (lonLatGetter.CanGetLonLat())
         {
-            lonLatInfo.text = string.Format(LonLatInfoTemplate, lonLatGetter.Latitude.ToString(), lonLatGetter.Longitude.ToString());
+            //lonLatInfo.text = string.Format(LonLatInfoTemplate, lonLatGetter.Latitude.ToString(), lonLatGetter.Longitude.ToString());
         }
         else
         {
-            lonLatInfo.text = string.Format(LonLatInfoTemplate, "測定不能", "測定不能", "測定不能");
+            //lonLatInfo.text = string.Format(LonLatInfoTemplate, "Loading", "Loading", "Loading");
         }
     }
 }
