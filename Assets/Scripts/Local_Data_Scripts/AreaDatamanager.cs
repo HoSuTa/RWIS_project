@@ -9,6 +9,7 @@ namespace GssDbManageWrapper
     {
         public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
         private int _currentAreaId = 0;
+        private bool _isUpdating = false;
         public int CurrentAreaId
         {
             get => _currentAreaId;
@@ -100,14 +101,16 @@ namespace GssDbManageWrapper
 
         public void UpdateAllDatasToGss(GssDbHub gssDbHub)
         {
+            _isUpdating = true;
             gssDbHub.GetAllDatas(GetAllDatasFeedBack);
         }
         private void GetAllDatasFeedBack(PayloadData[] datas)
         {
             RefreshAllDatas(datas);
+            _isUpdating = false;
         }
         private Dictionary<string, List<MessageJson>> GetNearPositionDatas(
-            Vector3 targetPos,Func<Vector3, Vector3, bool> nearConditionFunc = null)
+            Vector3 targetPos, Func<Vector3, Vector3, bool> nearConditionFunc = null)
         {
             if (nearConditionFunc == null)
             {
@@ -137,5 +140,11 @@ namespace GssDbManageWrapper
         {
             return (a - b).magnitude < .8f;
         }
+
+        public bool IsUpdating
+        {
+            get { return _isUpdating; }
+        }
+
     }
 }

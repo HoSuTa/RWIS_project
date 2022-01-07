@@ -44,15 +44,24 @@ public class GpsDataManager : MonoBehaviour
 
     private IEnumerator SaveGpsDataPeriodically()
     {
+        //Update local datas with gss datas.
+        LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub);
+        while (_userDataManager.IsUpdating || _areaDataManager.IsUpdating)
+        {
+            Debug.Log($"<color=blue>[GpsDataManager]</color> " +
+                $"Waiting for local datas to update...");
+            yield return new WaitForSeconds(_saveInterval / 10.0f);
+        }
+
         while (true)
         {
             if (_lonLatGetter.CanGetLonLat())
             {
                 var gpsData = new Vector2d(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
                 var gpsUnityPos = _abstractMap.GeoToWorldPosition(gpsData);
-                
+
                 //Updates when the user moved far enough
-                if( (gpsUnityPos - _lastUnityPos).magnitude > _distanceUntilUpdate)
+                if ((gpsUnityPos - _lastUnityPos).magnitude > _distanceUntilUpdate)
                 {
                     var isClosed = _areaDataManager.IsCurrentAreaClosed(_userDataManager.LocalPlayerName);
                     var updatingAreaId = _areaDataManager.CurrentAreaId;
@@ -63,17 +72,18 @@ public class GpsDataManager : MonoBehaviour
                     // ..Closed Line Check HERE...
                     // In some cases, re-upload whole datas.
                     //
-
+                    //local datas can be changed through updating with gss datas.
 
                     //No closed line, just need to add the position to GSS (and update local datas).
                     _gssDbHub.SaveData(
                         _userDataManager.LocalPlayerName,
                         new MessageJson(isClosed, updatingAreaId, savingVertexId, gpsUnityPos),
-                        _ => _areaDataManager.UpdateAllDatasToGss(_gssDbHub) );
+                        _ => LocalDataUpdater.Update(
+                            _userDataManager, _areaDataManager, _gssDbHub));
                     _lastUnityPos = gpsUnityPos;
                 }
-                
             }
+
             yield return new WaitForSeconds(_saveInterval);
         }
     }
@@ -81,7 +91,7 @@ public class GpsDataManager : MonoBehaviour
     private void ClosedLineDataUpdate(List<MessageJson> datas)
     {
         //Upload the datas, and get all the data by feedback function.
-        _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas, 
+        _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
             _ => _areaDataManager.UpdateAllDatasToGss(_gssDbHub));
         _areaDataManager.CurrentAreaId++;
         _lastUnityPos = _outlierPos;
