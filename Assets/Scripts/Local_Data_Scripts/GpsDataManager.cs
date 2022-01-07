@@ -28,7 +28,7 @@ public class GpsDataManager : MonoBehaviour
     private float _distanceUntilUpdate = .2f;
     //Making y big to make the initial save always valid.
     private Vector3 _lastUnityPos = _outlierPos;
-    private static Vector3 _outlierPos = new Vector3(0, -10000f, 0);
+    private static Vector3 _outlierPos = new Vector3(0, -100f, 0);
 
     private void Awake()
     {
