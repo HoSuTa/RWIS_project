@@ -399,8 +399,8 @@ Camera:
   m_GameObject: {fileID: 883764325}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.32128873, g: 0.4751691, b: 0.7169812, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -459,8 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39f06462f76f6574cae0cfa6eb513ad9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainCamera: {fileID: 0}
-  _mainCameraTransform: {fileID: 0}
+  _camera: {fileID: 0}
   _speed: 0.1
 --- !u!1 &908575787
 GameObject:
@@ -1371,7 +1370,7 @@ MonoBehaviour:
           visibleBuffer: 0
           disposeBuffer: 0
     placementOptions:
-      placementType: 1
+      placementType: 0
       snapMapToZero: 0
     scalingOptions:
       scalingType: 1
@@ -1458,4 +1457,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fc2e97d7e9559144bec6c660cb4fdda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lonLat: {x: 0, y: 0}
   _zoomSize: 16.5

@@ -6,12 +6,10 @@ using Mapbox.Unity.Map;
 
 [RequireComponent(typeof(AbstractMap))]
 [RequireComponent(typeof(LonLatGetter))]
-public class MapboxMapManager : MonoBehaviour
+public class MapboxMapGenerator : MonoBehaviour
 {
     AbstractMap _abstractMap;
     LonLatGetter _lonLatGetter;
-
-    Camera _camera;
 
     [SerializeField] public float _zoomSize = 16.5f;
 
@@ -21,22 +19,23 @@ public class MapboxMapManager : MonoBehaviour
         if (_lonLatGetter == null) _lonLatGetter = GetComponent<LonLatGetter>();
 
         _abstractMap.InitializeOnStart = false;
-
-        StartCoroutine(GenerateMapWithLonLat());
+        StartCoroutine(GenerateMapboxMap());
     }
 
-    private IEnumerator GenerateMapWithLonLat()
+    private IEnumerator GenerateMapboxMap()
     {
         while (true)
         {
             if (_lonLatGetter.CanGetLonLat())
             {
-                var gpsData = new Vector2d(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
+                _abstractMap.ResetMap();
+                var mapCenterLonLat = new Vector2d(
+                    _lonLatGetter.Latitude, _lonLatGetter.Longitude);
                 _abstractMap.SetZoom(_zoomSize);
-                _abstractMap.Initialize(gpsData, _abstractMap.AbsoluteZoom);
-
+                _abstractMap.Initialize(mapCenterLonLat, _abstractMap.AbsoluteZoom);
                 break;
             }
+
             yield return new WaitForSeconds(1.0f);
         }
     }
