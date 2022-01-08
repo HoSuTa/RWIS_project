@@ -89,7 +89,7 @@ public class GpsDataManager : MonoBehaviour
     {
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
-            _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub););
+            _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub));
         _lastUnityPos = _outlierPos;
     }
 
