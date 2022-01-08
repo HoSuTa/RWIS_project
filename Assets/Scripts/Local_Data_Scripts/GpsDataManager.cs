@@ -44,14 +44,6 @@ public class GpsDataManager : MonoBehaviour
 
     private IEnumerator SaveGpsDataPeriodically()
     {
-        //Update local datas with gss datas.
-        LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub);
-        while (_userDataManager.IsUpdating || _areaDataManager.IsUpdating)
-        {
-            Debug.Log($"<color=blue>[GpsDataManager]</color> " +
-                $"Waiting for local datas to update...");
-            yield return new WaitForSeconds(_saveInterval / 10.0f);
-        }
 
         while (true)
         {
@@ -63,8 +55,18 @@ public class GpsDataManager : MonoBehaviour
                 //Updates when the user moved far enough
                 if ((gpsUnityPos - _lastUnityPos).magnitude > _distanceUntilUpdate)
                 {
+                    //Update local datas with gss datas.
+                    LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub);
+                    while (_userDataManager.IsUpdating || _areaDataManager.IsUpdating)
+                    {
+                        Debug.Log($"<color=blue>[GpsDataManager]</color> " +
+                            $"Updating before checking the point.");
+                        yield return new WaitForSeconds(1.0f);
+                    }
+
+
                     var isClosed = _areaDataManager.IsCurrentAreaClosed(_userDataManager.LocalPlayerName);
-                    var updatingAreaId = _areaDataManager.CurrentAreaId;
+                    var updatingAreaId = _areaDataManager.GetCurrentAreaId(_userDataManager.LocalPlayerName);
                     var savingVertexId = _areaDataManager.GetNextVertexId(
                         _userDataManager.LocalPlayerName, updatingAreaId);
 
@@ -74,12 +76,7 @@ public class GpsDataManager : MonoBehaviour
                     //
                     //local datas can be changed through updating with gss datas.
 
-                    //No closed line, just need to add the position to GSS (and update local datas).
-                    _gssDbHub.SaveData(
-                        _userDataManager.LocalPlayerName,
-                        new MessageJson(isClosed, updatingAreaId, savingVertexId, gpsUnityPos),
-                        _ => LocalDataUpdater.Update(
-                            _userDataManager, _areaDataManager, _gssDbHub));
+                    //No closed line, just need to update lat position.
                     _lastUnityPos = gpsUnityPos;
                 }
             }
@@ -88,12 +85,11 @@ public class GpsDataManager : MonoBehaviour
         }
     }
 
-    private void ClosedLineDataUpdate(List<MessageJson> datas)
+    private void LineClosedUpdateDatas(List<MessageJson> datas)
     {
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
-            _ => _areaDataManager.UpdateAllDatasToGss(_gssDbHub));
-        _areaDataManager.CurrentAreaId++;
+            _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub););
         _lastUnityPos = _outlierPos;
     }
 
