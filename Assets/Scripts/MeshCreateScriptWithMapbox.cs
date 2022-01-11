@@ -23,7 +23,7 @@ public class MeshCreateScriptWithMapbox : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log(verList[0]);
+        
     }
 
 
