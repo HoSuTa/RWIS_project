@@ -31,13 +31,13 @@ public class MeshCreateScriptWithMapbox : MonoBehaviour
     {
         List<Vector3> vertList = new List<Vector3>();
         List<int> triList = new List<int>();
-        vertList.Add(new Vector3(0, 0, 0));  //Œ´“_
+        vertList.Add(new Vector3(0, 2.0f, 0));  //Œ´“_
         for (int n = 0; n < nPoly; n++)
         {
             float _x = values[n] / max * Mathf.Cos(n * 2 * Mathf.PI / nPoly);
-            float _y = 2.0;
+            float _y = 2.0f;
             float _z = values[n] / max * Mathf.Sin(n * 2 * Mathf.PI / nPoly);
-            vertList.Add(new Vector3(_x, _y, _z));
+            vertList.Add(new Vector3(_x * 10, _y, _z * 10));
             if (n != nPoly - 1)
             {
                 triList.Add(0); triList.Add(n + 2); triList.Add(n + 1);
@@ -71,6 +71,6 @@ public class MeshCreateScriptWithMapbox : MonoBehaviour
         t.GetComponent<MeshRenderer>().material.color = color;
         t.transform.localScale = new Vector3(2.8f, 2.8f, 1);
         t.transform.position = new Vector3(0, 2f, order);
-        t.transform.rotation = Quaternion.Euler(0, 0, 90);
+        t.transform.rotation = Quaternion.Euler(0, 0, 0);
     }
 }
