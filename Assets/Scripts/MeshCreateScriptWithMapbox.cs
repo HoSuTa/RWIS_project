@@ -49,11 +49,11 @@ public class MeshCreateScriptWithMapbox : MonoBehaviour
         }
         vertices = vertList.ToArray();
         triangles = triList.ToArray();
-        Debug.Log(vertList[0]);
-        Debug.Log(vertList[1]);
-        Debug.Log(vertList[2]);
-        Debug.Log(vertList[3]);
-        Debug.Log(vertList[4]);
+        //Debug.Log(vertList[0]);
+       // Debug.Log(vertList[1]);
+        //Debug.Log(vertList[2]);
+       // Debug.Log(vertList[3]);
+        //Debug.Log(vertList[4]);
  
     }
 
