@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshCreateScript : MonoBehaviour
+public class MeshCreateScriptWithMapbox : MonoBehaviour
 {
 
     Vector3[] vertices; //’¸“_
@@ -35,8 +35,9 @@ public class MeshCreateScript : MonoBehaviour
         for (int n = 0; n < nPoly; n++)
         {
             float _x = values[n] / max * Mathf.Cos(n * 2 * Mathf.PI / nPoly);
-            float _y = values[n] / max * Mathf.Sin(n * 2 * Mathf.PI / nPoly);
-            vertList.Add(new Vector3(_x, _y));
+            float _y = 2.0;
+            float _z = values[n] / max * Mathf.Sin(n * 2 * Mathf.PI / nPoly);
+            vertList.Add(new Vector3(_x, _y, _z));
             if (n != nPoly - 1)
             {
                 triList.Add(0); triList.Add(n + 2); triList.Add(n + 1);
