@@ -31,6 +31,14 @@ namespace GssDbManageWrapper
             yield return PostToGss(gasUrl, MethodNames.RemoveData, payloadRaw, feedbackHandler);
         }
 
+        public static IEnumerator RemoveArea(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
+        {
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.RemoveArea}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+            yield return PostToGss(gasUrl, MethodNames.RemoveArea, payloadRaw, feedbackHandler);
+        }
+
         private static IEnumerator PostToGss(string gasUrl, MethodNames methodName, byte[] payload, Action<object> feedbackHandler = null)
         {
             UnityWebRequest request =
@@ -39,6 +47,8 @@ namespace GssDbManageWrapper
                 : (methodName == MethodNames.UpdateDatas) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
                 : (methodName == MethodNames.RemoveData) ?
+                    UnityWebRequest.Post($"{gasUrl}", "POST")
+                : (methodName == MethodNames.RemoveArea) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
                 : null;
             if (request == null)

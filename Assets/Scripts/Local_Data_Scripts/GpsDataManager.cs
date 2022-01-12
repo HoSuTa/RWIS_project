@@ -64,11 +64,9 @@ public class GpsDataManager : MonoBehaviour
                         yield return new WaitForSeconds(1.0f);
                     }
 
+                    List<Vector3> currentAreaVerticies = _areaDataManager.GetCurrentAreaDatasAsVector();
 
-                    var isClosed = _areaDataManager.IsCurrentAreaClosed(_userDataManager.LocalPlayerName);
-                    var updatingAreaId = _areaDataManager.GetCurrentAreaId(_userDataManager.LocalPlayerName);
-                    var savingVertexId = _areaDataManager.GetNextVertexId(
-                        _userDataManager.LocalPlayerName, updatingAreaId);
+                    // _areaDataManager.AddPositinToCurrentAreaDatas(_userDataManager.LocalPlayerName, gpsUnityPos);
 
                     //
                     // ..Closed Line Check HERE...
@@ -90,6 +88,7 @@ public class GpsDataManager : MonoBehaviour
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
             _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub));
+        _areaDataManager.RefreshCurrentAreaDatas();
         _lastUnityPos = _outlierPos;
     }
 

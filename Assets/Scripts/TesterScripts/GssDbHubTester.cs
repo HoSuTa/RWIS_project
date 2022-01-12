@@ -22,7 +22,7 @@ namespace GssDbManageWrapper
         [SerializeField]
         private int _vertexId = 0;
         [SerializeField]
-        private Vector3 _position = new Vector3(0,0,0);
+        private Vector3 _position = new Vector3(0, 0, 0);
         [SerializeField]
         private List<MessageJson> _messageJsons;
         [SerializeField]
@@ -78,6 +78,10 @@ namespace GssDbManageWrapper
                 else if (_requestMethod == MethodNames.RemoveData)
                 {
                     _gssDbHub.RemoveData(_userName, _areaId, _vertexId);
+                }
+                else if (_requestMethod == MethodNames.RemoveArea)
+                {
+                    _gssDbHub.RemoveArea(_userName, _areaId);
                 }
                 _sendRequest = false;
             }

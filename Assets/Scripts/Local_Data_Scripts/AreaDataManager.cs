@@ -8,39 +8,91 @@ namespace GssDbManageWrapper
     public class AreaDataManager : MonoBehaviour
     {
         public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
-        private int _currentAreaId = 0;
+        public List<MessageJson> _userCurrentArea = new List<MessageJson>();
+
         private bool _isUpdating = false;
+
         public int GetCurrentAreaId(string userName)
         {
             var userDatas = GetUserDatas(userName);
-            int maxAreaId = userDatas.Max(x => x.areaId);
+            int maxAreaId = 0;
+            if (userDatas != null)
+            {
+                maxAreaId = userDatas.Max(x => x.areaId);
+            }
+
             bool isAreaClosed = IsAreaIdClosed(userName, maxAreaId);
             return isAreaClosed ? maxAreaId + 1 : maxAreaId;
         }
 
+
         public bool IsAreaIdClosed(string userName, int areaId)
         {
-            var areaIdData = GetAreaDatas(userName, areaId);
-            return areaIdData[0].isClosed;
-        }
-        public bool IsCurrentAreaClosed(string userName)
-        {
-            var areaIdData = GetAreaDatas(userName, GetCurrentAreaId(userName));
-            return areaIdData[0].isClosed;
-        }
-
-        public int GetNextVertexId(string userName, int areaId)
-        {
-            var areaIdData = GetAreaDatas(userName, areaId);
-            return areaIdData.Max(x => x.vertexId) + 1;
+            var areaIdData = GetAreaMessages(userName, areaId);
+            bool isClosed = false;
+            if (areaIdData != null)
+            {
+                isClosed = areaIdData[0].isClosed;
+            }
+            return isClosed;
         }
 
-        public List<MessageJson> GetAreaDatas(string userName, int areaId)
+
+        public List<MessageJson> GetAreaMessages(string userName, int areaId)
         {
             var userDatas = GetUserDatas(userName);
             var areaIdData = userDatas.Where(x => x.areaId == areaId);
             return areaIdData.ToList();
         }
+
+        public void RefreshCurrentAreaDatas()
+        {
+            _userCurrentArea.Clear();
+        }
+
+        //閉曲線まで単純に追加していく
+        public void AddPositinToCurrentAreaDatas(string userName, Vector3 position)
+        {
+            var currentAreaId = GetCurrentAreaId(userName);
+            var nextVertexId = _userCurrentArea.Count;
+            _userCurrentArea.Add(new MessageJson(false, currentAreaId, nextVertexId, position));
+        }
+
+        public List<Vector3> GetCurrentAreaDatasAsVector()
+        {
+            List<Vector3> positions = new List<Vector3>();
+            foreach (var m in _userCurrentArea)
+            {
+                positions.Add(m.position);
+            }
+            return positions;
+        }
+
+        //閉曲線のときに全てを更新
+        public void UpdateCurrentAreaDatas(string userName, List<Vector3> vertices)
+        {
+            RefreshCurrentAreaDatas();
+            var currentAreaId = GetCurrentAreaId(userName);
+            List<MessageJson> messageData = new List<MessageJson>();
+            for (int i = 0; i < vertices.Count; ++i)
+            {
+                messageData.Add(new MessageJson(true, currentAreaId, i, vertices[i]));
+            }
+            _userCurrentArea = messageData;
+        }
+
+        public List<Vector3> GetAreaVerticies(string userName, int areaId)
+        {
+            var userDatas = GetUserDatas(userName);
+            var areaIdData = userDatas.Where(x => x.areaId == areaId);
+            List<Vector3> verticies = new List<Vector3>();
+            foreach (MessageJson m in areaIdData)
+            {
+                verticies.Add(m.position);
+            }
+            return verticies;
+        }
+
 
         public List<MessageJson> GetUserDatas(string userName)
         {
