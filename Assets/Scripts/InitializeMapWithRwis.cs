@@ -8,6 +8,7 @@
     using UnityEngine;
     using UnityEngine.UI;
     using Mapbox.Utils;
+    using System.Drawing;
 
     public class InitializeMapWithRwis : MonoBehaviour
     {
@@ -32,6 +33,7 @@
         [SerializeField]
         private List<Vector3> list;
 
+        [SerializeField] private float lineWidth = 2.0f;
 
         private LineRenderer lineRend;
         private int positionCount;
@@ -77,13 +79,14 @@
 
             lineRend = gameObject.AddComponent<LineRenderer>();
             lineRend.useWorldSpace = false;
-            positionCount = 0;
+            lineRend.SetWidth(lineWidth, lineWidth);
 
-            // lRend.SetVertexCount(2);
-            //lRend.SetWidth(0.2f, 0.2f);
+            positionCount = 0;
 
             StartCoroutine(Map_Location());
             StartCoroutine(Save_Location());
+
+          
         }
 
         protected IEnumerator Save_Location()
@@ -126,9 +129,7 @@
 
                     _map.Initialize(LL, _map.AbsoluteZoom);
 
-                    //_map.Initialize(new Vector2d(lonLatGetter.Latitude, lonLatGetter.Longitude), _map.AbsoluteZoom);
-                    // LL_3 =_map.GeoToWorldPosition(LL);
-
+           
                     break;
                 }
                 yield return new WaitForSeconds(1.0f);
