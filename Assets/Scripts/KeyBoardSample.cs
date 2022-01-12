@@ -8,23 +8,40 @@ public class KeyBoardSample: MonoBehaviour
     [SerializeField]
     private GameObject  mainCamera;
     GameObject          canvas;
-    List<Vector2>       linePositions;
+    List<Vector3>       linePositions;
     GameObject          lineObject;
-    List<List<Vector2>> polyLinePositions;
+    List<List<Vector3>> polyLinePositions;
     List<GameObject>    polyLineObjects;
 
-    static bool    IsClosedPoint(Vector2 x1, Vector2 x2, float r_epsilon = 10)
+    static bool IsClosedPoint(Vector3 x1, Vector3 x2, float r_epsilon = 10)
     {
-        return Vector2.Distance(x1,x2) < r_epsilon;
+        return Vector3.Distance(x1,x2) < r_epsilon;
+    }
+    static bool IsClosedPointOnLines(Vector3 newPos, List<Vector3> linePositions, ref int crossIdx)
+    {
+        var isClosed = false;
+        crossIdx     = int.MaxValue;
+        if (linePositions.Count > 2){
+            for (var i = 0 ; i < linePositions.Count-2; ++i )
+            {
+                if (IsClosedPoint(newPos, linePositions[i]))
+                {
+                    isClosed    = true;
+                    crossIdx    = i;
+                    break;
+                }
+            }
+        }
+        return isClosed;
     }
     /*割とよさげ*/
-    static bool    IntersectLine(Vector2 origin, Vector2 target, Vector2 x1, Vector2 x2, ref float distance, float c_epsilon = 1e-5F)
+    static bool IntersectLine(Vector3 origin, Vector3 target, Vector3 x1, Vector3 x2, ref float distance, float c_epsilon = 1e-5F)
     {
-        Vector2 x3  = origin;
-        Vector2 x4  = target;
-        Vector2 x12 = x2 - x1;
-        Vector2 x34 = x4 - x3;
-        Vector2 x13 = x3 - x1;
+        Vector3 x3  = origin;
+        Vector3 x4  = target;
+        Vector3 x12 = x2 - x1;
+        Vector3 x34 = x4 - x3;
+        Vector3 x13 = x3 - x1;
         float det = x12.x * x34.y - x12.y * x34.x;
         float ps  = x34.y * x13.x - x34.x * x13.y;
         float pt  = x12.y * x13.x - x12.x * x13.y;
@@ -37,8 +54,30 @@ public class KeyBoardSample: MonoBehaviour
         }
         return false;
     }
+    static bool IntersectLines(Vector3 origin, Vector3 target, List<Vector3> linePositions, ref int crossIdx, ref float minDistance){
+        var isClosed = false;
+        crossIdx     = int.MaxValue;
+        minDistance  = float.MaxValue;
+        if (linePositions.Count > 1)
+        {
+            for (var i = 0 ; i < linePositions.Count-1; ++i )
+            {
+                float distance = 0.0f;
+                if (IntersectLine(origin,target,linePositions[i],linePositions[i+1],ref distance))
+                {
+                    if (distance < minDistance)
+                    {
+                        isClosed    = true;
+                        crossIdx    = i+1;
+                        minDistance = distance;
+                    }
+                }
+            }
+        }
+        return isClosed;
+    }
     /*FIX->割とよさげ*/
-    static bool    ContainPoint(ref List<Vector2> points, Vector2 target, Vector3? normal = null, float r_epsilon = 1e-2F)
+    static bool    ContainPoint(List<Vector3> points, Vector3 target, Vector3? normal = null, float r_epsilon = 1e-2F)
     {
         if (normal==null)
         {
@@ -50,7 +89,7 @@ public class KeyBoardSample: MonoBehaviour
             var p_i_1  = (i == points.Count - 1) ? points[0] : points[i + 1];
             var dp_i   = p_i   - target;
             var dp_i_1 = p_i_1 - target;
-            var cosTht = Vector2.Dot(dp_i,dp_i_1) / (dp_i.magnitude  * dp_i_1.magnitude );
+            var cosTht = Vector3.Dot(dp_i,dp_i_1) / (dp_i.magnitude  * dp_i_1.magnitude );
             var angle  = Mathf.Acos(cosTht);
             var cross  = Vector3.Cross(dp_i,dp_i_1);
             if (Vector3.Dot(cross,(Vector3)normal) < 0.0F) {
@@ -68,7 +107,7 @@ public class KeyBoardSample: MonoBehaviour
             return true;
         }
     }
-    static float   CalcSignedArea(ref List<Vector2> points) 
+    static float   CalcSignedArea(List<Vector3> points) 
     {
         float signedArea = 0.0f;
         for (var i = 0; i < points.Count; ++i) {
@@ -78,9 +117,9 @@ public class KeyBoardSample: MonoBehaviour
         }
         return signedArea * 0.5F;
     }
-    static Vector2 CalcCentroid(ref List<Vector2> points)
+    static Vector3 CalcCentroid(List<Vector3> points)
     {
-        Vector2 centroid = new Vector2(0.0f,0.0f);
+        Vector3 centroid = new Vector3(0.0f,0.0f);
         float area = 0.0F;
         for(var i = 0;i<points.Count;++i)
         {
@@ -109,10 +148,10 @@ public class KeyBoardSample: MonoBehaviour
     }
     void Start()
     {
-        linePositions     = new List<Vector2>();
+        linePositions     = new List<Vector3>();
         lineObject        = new GameObject();
-        polyLinePositions = new List<List<Vector2>>();
-        polyLineObjects       = new List<GameObject>();
+        polyLinePositions = new List<List<Vector3>>();
+        polyLineObjects   = new List<GameObject>();
         if (lineObject!=null)
         {
             lineObject.name            = "Line";
@@ -136,13 +175,12 @@ public class KeyBoardSample: MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Debug.Log("Key Down! "+Input.mousePosition.ToString());
-            var newPos      = new Vector2(Input.mousePosition.x,Input.mousePosition.y);
+            var newPos = new Vector3(Input.mousePosition.x,Input.mousePosition.y,0.0F);
             do{
                 bool isContained = false;
                 for (var i = 0; i< polyLinePositions.Count; ++i)
                 {
-                    var polyLinePosition = polyLinePositions[i];
-                    if (ContainPoint(ref polyLinePosition,newPos))
+                    if (ContainPoint(polyLinePositions[i],newPos))
                     {
                         isContained = true;
                         break;
@@ -160,7 +198,7 @@ public class KeyBoardSample: MonoBehaviour
                         var i = 0;
                         foreach (var x1 in pol)
                         {
-                            Vector2 x2 = (i == pol.Count-1) ? pol[0]: pol[i+1];
+                            Vector3 x2    = (i == pol.Count-1) ? pol[0]: pol[i+1];
                             var distance  = float.MaxValue;
                             if (IntersectLine(linePositions[linePositions.Count-1], newPos, x1, x2, ref distance))
                             {
@@ -182,42 +220,23 @@ public class KeyBoardSample: MonoBehaviour
             var minDistance = float.MaxValue;
             //ClosedPoint
             do {
-                if (linePositions.Count > 2){
-                    for (var i = 0 ; i < linePositions.Count-2; ++i )
-                    {
-                        if (IsClosedPoint(newPos, linePositions[i]))
-                        {
-                            isClosed    = true;
-                            crossIdx    = i;
-                            minDistance = 0.0f;
-                            break;
-                        }
-                    }
-                }
-                if (isClosed)
+                if (IsClosedPointOnLines(newPos, linePositions, ref crossIdx))
                 {
+                    isClosed    = true;
+                    minDistance = 0.0F;
                     break;
                 }
-                if (linePositions.Count > 1)
+                if (linePositions.Count == 0){
+                    break;
+                }
+                if (IntersectLines(linePositions[linePositions.Count-1],newPos,linePositions, ref crossIdx, ref minDistance))
                 {
-                    for (var i = 0 ; i < linePositions.Count-1; ++i )
-                    {
-                        float distance = 0.0f;
-                        if (IntersectLine(linePositions[linePositions.Count-1],newPos,linePositions[i],linePositions[i+1],ref distance))
-                        {
-                            if (distance < minDistance)
-                            {
-                                isClosed    = true;
-                                crossIdx    = i+1;
-                                minDistance = distance;
-                            }
-                        }
-                    }
+                    isClosed    = true;
                 }
             }while(false);
             if (isClosed)
             {
-                List<Vector2> tPositions = new List<Vector2>();
+                List<Vector3> tPositions = new List<Vector3>();
                 if (minDistance != 0.0F)
                 {
                     var t0 = (1.0F-minDistance)*linePositions[linePositions.Count-1]+minDistance*newPos;
@@ -227,7 +246,7 @@ public class KeyBoardSample: MonoBehaviour
                 {
                     tPositions.Add(linePositions[i]);
                 }
-                float signedArea = CalcSignedArea(ref tPositions);
+                float signedArea = CalcSignedArea(tPositions);
                 if (signedArea < 0.0F)
                 {
                     tPositions.Reverse();
@@ -241,7 +260,7 @@ public class KeyBoardSample: MonoBehaviour
                         {
                             bool isContained  = true;
                             foreach (var pos in poly) {
-                                if (!ContainPoint(ref tPositions, pos)) {
+                                if (!ContainPoint(tPositions, pos)) {
                                     isContained = false;
                                     break;
                                 }
@@ -270,6 +289,7 @@ public class KeyBoardSample: MonoBehaviour
                         }
                     }
                 }
+                
                 Vector3[] newLinePositions = new Vector3[tPositions.Count+1];
                 for (var i = 0; i< tPositions.Count; ++i)
                 {
@@ -280,11 +300,11 @@ public class KeyBoardSample: MonoBehaviour
                     polyLineObjects.Add(new GameObject());
                     polyLinePositions.Add(tPositions);
                     polyLineObjects[polyLineObjects.Count-1].name = "Polygon"+(polyLineObjects.Count-1).ToString();
-                    var area                   = Mathf.Abs(CalcSignedArea(ref tPositions));
-                    var centroid               = CalcCentroid(ref tPositions);
-                    var text                   = polyLineObjects[polyLineObjects.Count-1].AddComponent<Text>();
-                    text.text                  = "Area: " + area.ToString();
-                    text.rectTransform.anchoredPosition = centroid;
+                    // var area                   = Mathf.Abs(CalcSignedArea(tPositions));
+                    // var centroid               = CalcCentroid(tPositions);
+                    // var text                   = polyLineObjects[polyLineObjects.Count-1].AddComponent<Text>();
+                    // text.text                  = "Area: " + area.ToString();
+                    // text.rectTransform.anchoredPosition = centroid;
                     // text.transform.Translate(mainCamera.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(centroid.x,centroid.y,10.0F)));
                     var lineRenderer           = polyLineObjects[polyLineObjects.Count-1].AddComponent<LineRenderer>();
                     lineRenderer.positionCount = tPositions.Count+1;
