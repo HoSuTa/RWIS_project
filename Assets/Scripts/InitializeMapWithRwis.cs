@@ -83,9 +83,6 @@
 
             positionCount = 0;
 
-            // lRend.SetVertexCount(2);
-            //lRend.SetWidth(0.2f, 0.2f);
-
             StartCoroutine(Map_Location());
             StartCoroutine(Save_Location());
 

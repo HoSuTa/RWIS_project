@@ -1,13 +1,43 @@
 ﻿using System;
-
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace MeshEffect2D
 {
-    // TODO: O(N^3) => O(N^2) のアルゴリズムに修正する
+   
     public class Triangulate : MonoBehaviour
     {
+
+
+        [SerializeField]
+        private List<Vector3> list;
+        [SerializeField]
+        private List<int> li;
+
+        Vector3 a, b, c;
+
+        void Start()
+        {
+            a = new Vector3(0, 0, 0);
+            b = new Vector3(100, 0, 0);
+            c = new Vector3(100, 100, 0);
+            list.Add(a);
+            list.Add(b);
+            list.Add(c);
+            li.Add(1);
+            li.Add(2);
+            li.Add(3);
+
+            EarCut(list, li, 0, 0);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            
+        }
+
         public static void EarCut(
             IList<Vector3> vertices,
             IList<int> resultIndices,
