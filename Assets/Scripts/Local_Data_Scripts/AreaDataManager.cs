@@ -45,7 +45,7 @@ namespace GssDbManageWrapper
             return areaIdData.ToList();
         }
 
-        public void ResetCurrentAreaDatas()
+        public void RefreshCurrentAreaDatas()
         {
             _userCurrentArea.Clear();
         }
@@ -71,7 +71,7 @@ namespace GssDbManageWrapper
         //閉曲線のときに全てを更新
         public void UpdateCurrentAreaDatas(string userName, List<Vector3> vertices)
         {
-            ResetCurrentAreaDatas();
+            RefreshCurrentAreaDatas();
             var currentAreaId = GetCurrentAreaId(userName);
             List<MessageJson> messageData = new List<MessageJson>();
             for (int i = 0; i < vertices.Count; ++i)
