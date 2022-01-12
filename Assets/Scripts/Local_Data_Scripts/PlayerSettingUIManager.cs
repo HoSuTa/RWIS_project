@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using GssDbManageWrapper;
 
 [RequireComponent(typeof(GssDbHub))]
+[RequireComponent(typeof(LonLatGetter))]
 public class PlayerSettingUIManager : MonoBehaviour
 {
     [SerializeField]
@@ -26,16 +27,18 @@ public class PlayerSettingUIManager : MonoBehaviour
     private Color _minusColor;
 
     private GssDbHub _gssDbHub;
+    private LonLatGetter _lonLatGetter;
     private bool _playerNameValidanceCheck = false;
     private bool _runValidation = false;
 
     private void Awake()
     {
         if (_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
+        if (_lonLatGetter == null) _lonLatGetter = GetComponent<LonLatGetter>();
 
         _playerNameField.text = "";
         _playerValidationBG.SetActive(false);
-        //_nextSceneButton.SetActive(false);
+        _nextSceneButton.SetActive(false);
     }
 
     private void Update()
@@ -54,6 +57,10 @@ public class PlayerSettingUIManager : MonoBehaviour
             StartCoroutine(PlayerNameValidationUIEffect());
             _playerNameValidanceCheck = false;
         }*/
+        if (_lonLatGetter.CanGetLonLat())
+        {
+            _nextSceneButton.SetActive(true);
+        }
     }
 
 

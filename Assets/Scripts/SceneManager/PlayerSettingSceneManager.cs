@@ -4,16 +4,18 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using GssDbManageWrapper;
 
-public class GameSceneManager : MonoBehaviour
+[RequireComponent(typeof(PlayerSettingUIManager))]
+[RequireComponent(typeof(LonLatGetter))]
+public class PlayerSettingSceneManager : MonoBehaviour
 {
-    [SerializeField]
     PlayerSettingUIManager _playerSettingUIManager;
+    LonLatGetter _lonLatGetter;
 
     private void Awake()
     {
         if (_playerSettingUIManager == null) _playerSettingUIManager = GetComponent<PlayerSettingUIManager>();
+        if (_lonLatGetter == null) _lonLatGetter = GetComponent<LonLatGetter>();
     }
-
 
     public void LoadGameScene()
     {
@@ -21,23 +23,15 @@ public class GameSceneManager : MonoBehaviour
         SceneManager.LoadScene("TestingGame");
     }
 
-    public void LoadPlayerSettingScene()
-    {
-        SceneManager.LoadScene("PlayerSetting");
-    }
-
-    public void LoadMainMenuScene()
-    {
-        SceneManager.LoadScene("MainMenuScene");
-    }
-
     private void GameSceneLoaded(Scene next, LoadSceneMode mode)
     {
         // シーン切り替え後のスクリプトを取得
         var userDataManager = GameObject.FindWithTag("Manager").GetComponent<UserDataManager>();
+        var mapboxManager = GameObject.FindWithTag("Manager").GetComponent<MapboxMapManager>();
 
         // データを渡す処理
         userDataManager.LocalPlayerName = _playerSettingUIManager._playerNameField.text;
+        mapboxManager._lonLat = new Vector2(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
 
         // イベントから削除
         SceneManager.sceneLoaded -= GameSceneLoaded;

@@ -9,10 +9,13 @@ namespace GssDbManageWrapper
     {
         public Dictionary<string, List<MessageJson>> _allDatas = new Dictionary<string, List<MessageJson>>();
         private int _currentAreaId = 0;
-        public int CurrentAreaId
+        private bool _isUpdating = false;
+        public int GetCurrentAreaId(string userName)
         {
-            get => _currentAreaId;
-            set => _currentAreaId = value;
+            var userDatas = GetUserDatas(userName);
+            int maxAreaId = userDatas.Max(x => x.areaId);
+            bool isAreaClosed = IsAreaIdClosed(userName, maxAreaId);
+            return isAreaClosed ? maxAreaId + 1 : maxAreaId;
         }
 
         public bool IsAreaIdClosed(string userName, int areaId)
@@ -22,7 +25,7 @@ namespace GssDbManageWrapper
         }
         public bool IsCurrentAreaClosed(string userName)
         {
-            var areaIdData = GetAreaDatas(userName, _currentAreaId);
+            var areaIdData = GetAreaDatas(userName, GetCurrentAreaId(userName));
             return areaIdData[0].isClosed;
         }
 
@@ -95,19 +98,20 @@ namespace GssDbManageWrapper
         public void RefreshAllDatas(PayloadData[] datas)
         {
             RefreshDatas(ref _allDatas, datas);
-
         }
 
         public void UpdateAllDatasToGss(GssDbHub gssDbHub)
         {
+            _isUpdating = true;
             gssDbHub.GetAllDatas(GetAllDatasFeedBack);
         }
         private void GetAllDatasFeedBack(PayloadData[] datas)
         {
             RefreshAllDatas(datas);
+            _isUpdating = false;
         }
         private Dictionary<string, List<MessageJson>> GetNearPositionDatas(
-            Vector3 targetPos,Func<Vector3, Vector3, bool> nearConditionFunc = null)
+            Vector3 targetPos, Func<Vector3, Vector3, bool> nearConditionFunc = null)
         {
             if (nearConditionFunc == null)
             {
@@ -137,5 +141,11 @@ namespace GssDbManageWrapper
         {
             return (a - b).magnitude < .8f;
         }
+
+        public bool IsUpdating
+        {
+            get { return _isUpdating; }
+        }
+
     }
 }
