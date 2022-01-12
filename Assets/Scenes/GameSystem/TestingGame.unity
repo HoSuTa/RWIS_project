@@ -1247,12 +1247,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2025085179}
   - component: {fileID: 2025085184}
-  - component: {fileID: 2025085183}
   - component: {fileID: 2025085182}
-  - component: {fileID: 2025085181}
-  - component: {fileID: 2025085180}
-  - component: {fileID: 2025085178}
   - component: {fileID: 2025085185}
+  - component: {fileID: 2025085183}
+  - component: {fileID: 2025085180}
+  - component: {fileID: 2025085181}
+  - component: {fileID: 2025085178}
   m_Layer: 0
   m_Name: MANAGER
   m_TagString: Manager
@@ -1313,6 +1313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2cbcb75edfd32a459d42c9324856835, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _userCurrentArea: []
 --- !u!114 &2025085182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1457,5 +1458,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fc2e97d7e9559144bec6c660cb4fdda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lonLat: {x: 0, y: 0}
+  _lonLatFromPlayerSetting: {x: 0, y: 0}
   _zoomSize: 16.5
