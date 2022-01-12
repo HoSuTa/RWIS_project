@@ -624,6 +624,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2025085179}
   - component: {fileID: 2025085178}
+  - component: {fileID: 2025085180}
   m_Layer: 0
   m_Name: GSS_DB_HUB
   m_TagString: Untagged
@@ -644,12 +645,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiText: {fileID: 1251452134}
-  _userName: tester
+  _userName: tester2
   _areaId: 0
   _vertexId: 0
   _position: {x: 0, y: 0, z: 0}
-  _requestMethod: 3
+  _messageJsons: []
+  _requestMethod: 6
   _sendRequest: 0
+  _gssDbHub: {fileID: 0}
 --- !u!4 &2025085179
 Transform:
   m_ObjectHideFlags: 0
@@ -664,3 +667,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2025085180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025085177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31e31a4aef2f8c3439de72f6ddc14d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

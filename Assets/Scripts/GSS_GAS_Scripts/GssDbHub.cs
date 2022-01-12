@@ -14,6 +14,7 @@ namespace GssDbManageWrapper
         SaveData,
         UpdateDatas,
         RemoveData,
+        RemoveArea,
         CheckIfGssUrlValid,
         CheckIfGasUrlValid,
         CheckIfPlayerNameValid,
@@ -93,6 +94,16 @@ namespace GssDbManageWrapper
                 GssPoster.RemoveData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
         }
 
+        public void RemoveArea(string userName, int areaId, Action<string> localDataFeedback = null)
+        {
+            if (localDataFeedback == null) localDataFeedback = DefaultPostFeedBack;
+
+            string message = $"{{" +
+                        $"\"areaId\" : {areaId} " +
+                        $"}}";
+            StartCoroutine(
+                GssPoster.RemoveArea(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, message, response => localDataFeedback((string)response)));
+        }
 
 
         public void CheckIfPlayerNameValid(
@@ -111,7 +122,7 @@ namespace GssDbManageWrapper
         private void PlayerNameValidFeedBack(
             string response,
             string playerName,
-            Action<bool,string> updatePlayerNameRelatedUI = null)
+            Action<bool, string> updatePlayerNameRelatedUI = null)
         {
             bool isValid = !response.Contains("Invalid");
             updatePlayerNameRelatedUI?.Invoke(isValid, playerName);
