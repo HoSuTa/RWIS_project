@@ -11,7 +11,7 @@ public class MapboxMapManager : MonoBehaviour
     AbstractMap _abstractMap;
     LonLatGetter _lonLatGetter;
 
-    [SerializeField] public Vector2 _lonLat;
+    [SerializeField] public Vector2 _lonLatFromPlayerSetting;
     [SerializeField] public float _zoomSize = 16.5f;
 
     private void Awake()
@@ -24,7 +24,7 @@ public class MapboxMapManager : MonoBehaviour
 
     private void Start()
     {
-        RegenerateMapboxTexture(_lonLat);
+        RegenerateMapboxTexture(_lonLatFromPlayerSetting);
     }
 
     private void RegenerateMapboxTexture(Vector2 lonLat)

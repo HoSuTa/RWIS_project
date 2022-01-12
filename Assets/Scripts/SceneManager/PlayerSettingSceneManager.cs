@@ -31,7 +31,7 @@ public class PlayerSettingSceneManager : MonoBehaviour
 
         // データを渡す処理
         userDataManager.LocalPlayerName = _playerSettingUIManager._playerNameField.text;
-        mapboxManager._lonLat = new Vector2(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
+        mapboxManager._lonLatFromPlayerSetting = new Vector2(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
 
         // イベントから削除
         SceneManager.sceneLoaded -= GameSceneLoaded;

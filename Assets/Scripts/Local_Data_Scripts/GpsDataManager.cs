@@ -64,11 +64,9 @@ public class GpsDataManager : MonoBehaviour
                         yield return new WaitForSeconds(1.0f);
                     }
 
+                    List<Vector3> currentAreaVerticies = _areaDataManager.GetCurrentAreaDatasAsVector();
 
-                    var isClosed = _areaDataManager.IsCurrentAreaClosed(_userDataManager.LocalPlayerName);
-                    var updatingAreaId = _areaDataManager.GetCurrentAreaId(_userDataManager.LocalPlayerName);
-                    var savingVertexId = _areaDataManager.GetNextVertexId(
-                        _userDataManager.LocalPlayerName, updatingAreaId);
+                    // _areaDataManager.AddPositinToCurrentAreaDatas(_userDataManager.LocalPlayerName, gpsUnityPos);
 
                     //
                     // ..Closed Line Check HERE...
