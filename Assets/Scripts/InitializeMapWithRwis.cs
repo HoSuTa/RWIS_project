@@ -38,7 +38,7 @@
         private LineRenderer lineRend;
         private int positionCount;
 
-
+        Slider ZoomSlider;
 
 
         private void Awake()
@@ -59,7 +59,7 @@
             if (indices != null && indices.Count >= 3)
             {
                 GetComponent<LineAreaCalculator>().indices = indices;
-                text.text = $"Score: {GetComponent<LineAreaCalculator>().CalulateArea()}";
+               // text.text = $"Score: {GetComponent<LineAreaCalculator>().CalulateArea()}";
             }
 
 
@@ -86,7 +86,17 @@
             StartCoroutine(Map_Location());
             StartCoroutine(Save_Location());
 
-          
+            var ZoomSlider = GetComponent<Slider>();
+
+            float maxZoom = 19f;
+            float nowZoom = 18f;
+
+
+            //スライダーの最大値の設定
+            ZoomSlider.maxValue = maxZoom;
+
+            //スライダーの現在値の設定
+            ZoomSlider.value = nowZoom;
         }
 
         protected IEnumerator Save_Location()
