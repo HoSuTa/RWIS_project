@@ -38,7 +38,7 @@
         private LineRenderer lineRend;
         private int positionCount;
 
-        Slider ZoomSlider;
+        private Slider ZoomSlider;
 
 
         private void Awake()
@@ -62,7 +62,8 @@
                // text.text = $"Score: {GetComponent<LineAreaCalculator>().CalulateArea()}";
             }
 
-
+            //_map.AbsoluteZoom  = ZoomSlider.value;
+            Debug.Log(_map.Zoom);
         }
 
 
@@ -86,7 +87,7 @@
             StartCoroutine(Map_Location());
             StartCoroutine(Save_Location());
 
-            var ZoomSlider = GetComponent<Slider>();
+            ZoomSlider = GameObject.Find("Slider").GetComponent<Slider>();
 
             float maxZoom = 19f;
             float nowZoom = 18f;
@@ -145,6 +146,9 @@
                 yield return new WaitForSeconds(1.0f);
             }
         }
+       
 
     }
+
+
 }
