@@ -168,7 +168,7 @@ namespace GssDbManageWrapper
         }
         private void TempUIVisualizeAllNames()
         {
-            var datas = _userDataManager.UserNames.ToArray();
+            var datas = _userDataManager._userNames.ToArray();
             _uiText.text = "";
             for (int i = 0; i < datas.Length; i++)
             {
