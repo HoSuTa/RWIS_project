@@ -261,6 +261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 314970436}
   - component: {fileID: 314970434}
+  - component: {fileID: 314970440}
   - component: {fileID: 314970433}
   - component: {fileID: 314970437}
   - component: {fileID: 314970435}
@@ -463,6 +464,18 @@ MonoBehaviour:
   _tileProvider: {fileID: 0}
   _previewOptions:
     isPreviewEnabled: 0
+--- !u!114 &314970440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 314970432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6c127e4985ccc47b26e28a9bf19a94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &807695921
 GameObject:
   m_ObjectHideFlags: 0

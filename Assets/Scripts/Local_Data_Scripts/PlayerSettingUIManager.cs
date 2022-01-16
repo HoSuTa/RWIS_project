@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using GssDbManageWrapper;
 
 [RequireComponent(typeof(GssDbHub))]
+[RequireComponent(typeof(UserDataManager))]
 [RequireComponent(typeof(LonLatGetter))]
 public class PlayerSettingUIManager : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class PlayerSettingUIManager : MonoBehaviour
     private Color _minusColor;
 
     private GssDbHub _gssDbHub;
+    private UserDataManager _userDataManager;
     private LonLatGetter _lonLatGetter;
     private bool _playerNameValidanceCheck = false;
     private bool _runValidation = false;
@@ -34,11 +36,14 @@ public class PlayerSettingUIManager : MonoBehaviour
     private void Awake()
     {
         if (_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
+        if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
         if (_lonLatGetter == null) _lonLatGetter = GetComponent<LonLatGetter>();
 
         _playerNameField.text = "";
         _playerValidationBG.SetActive(false);
         _nextSceneButton.SetActive(false);
+
+        UpdateUserDataList();
     }
 
     private void Update()
@@ -57,12 +62,17 @@ public class PlayerSettingUIManager : MonoBehaviour
             StartCoroutine(PlayerNameValidationUIEffect());
             _playerNameValidanceCheck = false;
         }*/
-        if (_lonLatGetter.CanGetLonLat())
+        if (_lonLatGetter.CanGetLonLat() && !_userDataManager.IsUpdating)
         {
             _nextSceneButton.SetActive(true);
         }
     }
 
+    private void UpdateUserDataList()
+    {
+        _userDataManager.UpdateAllUserNamesToGss(_gssDbHub);
+
+    }
 
     IEnumerator PlayerNameValidationUIEffect()
     {

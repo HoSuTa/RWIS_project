@@ -15,6 +15,13 @@ namespace GssDbManageWrapper
 
             yield return PostToGss(gasUrl, MethodNames.SaveData, payloadRaw, feedbackHandler);
         }
+        public static IEnumerator SetUserData(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
+        {
+            var jsonBody = $"{{ \"method\" : \"{MethodNames.SetUserData}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
+            byte[] payloadRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+            yield return PostToGss(gasUrl, MethodNames.SetUserData, payloadRaw, feedbackHandler);
+        }
         public static IEnumerator UpdateDatas(string gasUrl, string gssUrl, string userName, string message, Action<object> feedbackHandler = null)
         {
             var jsonBody = $"{{ \"method\" : \"{MethodNames.UpdateDatas}\" , \"gssUrl\" : \"{gssUrl}\", \"userName\" : \"{userName}\", \"message\" : {message} }}";
@@ -43,6 +50,8 @@ namespace GssDbManageWrapper
         {
             UnityWebRequest request =
                 (methodName == MethodNames.SaveData) ?
+                    UnityWebRequest.Post($"{gasUrl}", "POST")
+                : (methodName == MethodNames.SetUserData) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")
                 : (methodName == MethodNames.UpdateDatas) ?
                     UnityWebRequest.Post($"{gasUrl}", "POST")

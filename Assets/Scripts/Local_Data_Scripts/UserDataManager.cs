@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace GssDbManageWrapper
 {
+    [System.Serializable]
     public class UserData
     {
         public string _userName;
@@ -18,13 +19,14 @@ namespace GssDbManageWrapper
 
     public class UserDataManager : MonoBehaviour
     {
-        [SerializeField]
-        private string _localPlayerName = "";
         public string LocalPlayerName
         {
-            get => _localPlayerName;
-            set => _localPlayerName = value;
+            get => _localPlayer._userName;
+            set => _localPlayer._userName = value;
         }
+
+        [SerializeField]
+        public UserData _localPlayer = null;
 
         private bool _isUpdating = false;
 
@@ -34,10 +36,10 @@ namespace GssDbManageWrapper
 
         private void Start()
         {
-            if (_localPlayerName == "")
+            if (_localPlayer == null)
             {
                 Debug.Log($"<color=red>[UserDataManager]</color> " +
-                    $"{nameof(_localPlayerName)} is \"{_localPlayerName}\".");
+                    $"{nameof(_localPlayer)} is null.");
             }
         }
 
@@ -47,17 +49,29 @@ namespace GssDbManageWrapper
             Color randomColor = Color.white;
             while (colorExists)
             {
-                randomColor = Random.ColorHSV(0f, 1f, 0f, 1f, 0f, 1f);
+                colorExists = false;
+                randomColor = Random.ColorHSV(0f, 1f, 0.3f, 1f, 0.3f, 1f);
+                randomColor.a = 1.0f;
+
                 foreach (var u in _userDatas)
                 {
-                    if (u._color == randomColor)
+                    if (IsColorClose(u._color, randomColor))
                     {
-                        colorExists = false;
+                        colorExists = true;
+                        continue;
                     }
                 }
             }
 
             return randomColor;
+        }
+
+        private bool IsColorClose(Color aa, Color bb)
+        {
+            float r = Mathf.Abs(aa.r - bb.r);
+            float g = Mathf.Abs(aa.g - bb.g);
+            float b = Mathf.Abs(aa.b - bb.b);
+            return (r + g + b) < .15f;
         }
 
         public void AddUserData(UserData userData)
@@ -87,10 +101,13 @@ namespace GssDbManageWrapper
         {
             foreach (var d in datas)
             {
-                if (!_userNames.Contains(d.userName))
+                var userName = d.userName;
+                var color = JsonUtility.FromJson<Color>(d.message);
+
+                if (!_userNames.Contains(userName))
                 {
-                    AddUserName(d.userName);
-                    AddUserData(new UserData(d.userName, RandomColor()));
+                    AddUserName(userName);
+                    AddUserData(new UserData(d.userName, color));
                 }
             }
         }
@@ -98,7 +115,7 @@ namespace GssDbManageWrapper
         public void UpdateAllUserNamesToGss(GssDbHub gssDbHub)
         {
             _isUpdating = true;
-            gssDbHub.GetUserNames(GetUserNamesFeedBack);
+            gssDbHub.GetUserDatas(GetUserNamesFeedBack);
         }
         private void GetUserNamesFeedBack(PayloadData[] datas)
         {

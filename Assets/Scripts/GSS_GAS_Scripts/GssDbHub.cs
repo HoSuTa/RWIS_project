@@ -9,6 +9,7 @@ namespace GssDbManageWrapper
     public enum MethodNames
     {
         GetUserNames,
+        SetUserData,
         GetUserDatas,
         GetAllDatas,
         SaveData,
@@ -48,11 +49,19 @@ namespace GssDbManageWrapper
                 GssGetter.GetUserNames(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), response => localDataFeedback((PayloadData[])response)));
         }
 
-        public void GetUserDatas(string userNames, Action<PayloadData[]> localDataFeedback = null)
+        public void GetUserDatas(Action<PayloadData[]> localDataFeedback = null)
         {
             if (localDataFeedback == null) localDataFeedback = DefaultGetFeedBack;
             StartCoroutine(
-                GssGetter.GetUserDatas(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userNames, response => localDataFeedback((PayloadData[])response)));
+                GssGetter.GetUserDatas(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), response => localDataFeedback((PayloadData[])response)));
+        }
+        public void SetUserData(UserData userData, Action<string> localDataFeedback = null)
+        {
+            if (localDataFeedback == null) localDataFeedback = DefaultPostFeedBack;
+            var userName = userData._userName;
+            var colorJsonString = JsonUtility.ToJson(userData._color);
+            StartCoroutine(
+                GssPoster.SetUserData(GasUrlManager.GetUrl(), GssUrlManager.GetUrl(), userName, colorJsonString, response => localDataFeedback((string)response)));
         }
 
 

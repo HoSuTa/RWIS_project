@@ -31,17 +31,15 @@ namespace GssDbManageWrapper
         private bool _sendRequest = false;
 
 
-        [SerializeField]
         private GssDbHub _gssDbHub;
         AreaDataManager _areaDataManager;
         UserDataManager _userDataManager;
 
         private void Start()
         {
-            if (_gssDbHub == null)
-            {
-                _gssDbHub = GetComponent<GssDbHub>();
-            }
+            if (_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
+            if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
+            if (_areaDataManager == null) _areaDataManager = GetComponent<AreaDataManager>();
         }
 
         private void Update()
@@ -65,11 +63,15 @@ namespace GssDbManageWrapper
                 }
                 else if (_requestMethod == MethodNames.GetUserDatas)
                 {
-                    _gssDbHub.GetUserDatas(_userName, GetUserDatasFeedback);
+                    _gssDbHub.GetUserDatas(GetUserDatasFeedback);
                 }
                 else if (_requestMethod == MethodNames.SaveData)
                 {
-                    _gssDbHub.SaveData(_userName, new MessageJson(false, _areaId, _vertexId, _position));
+                    //_gssDbHub.SaveData(_userName, new MessageJson(false, _areaId, _vertexId, _position));
+                }
+                else if (_requestMethod == MethodNames.SetUserData)
+                {
+                    _gssDbHub.SetUserData(new UserData(_userName, _userDataManager.RandomColor()));
                 }
                 else if (_requestMethod == MethodNames.UpdateDatas)
                 {
@@ -113,9 +115,9 @@ namespace GssDbManageWrapper
             _uiText.text = "userName: message\n";
             for (int i = 0; i < datas.Length; i++)
             {
-                var messageJson = JsonUtility.FromJson<MessageJson>(datas[i].message);
+                var color = JsonUtility.FromJson<Color>(datas[i].message);
                 _uiText.text = string.Concat(_uiText.text, $"[{i}] {datas[i].userName}:\n");
-                _uiText.text = string.Concat(_uiText.text, $"{messageJson.ToString()}.\n");
+                _uiText.text = string.Concat(_uiText.text, $"{color}.\n");
             }
         }
 

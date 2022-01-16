@@ -4,23 +4,29 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using GssDbManageWrapper;
 
+[RequireComponent(typeof(GssDbHub))]
+[RequireComponent(typeof(UserDataManager))]
 [RequireComponent(typeof(PlayerSettingUIManager))]
 [RequireComponent(typeof(LonLatGetter))]
 public class PlayerSettingSceneManager : MonoBehaviour
 {
     PlayerSettingUIManager _playerSettingUIManager;
     LonLatGetter _lonLatGetter;
+    GssDbHub _gssDbHub;
+    UserDataManager _userDataManager;
 
     private void Awake()
     {
         if (_playerSettingUIManager == null) _playerSettingUIManager = GetComponent<PlayerSettingUIManager>();
         if (_lonLatGetter == null) _lonLatGetter = GetComponent<LonLatGetter>();
+        if (_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
+        if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
     }
 
     public void LoadGameScene()
     {
         SceneManager.sceneLoaded += GameSceneLoaded;
-        SceneManager.LoadScene("TestingGame");
+        SceneManager.LoadScene("TestingAlgo");
     }
 
     private void GameSceneLoaded(Scene next, LoadSceneMode mode)
@@ -29,8 +35,23 @@ public class PlayerSettingSceneManager : MonoBehaviour
         var userDataManager = GameObject.FindWithTag("Manager").GetComponent<UserDataManager>();
         var mapboxManager = GameObject.FindWithTag("Manager").GetComponent<MapboxMapManager>();
 
-        // データを渡す処理
-        userDataManager.LocalPlayerName = _playerSettingUIManager._playerNameField.text;
+        bool localPlayerExists = false;
+        foreach (var d in _userDataManager._userDatas)
+        {
+            if (d._userName == _playerSettingUIManager._playerNameField.text)
+            {
+                localPlayerExists = true;
+                _userDataManager._localPlayer = d;
+            }
+        }
+
+        if (!localPlayerExists)
+        {
+            _userDataManager._localPlayer = new UserData(_playerSettingUIManager._playerNameField.text, _userDataManager.RandomColor());
+            _gssDbHub.SetUserData(_userDataManager._localPlayer);
+        }
+
+        userDataManager._localPlayer = _userDataManager._localPlayer;
         mapboxManager._lonLatFromPlayerSetting = new Vector2(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
 
         // イベントから削除

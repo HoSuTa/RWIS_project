@@ -625,6 +625,8 @@ GameObject:
   - component: {fileID: 2025085179}
   - component: {fileID: 2025085178}
   - component: {fileID: 2025085180}
+  - component: {fileID: 2025085182}
+  - component: {fileID: 2025085181}
   m_Layer: 0
   m_Name: GSS_DB_HUB
   m_TagString: Untagged
@@ -650,9 +652,8 @@ MonoBehaviour:
   _vertexId: 0
   _position: {x: 0, y: 0, z: 0}
   _messageJsons: []
-  _requestMethod: 6
+  _requestMethod: 1
   _sendRequest: 0
-  _gssDbHub: {fileID: 0}
 --- !u!4 &2025085179
 Transform:
   m_ObjectHideFlags: 0
@@ -679,3 +680,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31e31a4aef2f8c3439de72f6ddc14d12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2025085181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025085177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2cbcb75edfd32a459d42c9324856835, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _userCurrentArea: []
+--- !u!114 &2025085182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025085177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6c127e4985ccc47b26e28a9bf19a94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _localPlayer:
+    _userName: 
+    _color: {r: 0, g: 0, b: 0, a: 0}

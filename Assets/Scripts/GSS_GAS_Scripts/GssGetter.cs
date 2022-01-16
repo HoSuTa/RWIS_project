@@ -11,9 +11,9 @@ namespace GssDbManageWrapper
         {
             yield return GetGssData(gasUrl, gssUrl, MethodNames.GetAllDatas, "", feedbackHandler);
         }
-        public static IEnumerator GetUserDatas(string gasUrl, string gssUrl, string userName, Action<object> feedbackHandler = null)
+        public static IEnumerator GetUserDatas(string gasUrl, string gssUrl, Action<object> feedbackHandler = null)
         {
-            yield return GetGssData(gasUrl, gssUrl, MethodNames.GetUserDatas, userName, feedbackHandler);
+            yield return GetGssData(gasUrl, gssUrl, MethodNames.GetUserDatas, "", feedbackHandler);
         }
 
         public static IEnumerator GetUserNames(string gasUrl, string gssUrl, Action<object> feedbackHandler = null)
@@ -44,9 +44,9 @@ namespace GssDbManageWrapper
                 (methodName == MethodNames.GetAllDatas) ?
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.GetUserDatas) ?
-                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(userName)}={userName}&{nameof(gssUrl)}={gssUrl}")
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.GetUserNames) ?
-                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}") 
+                    UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.CheckIfGssUrlValid) ?
                     UnityWebRequest.Get($"{gasUrl}?method={methodName}&{nameof(gssUrl)}={gssUrl}")
                 : (methodName == MethodNames.CheckIfGasUrlValid) ?
@@ -99,14 +99,14 @@ namespace GssDbManageWrapper
                     {
                         feedbackHandler?.Invoke(response);
                     }
-                    else if(methodName == MethodNames.GetUserNames)
+                    else if (methodName == MethodNames.GetUserNames)
                     {
                         feedbackHandler?.Invoke(response);
                     }
                     else if (methodName == MethodNames.GetUserDatas)
                     {
                         feedbackHandler?.Invoke(response);
-                    } 
+                    }
                 }
             }
         }
