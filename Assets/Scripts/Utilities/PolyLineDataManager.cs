@@ -76,7 +76,7 @@ public class PolyLineDataManager : MonoBehaviour
 
                 if (!sameData)
                 {
-                    _polyLineDatas.Add(new PolyLineData(userData, areaId, polygonPositions, 100));
+                    _polyLineDatas.Add(new PolyLineData(userData, areaId, polygonPositions));
                 }
             }
         }
