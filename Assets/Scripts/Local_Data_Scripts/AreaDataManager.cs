@@ -160,7 +160,7 @@ namespace GssDbManageWrapper
         public void UpdateAllDatasToGss(GssDbHub gssDbHub, Action feedback = null)
         {
             _isUpdating = true;
-            gssDbHub.GetAllDatas((datas) => { GetAllDatasFeedBack(datas); feedback(); });
+            gssDbHub.GetAllDatas((datas) => { GetAllDatasFeedBack(datas); feedback?.Invoke(); });
         }
         private void GetAllDatasFeedBack(PayloadData[] datas)
         {

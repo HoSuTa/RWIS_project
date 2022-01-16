@@ -14,6 +14,7 @@ const CONSTS = {
   RemoveDataMethod: "RemoveData",
   RemoveAreaMethod: "RemoveArea",
   GetAllDatasMethod: "GetAllDatas",
+  SetUserDataMethod: "SetUserData",
   GetUserDatasMethod: "GetUserDatas",
   GetUserNamesMethod: "GetUserNames",
   CheckIfGssUrlValidMethod: "CheckIfGssUrlValid",
@@ -29,10 +30,19 @@ const CONSTS = {
   Position: "position",
 };
 
-function getSheet(gssUrl) {
+function getPositionsSheet(gssUrl) {
   try {
     const gssSheet = SpreadsheetApp.openByUrl(gssUrl);
-    return gssSheet.getActiveSheet();
+    return gssSheet.getSheetByName("Positions");
+  } catch (e) {
+    throw new Error(`GssUrl \"${gssUrl}\" is not valid.`);
+  }
+}
+
+function getUserDataSheet(gssUrl) {
+  try {
+    const gssSheet = SpreadsheetApp.openByUrl(gssUrl);
+    return gssSheet.getSheetByName("UserDatas");
   } catch (e) {
     throw new Error(`GssUrl \"${gssUrl}\" is not valid.`);
   }
@@ -66,7 +76,7 @@ function findUserRowsByUserId(sheetData, userId) {
 
 function getAllDatas(request) {
   const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getPositionsSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
   const sheetHeader = sheetData[0];
   sheetData.splice(0, 1);
@@ -75,7 +85,7 @@ function getAllDatas(request) {
   let datas = [];
   for (let i = 0; i < sheetData.length; i++) {
     data = new Object();
-    for (let j = 2; j < sheetHeader.length; j++) {
+    for (let j = CONSTS.UserNameColumn; j < sheetHeader.length; j++) {
       data[sheetHeader[j]] = sheetData[i][j];
     }
     datas[i] = data;
@@ -91,7 +101,7 @@ function getAllDatas(request) {
 
 function getUserNames(request) {
   const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getPositionsSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   userIdsData = {
@@ -106,28 +116,20 @@ function getUserNames(request) {
 
 function getUserDatas(request) {
   const gssUrl = request[CONSTS.GssUrl];
-  const userName = request[CONSTS.UserName];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getUserDataSheet(gssUrl);
+  const positionsSheetData = getPositionsSheet(gssUrl)
+    .getDataRange()
+    .getValues();
   const sheetData = gssSheet.getDataRange().getValues();
-  const sheetHeader = sheetData[0];
-
-  const userId = findUserId(sheetData, userName);
-  const user_rows = findUserRowsByUserId(sheetData, userId);
-
-  if (user_rows.length == 0) {
-    Logger.log(`Error: \"${userName}\" does not exist in the sheet.`);
-
-    return ContentService.createTextOutput(
-      `Error: \"${userName}\" does not exist in the sheet.`
-    );
-  }
+  const sheetHeader = positionsSheetData[0];
+  sheetData.splice(0, 1);
 
   let returning_datas = {};
   let datas = [];
-  for (let i = 0; i < user_rows.length; i++) {
+  for (let i = 0; i < sheetData.length; i++) {
     data = new Object();
-    for (let j = 2; j < sheetHeader.length; j++) {
-      data[sheetHeader[j]] = sheetData[user_rows[i]][j];
+    for (let j = CONSTS.UserNameColumn; j < sheetHeader.length; j++) {
+      data[sheetHeader[j]] = sheetData[i][j];
     }
     datas[i] = data;
   }
@@ -144,7 +146,7 @@ function isGssUrlValid(request) {
   const gssUrl = request[CONSTS.GssUrl];
 
   try {
-    getSheet(gssUrl);
+    getPositionsSheet(gssUrl);
     const log = `GssUrl is valid.`;
     return ContentService.createTextOutput(log);
   } catch (e) {
@@ -156,22 +158,24 @@ function isGasUrlValid() {
   return ContentService.createTextOutput(`GasUrl is valid.`);
 }
 
-function isPlayerNameValid(request)
-{
+function isPlayerNameValid(request) {
   const playerName = request[CONSTS.UserName];
 
   const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getPositionsSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   const userNames = findUserNames(sheetData);
 
-  const playerNameValid = userNames.find((e) => {return e[CONSTS.UserName] == playerName} ) == null;
-  const log = playerNameValid ? `PlayerName: ${playerName} is Valid.` : `PlayerName: ${playerName} is Invalid.`;
+  const playerNameValid =
+    userNames.find((e) => {
+      return e[CONSTS.UserName] == playerName;
+    }) == null;
+  const log = playerNameValid
+    ? `PlayerName: ${playerName} is Valid.`
+    : `PlayerName: ${playerName} is Invalid.`;
   Logger.log(log);
-  sendingBackPayload = ContentService.createTextOutput(
-    log
-  );
+  sendingBackPayload = ContentService.createTextOutput(log);
   return sendingBackPayload;
 }
 
@@ -208,7 +212,7 @@ function doGet(e) {
 function generateDebugObjectForGET() {
   //[variable], [] makes the variable to expand.
   const fakePayload = {
-    [CONSTS.Method]: [CONSTS.CheckIfPlayerNameValidMethod],
+    [CONSTS.Method]: [CONSTS.GetUserDatasMethod],
     [CONSTS.UserName]: "tester",
     [CONSTS.GssUrl]: GssUrl,
   };
@@ -217,7 +221,7 @@ function generateDebugObjectForGET() {
 
 function saveData(request) {
   const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getPositionsSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   const currentTime = Utilities.formatDate(
@@ -226,28 +230,25 @@ function saveData(request) {
     "yyyy/MM/dd HH:mm:ss"
   );
 
-  const userId = findUserId(sheetData, request[CONSTS.UserName]);
+  const userId = findUserId(
+    getUserDataSheet(gssUrl).getDataRange().getValues(),
+    request[CONSTS.UserName]
+  );
   const messageObj = request[CONSTS.Message];
   const areaId = messageObj[CONSTS.AreaId];
   const vertexId = messageObj[CONSTS.VertexId];
   const inputtingMessage = JSON.stringify(messageObj);
 
-
   if (userId != null) {
     const userRows = findUserRowsByUserId(sheetData, userId);
 
     for (let userRow of userRows) {
-      const gssMessageObj = JSON.parse(sheetData[userRow][CONSTS.MessageColumn]);
+      const gssMessageObj = JSON.parse(
+        sheetData[userRow][CONSTS.MessageColumn]
+      );
 
-      if (
-        gssMessageObj[CONSTS.AreaId] ==
-        areaId
-      ) {
-        if (
-          gssMessageObj[
-            CONSTS.VertexId
-          ] == vertexId
-        ) {
+      if (gssMessageObj[CONSTS.AreaId] == areaId) {
+        if (gssMessageObj[CONSTS.VertexId] == vertexId) {
           gssSheet
             .getRange(1 + Number(userRow), 1 + CONSTS.UpdateTimeColumn)
             .setValue(currentTime);
@@ -264,7 +265,9 @@ function saveData(request) {
 
   let addingData = [];
   addingData[CONSTS.UserIdColumn] =
-    userId == null ? findMaxUserId(sheetData) + 1 : userId;
+    userId == null
+      ? findMaxUserId(getUserDataSheet(gssUrl).getDataRange().getValues()) + 1
+      : userId;
   addingData[CONSTS.UpdateTimeColumn] = currentTime;
   addingData[CONSTS.UserNameColumn] = request[CONSTS.UserName];
   addingData[CONSTS.MessageColumn] = inputtingMessage;
@@ -279,12 +282,12 @@ function updateDatas(request) {
     [CONSTS.GssUrl]: GssUrl,
     [CONSTS.UserName]: "tester3",
     [CONSTS.Message]: [
-        {"areaId":1,"vertexId":0, "position":{"x":4,"y":2,"z":0} },
-        {"areaId":1,"vertexId":1, "position":{"x":4,"y":4,"z":0} },
-        {"areaId":1,"vertexId":2, "position":{"x":2,"y":4,"z":0} },
-        {"areaId":1,"vertexId":3, "position":{"x":2,"y":2,"z":0} },
-        {"areaId":1,"vertexId":4, "position":{"x":4,"y":2,"z":0} },
-      ],
+      { areaId: 1, vertexId: 0, position: { x: 4, y: 2, z: 0 } },
+      { areaId: 1, vertexId: 1, position: { x: 4, y: 4, z: 0 } },
+      { areaId: 1, vertexId: 2, position: { x: 2, y: 4, z: 0 } },
+      { areaId: 1, vertexId: 3, position: { x: 2, y: 2, z: 0 } },
+      { areaId: 1, vertexId: 4, position: { x: 4, y: 2, z: 0 } },
+    ],
   };
 
   const currentTime = Utilities.formatDate(
@@ -294,32 +297,36 @@ function updateDatas(request) {
   );
 
   const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getPositionsSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
-  const userId = findUserId(sheetData, request[CONSTS.UserName]);
+  const userId = findUserId(
+    getUserDataSheet(gssUrl).getDataRange().getValues(),
+    request[CONSTS.UserName]
+  );
   const messageDatas = request[CONSTS.Message];
 
-
-  if(userId != null)
-  {
+  if (userId != null) {
     const userRows = findUserRowsByUserId(sheetData, userId);
     const areaId = messageDatas[0][CONSTS.AreaId];
 
     userRows.reverse();
     for (let userRow of userRows) {
-      const gssMessageObj = JSON.parse(sheetData[userRow][CONSTS.MessageColumn]);
+      const gssMessageObj = JSON.parse(
+        sheetData[userRow][CONSTS.MessageColumn]
+      );
       if (gssMessageObj[CONSTS.AreaId] == areaId) {
         gssSheet.deleteRows(1 + Number(userRow));
       }
     }
   }
 
-  for(const data of messageDatas)
-  {
+  for (const data of messageDatas) {
     let addingData = [];
     addingData[CONSTS.UserIdColumn] =
-      userId == null ? findMaxUserId(sheetData) + 1 : userId;
+      userId == null
+        ? findMaxUserId(getUserDataSheet(gssUrl).getDataRange().getValues()) + 1
+        : userId;
     addingData[CONSTS.UpdateTimeColumn] = currentTime;
     addingData[CONSTS.UserNameColumn] = request[CONSTS.UserName];
     addingData[CONSTS.MessageColumn] = JSON.stringify(data);
@@ -331,11 +338,14 @@ function updateDatas(request) {
 
 function removeData(request) {
   const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getPositionsSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   const userName = request[CONSTS.UserName];
-  const userId = findUserId(sheetData, userName);
+  const userId = findUserId(
+    getUserDataSheet(gssUrl).getDataRange().getValues(),
+    userName
+  );
   const areaId = request[CONSTS.Message][CONSTS.AreaId];
   const vertexId = request[CONSTS.Message][CONSTS.VertexId];
 
@@ -367,11 +377,14 @@ function removeData(request) {
 
 function removeArea(request) {
   const gssUrl = request[CONSTS.GssUrl];
-  const gssSheet = getSheet(gssUrl);
+  const gssSheet = getPositionsSheet(gssUrl);
   const sheetData = gssSheet.getDataRange().getValues();
 
   const userName = request[CONSTS.UserName];
-  const userId = findUserId(sheetData, userName);
+  const userId = findUserId(
+    getUserDataSheet(gssUrl).getDataRange().getValues(),
+    userName
+  );
   const messageDatas = request[CONSTS.Message];
 
   if (userId != null) {
@@ -380,20 +393,57 @@ function removeArea(request) {
 
     userRows.reverse();
     for (let userRow of userRows) {
-      const gssMessageObj = JSON.parse(sheetData[userRow][CONSTS.MessageColumn]);
+      const gssMessageObj = JSON.parse(
+        sheetData[userRow][CONSTS.MessageColumn]
+      );
       if (gssMessageObj[CONSTS.AreaId] == areaId) {
         gssSheet.deleteRows(1 + Number(userRow));
       }
     }
 
     return ContentService.createTextOutput(
-            `Removed userName=\"${userName}\", areaId=\"${areaId}\" succeeded.`
-          );
+      `Removed userName=\"${userName}\", areaId=\"${areaId}\" succeeded.`
+    );
   } else {
     const errorLog = `Error : userName=\"${userName}\" does not exist.`;
     Logger.log(errorLog);
     return ContentService.createTextOutput(errorLog);
   }
+}
+
+function setUserData(request) {
+  const gssUrl = request[CONSTS.GssUrl];
+  const gssSheet = getUserDataSheet(gssUrl);
+  const sheetData = gssSheet.getDataRange().getValues();
+
+  const currentTime = Utilities.formatDate(
+    new Date(),
+    "GMT+9",
+    "yyyy/MM/dd HH:mm:ss"
+  );
+
+  const userName = request[CONSTS.UserName];
+  const userId = findUserId(sheetData, userName);
+  const messageObj = request[CONSTS.Message];
+  const inputtingData = JSON.stringify(messageObj);
+
+  if (userId != null) {
+    const errorLog = `Error : userName=\"${userName}\" already exists.`;
+    Logger.log(errorLog);
+    return ContentService.createTextOutput(errorLog);
+  }
+
+  let addingData = [];
+  addingData[CONSTS.UserIdColumn] =
+    userId == null ? findMaxUserId(sheetData) + 1 : userId;
+  addingData[CONSTS.UpdateTimeColumn] = currentTime;
+  addingData[CONSTS.UserNameColumn] = userName;
+  addingData[CONSTS.MessageColumn] = inputtingData;
+  gssSheet.appendRow(addingData);
+
+  const successLog = `UserName=\"${userName}\" was entered successfully.`;
+  Logger.log(successLog);
+  return ContentService.createTextOutput(successLog);
 }
 
 function findUserId(sheetData, userName) {
@@ -457,21 +507,23 @@ function doPost(e) {
     return removeData(request);
   } else if (request[CONSTS.Method] == CONSTS.RemoveAreaMethod) {
     return removeArea(request);
+  } else if (request[CONSTS.Method] == CONSTS.SetUserDataMethod) {
+    return setUserData(request);
   }
 }
 
 function generateDebugObjectForPOST() {
   const fakePayload = {
-    [CONSTS.Method]: [CONSTS.UpdateDatasMethod],
+    [CONSTS.Method]: [CONSTS.SetUserDataMethod],
     [CONSTS.GssUrl]: GssUrl,
-    [CONSTS.UserName]: "tester3",
+    [CONSTS.UserName]: "tester",
     [CONSTS.Message]: [
-        {"areaId":0,"vertexId":0, "position":{"x":4,"y":2,"z":0} },
-        {"areaId":0,"vertexId":1, "position":{"x":4,"y":4,"z":0} },
-        {"areaId":0,"vertexId":2, "position":{"x":2,"y":4,"z":0} },
-        {"areaId":0,"vertexId":3, "position":{"x":2,"y":2,"z":0} },
-        {"areaId":0,"vertexId":4, "position":{"x":4,"y":2,"z":0} },
-      ],
+      { areaId: 0, vertexId: 0, position: { x: 4, y: 2, z: 0 } },
+      { areaId: 0, vertexId: 1, position: { x: 4, y: 4, z: 0 } },
+      { areaId: 0, vertexId: 2, position: { x: 2, y: 4, z: 0 } },
+      { areaId: 0, vertexId: 3, position: { x: 2, y: 2, z: 0 } },
+      { areaId: 0, vertexId: 4, position: { x: 4, y: 2, z: 0 } },
+    ],
   };
   return fakePayload;
 }
