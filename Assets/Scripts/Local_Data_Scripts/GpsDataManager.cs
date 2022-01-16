@@ -43,7 +43,6 @@ public class GpsDataManager : MonoBehaviour
 
 
 
-    // Start is called before the first frame update
     public Dictionary<string, HashSet<int>> GetAllAreaIdMap()
     {
         var allDatas = _areaDataManager._allDatas;
@@ -382,7 +381,7 @@ public class GpsDataManager : MonoBehaviour
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
             _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub));
-        _areaDataManager.RefreshCurrentAreaDatas();
+        _areaDataManager.RefreshUserAreaData();
         _lastUnityPos = _outlierPos;
     }
 

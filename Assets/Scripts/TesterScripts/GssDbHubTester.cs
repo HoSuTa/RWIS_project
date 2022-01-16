@@ -150,7 +150,7 @@ namespace GssDbManageWrapper
         }
         private void LocalUserNamesSetFeedBack(PayloadData[] datas)
         {
-            _userDataManager.RefreshUserNames(datas);
+            _userDataManager.UpdateDatas(datas);
             TempUIVisualizeAllNames();
         }
 

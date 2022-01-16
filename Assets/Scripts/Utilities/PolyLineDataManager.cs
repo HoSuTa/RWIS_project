@@ -1,0 +1,86 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using GssDbManageWrapper;
+
+[RequireComponent(typeof(UserDataManager))]
+[RequireComponent(typeof(AreaDataManager))]
+public class PolyLineDataManager : MonoBehaviour
+{
+    AreaDataManager _areaDataManager;
+    UserDataManager _userDataManager;
+
+    private List<PolyLineData> _polyLineDatas = new List<PolyLineData>();
+
+    private void Awake()
+    {
+        if (_areaDataManager == null) _areaDataManager = GetComponent<AreaDataManager>();
+        if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
+
+    }
+
+
+    public Dictionary<string, HashSet<int>> GetAllAreaIdMap()
+    {
+        var allDatas = _areaDataManager._allDatas;
+        var areaIdMap = new Dictionary<string, HashSet<int>>();
+        foreach (var pair in allDatas)
+        {
+            if (!areaIdMap.ContainsKey(pair.Key))
+            {
+                areaIdMap[pair.Key] = new HashSet<int>();
+            }
+            foreach (var data in pair.Value)
+            {
+                areaIdMap[pair.Key].Add(data.areaId);
+            }
+        }
+        return areaIdMap;
+    }
+    public Dictionary<string, List<(int, List<Vector3>)>> GetAllPolygonPositions()
+    {
+        var allAreaIdMap = GetAllAreaIdMap();
+        var allPolygonVertices = new Dictionary<string, List<(int, List<Vector3>)>>();
+        foreach (var pair in allAreaIdMap)
+        {
+            if (!allPolygonVertices.ContainsKey(pair.Key))
+            {
+                allPolygonVertices[pair.Key] = new List<(int, List<Vector3>)>();
+            }
+            foreach (var areaId in pair.Value)
+            {
+                var polygonVertices = _areaDataManager.GetAreaVerticies(pair.Key, areaId);
+                allPolygonVertices[pair.Key].Add((areaId, polygonVertices));
+            }
+        }
+        return allPolygonVertices;
+    }
+    public void UpdatePolyLineDatas()
+    {
+        var allPolygonPositions = GetAllPolygonPositions();
+        foreach (var data in allPolygonPositions)
+        {
+            var userName = data.Key;
+            var userData = _userDataManager.GetUserData(userName);
+            foreach (var (areaId, polygonPositions) in data.Value)
+            {
+                bool sameData = false;
+                foreach (var polyLineData in _polyLineDatas)
+                {
+                    if (polyLineData._userData == userData && polyLineData._areaId == areaId)
+                    {
+                        sameData = true;
+                        break;
+                    }
+                }
+
+                if (!sameData)
+                {
+                    _polyLineDatas.Add(new PolyLineData(userData, areaId, polygonPositions, 100));
+                }
+            }
+        }
+
+    }
+
+}

@@ -65,25 +65,33 @@ namespace GssDbManageWrapper
             _userDatas.Add(userData);
         }
 
+        public UserData GetUserData(string userName)
+        {
+            foreach (var u in _userDatas)
+            {
+                if (u._userName == userName)
+                {
+                    return u;
+                }
+            }
+
+            return null;
+        }
+
         public void AddUserName(string userName)
         {
             _userNames.Add(userName);
         }
 
-        public void RefreshUserNames(PayloadData[] datas)
+        public void UpdateDatas(PayloadData[] datas)
         {
-            ClearUserNames();
             foreach (var d in datas)
             {
-                AddUserName(d.userName);
-            }
-        }
-        public void RefreshUserDatas(PayloadData[] datas)
-        {
-            ClearUserNames();
-            foreach (var d in datas)
-            {
-                AddUserData(new UserData(d.userName, RandomColor()));
+                if (!_userNames.Contains(d.userName))
+                {
+                    AddUserName(d.userName);
+                    AddUserData(new UserData(d.userName, RandomColor()));
+                }
             }
         }
 
@@ -94,14 +102,8 @@ namespace GssDbManageWrapper
         }
         private void GetUserNamesFeedBack(PayloadData[] datas)
         {
-            RefreshUserNames(datas);
-            RefreshUserDatas(datas);
+            UpdateDatas(datas);
             _isUpdating = false;
-        }
-
-        public void ClearUserNames()
-        {
-            _userNames.Clear();
         }
 
         public bool IsUpdating
