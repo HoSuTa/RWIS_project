@@ -417,7 +417,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 180
+  orthographic size: 300
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1253,6 +1253,7 @@ GameObject:
   - component: {fileID: 2025085183}
   - component: {fileID: 2025085180}
   - component: {fileID: 2025085181}
+  - component: {fileID: 2025085186}
   - component: {fileID: 2025085178}
   m_Layer: 0
   m_Name: MANAGER
@@ -1270,11 +1271,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2025085177}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae1afc69224561047b8f27d220522727, type: 3}
+  m_Script: {fileID: 11500000, guid: a3b5d687c6bc21145b4c106772ad496b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _saveInterval: 10
-  _distanceUntilUpdate: 0.2
 --- !u!4 &2025085179
 Transform:
   m_ObjectHideFlags: 0
@@ -1301,7 +1300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c6c127e4985ccc47b26e28a9bf19a94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localPlayerName: TTT
+  _localPlayerName: AAAAAA
 --- !u!114 &2025085181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1372,8 +1371,8 @@ MonoBehaviour:
           visibleBuffer: 0
           disposeBuffer: 0
     placementOptions:
-      placementType: 1
-      snapMapToZero: 1
+      placementType: 0
+      snapMapToZero: 0
     scalingOptions:
       scalingType: 1
       unityTileSize: 100
@@ -1461,3 +1460,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _lonLatFromPlayerSetting: {x: 0, y: 0}
   _zoomSize: 16.5
+--- !u!114 &2025085186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025085177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d535ae78cbea341a38d90c3b641ddb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

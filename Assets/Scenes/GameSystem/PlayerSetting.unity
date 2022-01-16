@@ -389,10 +389,10 @@ MonoBehaviour:
           disposeBuffer: 0
     placementOptions:
       placementType: 0
-      snapMapToZero: 0
+      snapMapToZero: 1
     scalingOptions:
       scalingType: 1
-      unityTileSize: 120
+      unityTileSize: 100
     loadingTexture: {fileID: 1096114567}
     tileMaterial: {fileID: 2100000, guid: efe9553a86de35e439b40b33b50ae9cc, type: 2}
   _initializeOnStart: 1

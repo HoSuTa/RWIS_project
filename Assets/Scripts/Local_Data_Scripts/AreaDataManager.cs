@@ -41,8 +41,13 @@ namespace GssDbManageWrapper
         public List<MessageJson> GetAreaMessages(string userName, int areaId)
         {
             var userDatas = GetUserDatas(userName);
-            var areaIdData = userDatas.Where(x => x.areaId == areaId);
-            return areaIdData.ToList();
+            if (userDatas != null)
+            {
+                var areaIdData = userDatas.Where(x => x.areaId == areaId);
+                return areaIdData.ToList();
+            }
+
+            return null;
         }
 
         public void RefreshCurrentAreaDatas()
