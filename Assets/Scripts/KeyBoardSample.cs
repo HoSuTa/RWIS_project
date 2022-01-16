@@ -6,12 +6,15 @@ public class KeyBoardSample: MonoBehaviour
 {
     // Start is called before the first frame update
     [SerializeField]
+    private Font        font;
+    [SerializeField]
     private GameObject  mainCamera;
-    GameObject          canvas;
+    Transform           canvasTransform;
     List<Vector3>       linePositions;
     GameObject          lineObject;
     List<List<Vector3>> polyLinePositions;
     List<GameObject>    polyLineObjects;
+    List<GameObject>    polyTextObjects;
 
     static bool IsClosedPoint(Vector3 x1, Vector3 x2, float r_epsilon = 10)
     {
@@ -143,7 +146,12 @@ public class KeyBoardSample: MonoBehaviour
         {
             Destroy(polyObject);
         }
+        foreach (var polyObject in polyTextObjects)
+        {
+            Destroy(polyObject);
+        }
         polyLineObjects.Clear();
+        polyTextObjects.Clear();
         polyLinePositions.Clear();
     }
     void Start()
@@ -152,6 +160,8 @@ public class KeyBoardSample: MonoBehaviour
         lineObject        = new GameObject();
         polyLinePositions = new List<List<Vector3>>();
         polyLineObjects   = new List<GameObject>();
+        polyTextObjects   = new List<GameObject>();
+        canvasTransform   = GameObject.Find("Canvas").transform;
         if (lineObject!=null)
         {
             lineObject.name            = "Line";
@@ -276,16 +286,30 @@ public class KeyBoardSample: MonoBehaviour
                         var offset = 0;
                         foreach (var idx in removeIndices) {
                             polyLinePositions.RemoveAt(idx - offset);
-                            var polyObject = polyLineObjects[idx - offset];
+                            var polyTextObject = polyTextObjects[idx - offset];
+                            polyTextObject.transform.parent = null;
+                            var polyLineObject = polyLineObjects[idx - offset];
+                            polyTextObjects.RemoveAt(idx-offset);
                             polyLineObjects.RemoveAt(idx-offset);
-                            Destroy(polyObject);
+                            Destroy(polyTextObject);
+                            Destroy(polyLineObject);
                             ++offset;
                         }
-                        var i = 0;
-                        foreach (var polyObject in polyLineObjects)
+                       {
+                            var i = 0;
+                            foreach (var polyObject in polyTextObjects)
+                            {
+                                polyObject.name = "PolyText"+(i).ToString();
+                                ++i;
+                            }
+                        }
                         {
-                            polyObject.name = "Polygon"+(i).ToString();
-                            ++i;
+                            var i = 0;
+                            foreach (var polyObject in polyLineObjects)
+                            {
+                                polyObject.name = "PolyLine"+(i).ToString();
+                                ++i;
+                            }
                         }
                     }
                 }
@@ -297,15 +321,24 @@ public class KeyBoardSample: MonoBehaviour
                 }
                 newLinePositions[tPositions.Count] = newLinePositions[0];
                 {
+                    polyTextObjects.Add(new GameObject());
                     polyLineObjects.Add(new GameObject());
                     polyLinePositions.Add(tPositions);
-                    polyLineObjects[polyLineObjects.Count-1].name = "Polygon"+(polyLineObjects.Count-1).ToString();
-                    // var area                   = Mathf.Abs(CalcSignedArea(tPositions));
-                    // var centroid               = CalcCentroid(tPositions);
-                    // var text                   = polyLineObjects[polyLineObjects.Count-1].AddComponent<Text>();
-                    // text.text                  = "Area: " + area.ToString();
-                    // text.rectTransform.anchoredPosition = centroid;
-                    // text.transform.Translate(mainCamera.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(centroid.x,centroid.y,10.0F)));
+                    polyTextObjects[polyTextObjects.Count-1].name = "PolyText"+(polyTextObjects.Count-1).ToString();
+                    polyTextObjects[polyTextObjects.Count-1].transform.SetParent(canvasTransform);
+                    polyLineObjects[polyLineObjects.Count-1].name = "PolyLine"+(polyLineObjects.Count-1).ToString();
+                    var area                   = Mathf.Abs(CalcSignedArea(tPositions));
+                    var centroid               = CalcCentroid(tPositions);
+                    var text                   = polyTextObjects[polyTextObjects.Count-1].AddComponent<Text>();
+                    Debug.Log("Centroid " + centroid.ToString());
+                    var screenPos              = centroid;
+                    screenPos.z                = 1.0f;
+                    text.text                  = "Area: " + area.ToString();
+                    text.font                  = font;
+                    text.fontSize              = 14;
+                    text.color                 = Color.black;
+                    text.rectTransform.sizeDelta = new Vector2(100.0f,30.0f);
+                    text.rectTransform.position= screenPos;
                     var lineRenderer           = polyLineObjects[polyLineObjects.Count-1].AddComponent<LineRenderer>();
                     lineRenderer.positionCount = tPositions.Count+1;
                     lineRenderer.SetPositions(newLinePositions);
