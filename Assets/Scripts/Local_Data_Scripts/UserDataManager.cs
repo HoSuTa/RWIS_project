@@ -112,10 +112,10 @@ namespace GssDbManageWrapper
             }
         }
 
-        public void UpdateAllUserNamesToGss(GssDbHub gssDbHub)
+        public void UpdateAllUserNamesToGss(GssDbHub gssDbHub, System.Action feedback = null)
         {
             _isUpdating = true;
-            gssDbHub.GetUserDatas(GetUserNamesFeedBack);
+            gssDbHub.GetUserDatas((datas) => { GetUserNamesFeedBack(datas); feedback(); });
         }
         private void GetUserNamesFeedBack(PayloadData[] datas)
         {

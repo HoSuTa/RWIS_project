@@ -157,10 +157,10 @@ namespace GssDbManageWrapper
             RefreshDatas(ref _allDatas, datas);
         }
 
-        public void UpdateAllDatasToGss(GssDbHub gssDbHub)
+        public void UpdateAllDatasToGss(GssDbHub gssDbHub, Action feedback = null)
         {
             _isUpdating = true;
-            gssDbHub.GetAllDatas(GetAllDatasFeedBack);
+            gssDbHub.GetAllDatas((datas) => { GetAllDatasFeedBack(datas); feedback(); });
         }
         private void GetAllDatasFeedBack(PayloadData[] datas)
         {

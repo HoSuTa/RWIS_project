@@ -23,6 +23,9 @@ public class GssSample : MonoBehaviour
     private Vector3 _lastUnityPos = _outlierPos;
     private static Vector3 _outlierPos = new Vector3(0, 0, -100);
 
+    private bool _triggerArea = false;
+    private bool _triggerUser = false;
+
     void Start()
     {
         if (_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
@@ -31,6 +34,8 @@ public class GssSample : MonoBehaviour
 
         if (_polyLineDataManager == null) _polyLineDataManager = GetComponent<PolyLineDataManager>();
         if (_lineDataManager == null) _lineDataManager = GetComponent<LineDataManager>();
+
+        LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub, PolyLineDataManagerUserFeedback, PolyLineDataManagerAreaFeedback);
     }
 
 
@@ -207,12 +212,14 @@ public class GssSample : MonoBehaviour
 
     private void Update()
     {
+        PoLyLineDataManagerUpdate();
+
         if (Input.GetMouseButtonDown(0))
         {
             var newPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0F);
 
             newPos = Camera.main.ScreenToWorldPoint(newPos);
-            newPos.y = 1f;
+            newPos.y = 10f;
 
             newPos = new Vector3(newPos.x, newPos.z, newPos.y);
 
@@ -356,11 +363,31 @@ public class GssSample : MonoBehaviour
     {
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
-            _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub));
+            _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub, PolyLineDataManagerUserFeedback, PolyLineDataManagerAreaFeedback));
         _areaDataManager.RefreshUserAreaData();
         _lineDataManager.UpdateLineData();
-        _polyLineDataManager.UpdatePolyLineDatas();
 
         _lastUnityPos = _outlierPos;
+    }
+
+    private void PolyLineDataManagerUserFeedback()
+    {
+        _triggerUser = true;
+    }
+    private void PolyLineDataManagerAreaFeedback()
+    {
+        _triggerArea = true;
+    }
+
+    private void PoLyLineDataManagerUpdate()
+    {
+        if (_triggerUser && _triggerArea)
+        {
+            _polyLineDataManager.UpdatePolyLineDatas();
+
+
+            _triggerUser = false;
+            _triggerArea = false;
+        }
     }
 }

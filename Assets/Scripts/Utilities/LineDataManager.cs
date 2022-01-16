@@ -20,12 +20,15 @@ public class LineDataManager : MonoBehaviour
 
     public void UpdateLineData()
     {
+        if (_lineData != null) _lineData.RefreshLine();
+
         var userAreaData = _areaDataManager._userCurrentArea;
         List<Vector3> positions = new List<Vector3>();
         foreach (var d in userAreaData)
         {
-            positions.Add(d.position);
+            var position = new Vector3(d.position.x, d.position.z, d.position.y);
+            positions.Add(position);
         }
-        _lineData = new LineData(_userDataManager.GetUserData(_userDataManager.LocalPlayerName), userAreaData[0].areaId, positions);
+        _lineData = new LineData(_userDataManager._localPlayer, positions);
     }
 }

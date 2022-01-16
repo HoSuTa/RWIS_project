@@ -76,7 +76,15 @@ public class PolyLineDataManager : MonoBehaviour
 
                 if (!sameData)
                 {
-                    _polyLineDatas.Add(new PolyLineData(userData, areaId, polygonPositions));
+                    List<Vector3> positions = new List<Vector3>();
+                    foreach (var d in polygonPositions)
+                    {
+                        var position = new Vector3(d.x, d.z, d.y);
+                        positions.Add(position);
+                    }
+                    positions.Add(positions[0]);
+
+                    _polyLineDatas.Add(new PolyLineData(userData, areaId, positions));
                 }
             }
         }

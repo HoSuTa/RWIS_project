@@ -10,7 +10,7 @@ public class PolyLineData
     public float _score;
     private Transform _canvasTransform;
     public GameObject _scoreTextObject;
-    private Text      _scoreText;
+    private Text _scoreText;
     public GameObject _lineObject;
     private LineRenderer _lineRenderer;
 
@@ -19,27 +19,44 @@ public class PolyLineData
         float score = Mathf.Abs(CalcSignedArea(positions));
         _userData = userData;
         _areaId = areaId;
-        _score  = score;
+        _score = score;
         _canvasTransform = GameObject.Find("Canvas").transform;
 
         _scoreTextObject = new GameObject();
         _scoreTextObject.transform.SetParent(_canvasTransform);
+        _scoreTextObject.transform.name = userData._userName + " " + areaId;
         _scoreTextObject.transform.localScale = new Vector3(1, 1, 1);
         _scoreText = _scoreTextObject.AddComponent<Text>();
         _scoreText.text = "Score: " + score.ToString();
-        _scoreText.font = Resources.GetBuiltinResource (typeof(Font), "Arial.ttf") as Font;
+        _scoreText.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
         _scoreText.fontSize = 14;
         _scoreText.color = Color.black;
-        var centroid  = CalcCentroid(positions);
+        var centroid = CalcCentroid(positions);
         var screenPos = Camera.main.WorldToScreenPoint(centroid);
-        screenPos.z   = 1.0f;
-        _scoreText.rectTransform.position   = screenPos;
-        _scoreText.rectTransform.sizeDelta = new Vector2(100.0f,30.0f);
+        screenPos.z = 1.0f;
+        _scoreText.rectTransform.position = screenPos;
+        _scoreText.rectTransform.sizeDelta = new Vector2(100.0f, 30.0f);
+
+
+
         _lineObject = new GameObject();
+        _lineObject.transform.name = userData._userName + " " + areaId;
+
         _lineRenderer = _lineObject.AddComponent<LineRenderer>();
+
+        Material material = new Material(Shader.Find("Diffuse"));
+        material.color = userData._color;
+
+        _lineRenderer.material = material;
+
         _lineRenderer.useWorldSpace = true;
         _lineRenderer.startColor = _userData._color;
-        _lineRenderer.endColor   = _userData._color;
+        _lineRenderer.endColor = _userData._color;
+
+        _lineRenderer.startWidth = 5f;
+        _lineRenderer.endWidth = 5f;
+
+        _lineRenderer.positionCount = positions.Count;
         _lineRenderer.SetPositions(positions.ToArray());
 
     }
@@ -49,7 +66,7 @@ public class PolyLineData
         UnityEngine.Object.Destroy(_lineObject);
         UnityEngine.Object.Destroy(_scoreTextObject);
     }
-    void OnRemove()
+    void RefreshPolyLine()
     {
         UnityEngine.Object.Destroy(_scoreTextObject);
         UnityEngine.Object.Destroy(_lineObject);
