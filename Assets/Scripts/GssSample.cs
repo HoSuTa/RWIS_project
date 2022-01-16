@@ -8,12 +8,16 @@ using Mapbox.Unity.Map;
 [RequireComponent(typeof(GssDbHub))]
 [RequireComponent(typeof(UserDataManager))]
 [RequireComponent(typeof(AreaDataManager))]
+[RequireComponent(typeof(LineDataManager))]
+[RequireComponent(typeof(PolyLineDataManager))]
 public class GssSample : MonoBehaviour
 {
     GssDbHub _gssDbHub;
     AreaDataManager _areaDataManager;
     UserDataManager _userDataManager;
 
+    PolyLineDataManager _polyLineDataManager;
+    LineDataManager _lineDataManager;
 
     //Making y big to make the initial save always valid.
     private Vector3 _lastUnityPos = _outlierPos;
@@ -24,6 +28,9 @@ public class GssSample : MonoBehaviour
         if (_gssDbHub == null) _gssDbHub = GetComponent<GssDbHub>();
         if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
         if (_areaDataManager == null) _areaDataManager = GetComponent<AreaDataManager>();
+
+        if (_polyLineDataManager == null) _polyLineDataManager = GetComponent<PolyLineDataManager>();
+        if (_lineDataManager == null) _lineDataManager = GetComponent<LineDataManager>();
     }
 
 
@@ -202,7 +209,6 @@ public class GssSample : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Key Down! " + Input.mousePosition.ToString());
             var newPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0F);
 
             newPos = Camera.main.ScreenToWorldPoint(newPos);
@@ -337,12 +343,12 @@ public class GssSample : MonoBehaviour
             }
             _areaDataManager.UpdateCurrentAreaDatas(_userDataManager.LocalPlayerName, tPositions);
             LineClosedUpdateDatas(_areaDataManager._userCurrentArea);
-
         }
         else
         {
             _areaDataManager.AddPositinToCurrentAreaDatas(_userDataManager.LocalPlayerName, newPos);
             Debug.Log("Added position: " + newPos);
+            _lineDataManager.UpdateLineData();
         }
     }
 
@@ -351,7 +357,10 @@ public class GssSample : MonoBehaviour
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
             _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub));
-        _areaDataManager.RefreshCurrentAreaDatas();
+        _areaDataManager.RefreshUserAreaData();
+        _lineDataManager.UpdateLineData();
+        _polyLineDataManager.UpdatePolyLineDatas();
+
         _lastUnityPos = _outlierPos;
     }
 }

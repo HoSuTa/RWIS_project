@@ -4,53 +4,94 @@ using UnityEngine;
 
 namespace GssDbManageWrapper
 {
+    public class UserData
+    {
+        public string _userName;
+        public Color _color;
+
+        public UserData(string userName, Color color)
+        {
+            _userName = userName;
+            _color = color;
+        }
+    }
+
     public class UserDataManager : MonoBehaviour
     {
         [SerializeField]
         private string _localPlayerName = "";
-        private bool _isUpdating = false;
-
         public string LocalPlayerName
         {
             get => _localPlayerName;
             set => _localPlayerName = value;
         }
-        private HashSet<string> _userNames = new HashSet<string>();
-        public HashSet<string> UserNames
-        {
-            get => _userNames;
-            set => _userNames = value;
-        }
+
+        private bool _isUpdating = false;
+
+        public HashSet<string> _userNames = new HashSet<string>();
+        public HashSet<UserData> _userDatas = new HashSet<UserData>();
+
 
         private void Start()
         {
             if (_localPlayerName == "")
             {
                 Debug.Log($"<color=red>[UserDataManager]</color> " +
-                    $"{nameof(_localPlayerName)} is {_localPlayerName}.");
+                    $"{nameof(_localPlayerName)} is \"{_localPlayerName}\".");
             }
+        }
+
+        public Color RandomColor()
+        {
+            bool colorExists = true;
+            Color randomColor = Color.white;
+            while (colorExists)
+            {
+                randomColor = Random.ColorHSV(0f, 1f, 0f, 1f, 0f, 1f);
+                foreach (var u in _userDatas)
+                {
+                    if (u._color == randomColor)
+                    {
+                        colorExists = false;
+                    }
+                }
+            }
+
+            return randomColor;
+        }
+
+        public void AddUserData(UserData userData)
+        {
+            _userDatas.Add(userData);
+        }
+
+        public UserData GetUserData(string userName)
+        {
+            foreach (var u in _userDatas)
+            {
+                if (u._userName == userName)
+                {
+                    return u;
+                }
+            }
+
+            return null;
         }
 
         public void AddUserName(string userName)
         {
             _userNames.Add(userName);
         }
-        public void RefreshUserNames(string[] userNames)
+
+        public void UpdateDatas(PayloadData[] datas)
         {
-            ClearUserNames();
-            _userNames = new HashSet<string>(userNames);
-        }
-        public void RefreshUserNames(HashSet<string> userNames)
-        {
-            ClearUserNames();
-            _userNames = userNames;
-        }
-        public void RefreshUserNames(PayloadData[] datas)
-        {
-            ClearUserNames();
             foreach (var d in datas)
             {
-                AddUserName(d.userName);
+                if (!_userNames.Contains(d.userName))
+                {
+                    AddUserName(d.userName);
+                    AddUserData(new UserData(d.userName, RandomColor()));
+                }
             }
         }
 
@@ -61,13 +102,8 @@ namespace GssDbManageWrapper
         }
         private void GetUserNamesFeedBack(PayloadData[] datas)
         {
-            RefreshUserNames(datas);
+            UpdateDatas(datas);
             _isUpdating = false;
-        }
-
-        public void ClearUserNames()
-        {
-            _userNames.Clear();
         }
 
         public bool IsUpdating
