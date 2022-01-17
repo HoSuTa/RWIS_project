@@ -10,12 +10,12 @@ public static class GasUrlManager
             return;
         }
 
-        KeyManager.SaveKey(KeyManager.GAS_URL_PATH, gasUrl);
+        KeyManager.SaveKey(KeyManager.GetDataPathGasUrl(), gasUrl);
     }
 
     public static string GetUrl()
     {
-        return KeyManager.GetKeyData(KeyManager.GAS_URL_PATH);
+        return KeyManager.GetKeyData(KeyManager.GetDataPathGasUrl());
     }
 
     public static bool IsUrlAssigned()
@@ -26,7 +26,7 @@ public static class GasUrlManager
 
     public static void ResetUrl()
     {
-        KeyManager.RemoveKeyFile(KeyManager.GAS_URL_PATH);
+        KeyManager.RemoveKeyFile(KeyManager.GetDataPathGasUrl());
     }
 }
 
