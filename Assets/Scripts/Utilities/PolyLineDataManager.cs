@@ -80,6 +80,7 @@ public class PolyLineDataManager : MonoBehaviour
                     foreach (var d in polygonPositions)
                     {
                         var position = new Vector3(d.x, d.z, d.y);
+                        position = new Vector3(position.x, 10.0f, position.z);
                         positions.Add(position);
                     }
                     positions.Add(positions[0]);
