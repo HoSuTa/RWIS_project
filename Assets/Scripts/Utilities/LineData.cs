@@ -35,8 +35,11 @@ public class LineData
         _lineRenderer.SetPositions(positions.ToArray());
 
         _lastPosUserObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        _lastPosUserObj.transform.position = positions[positions.Count - 1];
-        _lastPosUserObj.transform.localScale *= 12;
+        var lastPosVis = positions[positions.Count - 1];
+        lastPosVis.y = 10.0f;
+        _lastPosUserObj.transform.position = lastPosVis;
+        _lastPosUserObj.transform.localScale *= 8;
+        _lastPosUserObj.transform.name = "Line Data Last Pos";
         _lastPosUserObj.GetComponent<MeshRenderer>().material = material;
     }
 

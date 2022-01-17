@@ -8,7 +8,7 @@ public class MapMover : MonoBehaviour
     private Transform _mainCameraTransform;
     [SerializeField]
     [Range(0f, 1f)]
-    private float _speed = .1f;
+    private float _speed = .04f;
     private bool _isSwiping;
     private Vector2 _startPos, _currentPos, _diffSwipeVec2;
     void Start()

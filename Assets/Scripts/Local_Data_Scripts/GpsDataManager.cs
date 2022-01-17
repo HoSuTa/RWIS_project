@@ -11,6 +11,8 @@ using Mapbox.Unity.Map;
 [RequireComponent(typeof(LonLatGetter))]
 [RequireComponent(typeof(AreaDataManager))]
 [RequireComponent(typeof(UserDataManager))]
+[RequireComponent(typeof(LineDataManager))]
+[RequireComponent(typeof(PolyLineDataManager))]
 
 public class GpsDataManager : MonoBehaviour
 {
@@ -21,13 +23,23 @@ public class GpsDataManager : MonoBehaviour
     AreaDataManager _areaDataManager;
     UserDataManager _userDataManager;
 
+    PolyLineDataManager _polyLineDataManager;
+    LineDataManager _lineDataManager;
+
     [SerializeField]
     private float _saveInterval = 10.0f;
     [SerializeField]
     private float _distanceUntilUpdate = .2f;
     //Making y big to make the initial save always valid.
     private Vector3 _lastUnityPos = _outlierPos;
-    private static Vector3 _outlierPos = new Vector3(0, 0, -100);
+    private static Vector3 _outlierPos = new Vector3(0, -100, 0);
+
+
+    private bool _triggerArea = false;
+    private bool _triggerUser = false;
+
+    Material _material;
+    private GameObject _playerGpsPosObj;
 
     private void Awake()
     {
@@ -37,6 +49,17 @@ public class GpsDataManager : MonoBehaviour
         if (_lonLatGetter == null) _lonLatGetter = GetComponent<LonLatGetter>();
         if (_areaDataManager == null) _areaDataManager = GetComponent<AreaDataManager>();
         if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
+
+        if (_polyLineDataManager == null) _polyLineDataManager = GetComponent<PolyLineDataManager>();
+        if (_lineDataManager == null) _lineDataManager = GetComponent<LineDataManager>();
+
+        _material = new Material(Shader.Find("Diffuse"));
+        _material.color = Color.red;
+        _playerGpsPosObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        _playerGpsPosObj.GetComponent<MeshRenderer>().material = _material;
+        _playerGpsPosObj.transform.localScale *= 15;
+        _playerGpsPosObj.transform.name = "Player Current Position";
+
 
         StartCoroutine(SaveGpsDataPeriodically());
     }
@@ -208,10 +231,20 @@ public class GpsDataManager : MonoBehaviour
         return centroid;
     }
 
+    private void Update()
+    {
+        if (_lonLatGetter.CanGetLonLat())
+        {
+            var gpsData = new Vector2d(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
+            var gpsUnityPos = _abstractMap.GeoToWorldPosition(gpsData);
+
+            gpsUnityPos.y = 0.0f;
+            _playerGpsPosObj.transform.position = gpsUnityPos;
+        }
+    }
 
     private IEnumerator SaveGpsDataPeriodically()
     {
-
         while (true)
         {
             if (_lonLatGetter.CanGetLonLat())
@@ -219,17 +252,21 @@ public class GpsDataManager : MonoBehaviour
                 var gpsData = new Vector2d(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
                 var gpsUnityPos = _abstractMap.GeoToWorldPosition(gpsData);
 
+                print((gpsUnityPos - _lastUnityPos).magnitude);
                 //Updates when the user moved far enough
                 if ((gpsUnityPos - _lastUnityPos).magnitude > _distanceUntilUpdate)
                 {
                     //Update local datas with gss datas.
-                    LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub);
+                    LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub, PolyLineDataManagerUserFeedback, PolyLineDataManagerAreaFeedback);
                     while (_userDataManager.IsUpdating || _areaDataManager.IsUpdating)
                     {
                         Debug.Log($"<color=blue>[GpsDataManager]</color> " +
                             $"Updating before checking the point.");
                         yield return new WaitForSeconds(1.0f);
                     }
+
+                    PoLyLineDataManagerUpdate();
+
 
                     List<Vector3> currentAreaVerticies = _areaDataManager.GetCurrentAreaDatasAsVector();
 
@@ -373,6 +410,7 @@ public class GpsDataManager : MonoBehaviour
         {
             _areaDataManager.AddPositinToCurrentAreaDatas(_userDataManager.LocalPlayerName, newPos);
             Debug.Log("Added position: " + newPos);
+            _lineDataManager.UpdateLineData();
         }
     }
 
@@ -380,9 +418,31 @@ public class GpsDataManager : MonoBehaviour
     {
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
-            _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub));
+            _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub, PolyLineDataManagerUserFeedback, PolyLineDataManagerAreaFeedback));
         _areaDataManager.RefreshUserAreaData();
+        _lineDataManager.UpdateLineData();
+
         _lastUnityPos = _outlierPos;
     }
 
+    private void PolyLineDataManagerUserFeedback()
+    {
+        _triggerUser = true;
+    }
+    private void PolyLineDataManagerAreaFeedback()
+    {
+        _triggerArea = true;
+    }
+
+    private void PoLyLineDataManagerUpdate()
+    {
+        if (_triggerUser && _triggerArea)
+        {
+            _polyLineDataManager.UpdatePolyLineDatas();
+
+
+            _triggerUser = false;
+            _triggerArea = false;
+        }
+    }
 }
