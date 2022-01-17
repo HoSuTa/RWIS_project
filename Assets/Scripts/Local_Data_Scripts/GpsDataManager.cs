@@ -168,7 +168,7 @@ public class GpsDataManager : MonoBehaviour
         return isClosed;
     }
     /*FIX->割とよさげ*/
-    static bool ContainPoint(List<Vector3> points, Vector3 target, Vector3? normal = null, float r_epsilon = 1e-2F)
+    static bool ContainPoint(List<Vector3> points, Vector3 target, Vector3? normal = null, float r_epsilon = 0.05f)
     {
         if (normal == null)
         {
@@ -252,12 +252,12 @@ public class GpsDataManager : MonoBehaviour
                 var gpsData = new Vector2d(_lonLatGetter.Latitude, _lonLatGetter.Longitude);
                 var gpsUnityPos = _abstractMap.GeoToWorldPosition(gpsData);
 
-                print((gpsUnityPos - _lastUnityPos).magnitude);
                 //Updates when the user moved far enough
                 if ((gpsUnityPos - _lastUnityPos).magnitude > _distanceUntilUpdate)
                 {
                     //Update local datas with gss datas.
                     LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub, PolyLineDataManagerUserFeedback, PolyLineDataManagerAreaFeedback);
+
                     while (_userDataManager.IsUpdating || _areaDataManager.IsUpdating)
                     {
                         Debug.Log($"<color=blue>[GpsDataManager]</color> " +
@@ -439,7 +439,7 @@ public class GpsDataManager : MonoBehaviour
         if (_triggerUser && _triggerArea)
         {
             _polyLineDataManager.UpdatePolyLineDatas();
-
+            _lineDataManager.UpdateLineData();
 
             _triggerUser = false;
             _triggerArea = false;
