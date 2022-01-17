@@ -26,10 +26,8 @@ public class GpsDataManager : MonoBehaviour
     PolyLineDataManager _polyLineDataManager;
     LineDataManager _lineDataManager;
 
-    [SerializeField]
-    private float _saveInterval = 10.0f;
-    [SerializeField]
-    private float _distanceUntilUpdate = .2f;
+    private float _saveInterval = 5.0f;
+    private float _distanceUntilUpdate = 1.5f;
     //Making y big to make the initial save always valid.
     private Vector3 _lastUnityPos = _outlierPos;
     private static Vector3 _outlierPos = new Vector3(0, -100, 0);
@@ -102,7 +100,7 @@ public class GpsDataManager : MonoBehaviour
         return allPolygonVertices;
     }
     //String _userName
-    static bool IsClosedPoint(Vector3 x1, Vector3 x2, float r_epsilon = 10)
+    static bool IsClosedPoint(Vector3 x1, Vector3 x2, float r_epsilon = 1)
     {
         return Vector3.Distance(x1, x2) < r_epsilon;
     }

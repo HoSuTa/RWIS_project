@@ -26,7 +26,7 @@ public class LineDataManager : MonoBehaviour
         List<Vector3> positions = new List<Vector3>();
         foreach (var d in userAreaData)
         {
-            var position = new Vector3(d.position.x, d.position.z, d.position.y);
+            var position = new Vector3(d.position.x, 8.0f, d.position.y);
             positions.Add(position);
         }
         _lineData = new LineData(_userDataManager._localPlayer, positions);
