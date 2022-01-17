@@ -59,16 +59,49 @@ public class ScoreDataManager : MonoBehaviour
                 var scoreObject = new GameObject();
                 scoreObject.transform.SetParent(_textBGTransform);
                 scoreObject.transform.name = "scoreBoard " + userName;
-                scoreObject.transform.localScale = new Vector3(1, 1, 1);
+                scoreObject.transform.localScale    = new Vector3(1, 1, 1);
+                scoreObject.transform.localPosition = new Vector3(0, 0, 0);
                 var scoreText   = scoreObject.AddComponent<Text>();
-                scoreText.text  = "Score: 0";
+                scoreText.text  = userName + ": 0";
+                scoreText.rectTransform.position  = Vector3.zero;
+                scoreText.rectTransform.offsetMin = new Vector2 (0,0);
+                scoreText.rectTransform.offsetMax = new Vector2 (0,0);
+                scoreText.rectTransform.anchorMin = new Vector3(0.01f,0.01f,0.01f);
+                scoreText.rectTransform.anchorMax = new Vector3(0.99f,0.99f,0.99f);
                 scoreText.font  = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
                 scoreText.fontSize = 20;
                 scoreText.color = userData._color;
-                scoreText.rectTransform.position  = new Vector3(0,0,0);
-                scoreText.rectTransform.sizeDelta = new Vector2(200.0f, 20.0f);
                 _scoreObjects.Add(userName, scoreObject);
             }
         }
+        {
+            var allPolygonPositions = _polyLineDataManager.GetAllPolygonPositions();
+            var offset = 0.0f;
+            foreach(var item in _scoreObjects)
+            {
+                var score = 0.0f;
+                if (allPolygonPositions.ContainsKey(item.Key))
+                {
+                    foreach(var (areaId,polygon) in allPolygonPositions[item.Key])
+                    {
+                        score += Mathf.Abs(CalcSignedArea(polygon));
+                    }
+                }
+                item.Value.GetComponent<Text>().text = item.Key + ": " + score.ToString();
+                item.Value.GetComponent<RectTransform>().offsetMax = new Vector2(0, -offset);
+                offset += 20.0f;
+            }
+        }
+    }
+    static float CalcSignedArea(List<Vector3> points)
+    {
+        float signedArea = 0.0f;
+        for (var i = 0; i < points.Count; ++i)
+        {
+            var p_i = points[i];
+            var p_i_1 = (i == points.Count - 1) ? points[0] : points[i + 1];
+            signedArea += (p_i.x * p_i_1.y - p_i.y * p_i_1.x);
+        }
+        return signedArea * 0.5F;
     }
 }
