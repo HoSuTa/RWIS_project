@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GssDbManageWrapper;
 
+[RequireComponent(typeof(PolyLineData))]
 [RequireComponent(typeof(UserDataManager))]
 [RequireComponent(typeof(AreaDataManager))]
 public class PolyLineDataManager : MonoBehaviour
@@ -88,7 +89,40 @@ public class PolyLineDataManager : MonoBehaviour
                 }
             }
         }
-
+        int areaIdx = 0;
+        List<int> removeIndices = new List<int>();
+        foreach (var polyLineData in _polyLineDatas)
+        {
+            bool sameData = false;
+            foreach (var data in allPolygonPositions)
+            {
+                var userName = data.Key;
+                var userData = _userDataManager.GetUserData(userName);
+                foreach (var (areaId, polygonPositions) in data.Value)
+                {
+                    if (polyLineData._userData == userData && polyLineData._areaId == areaId)
+                    {
+                        sameData = true;
+                        break;
+                    }
+                }
+            }
+            if (!sameData)
+            {
+                Debug.Log("Remove Local "+ areaIdx.ToString());
+                removeIndices.Add(areaIdx);
+            }
+            ++areaIdx;
+        }
+        {
+            int removeOffset = 0;
+            foreach(var removeIndex in removeIndices)
+            {
+                var polyLineData = _polyLineDatas[removeIndex-removeOffset];
+                _polyLineDatas.Remove(polyLineData);
+                polyLineData.RefreshPolyLine();
+                ++removeOffset;
+            }
+        }
     }
-
 }
