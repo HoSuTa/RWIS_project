@@ -35,21 +35,6 @@ public class PlayerSettingSceneManager : MonoBehaviour
         var userDataManager = GameObject.FindWithTag("Manager").GetComponent<UserDataManager>();
         var mapboxManager = GameObject.FindWithTag("Manager").GetComponent<MapboxMapManager>();
 
-        bool localPlayerExists = false;
-        foreach (var d in _userDataManager._userDatas)
-        {
-            if (d._userName == _playerSettingUIManager._playerNameField.text)
-            {
-                localPlayerExists = true;
-                _userDataManager._localPlayer = d;
-            }
-        }
-
-        if (!localPlayerExists)
-        {
-            _userDataManager._localPlayer = new UserData(_playerSettingUIManager._playerNameField.text, _userDataManager.RandomColor());
-            _gssDbHub.SetUserData(_userDataManager._localPlayer);
-        }
 
         userDataManager._localPlayer = _userDataManager._localPlayer;
         mapboxManager._lonLatFromPlayerSetting = new Vector2(_lonLatGetter.Latitude, _lonLatGetter.Longitude);

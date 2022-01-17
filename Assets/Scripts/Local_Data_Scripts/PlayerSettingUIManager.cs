@@ -21,6 +21,8 @@ public class PlayerSettingUIManager : MonoBehaviour
 
     [SerializeField]
     private GameObject _nextSceneButton;
+    [SerializeField]
+    private GameObject _checkUserButton;
 
     [SerializeField]
     private Color _plusColor;
@@ -32,6 +34,7 @@ public class PlayerSettingUIManager : MonoBehaviour
     private LonLatGetter _lonLatGetter;
     private bool _playerNameValidanceCheck = false;
     private bool _runValidation = false;
+    private bool _checkButtonPressed = false;
 
     private void Awake()
     {
@@ -41,7 +44,10 @@ public class PlayerSettingUIManager : MonoBehaviour
 
         _playerNameField.text = "";
         _playerValidationBG.SetActive(false);
+
         _nextSceneButton.SetActive(false);
+        _playerNameField.readOnly = false;
+        _checkUserButton.SetActive(true);
 
         UpdateUserDataList();
     }
@@ -62,10 +68,37 @@ public class PlayerSettingUIManager : MonoBehaviour
             StartCoroutine(PlayerNameValidationUIEffect());
             _playerNameValidanceCheck = false;
         }*/
-        if (_lonLatGetter.CanGetLonLat() && !_userDataManager.IsUpdating)
+        if (_lonLatGetter.CanGetLonLat() && !_userDataManager.IsUpdating && _checkButtonPressed)
         {
             _nextSceneButton.SetActive(true);
         }
+    }
+
+    public void CheckUser()
+    {
+        bool localPlayerExists = false;
+        foreach (var d in _userDataManager._userDatas)
+        {
+            if (d._userName == _playerNameField.text)
+            {
+                localPlayerExists = true;
+                _userDataManager._localPlayer = d;
+            }
+        }
+
+        if (!localPlayerExists)
+        {
+            _userDataManager._localPlayer = new UserData(_playerNameField.text, _userDataManager.RandomColor());
+            _gssDbHub.SetUserData(_userDataManager._localPlayer, data => { _checkButtonPressed = true; });
+
+        }
+        else
+        {
+            _checkButtonPressed = true;
+        }
+
+        _playerNameField.readOnly = true;
+        _checkUserButton.SetActive(false);
     }
 
     private void UpdateUserDataList()
