@@ -87,7 +87,7 @@ public class ScoreDataManager : MonoBehaviour
                         score += Mathf.Abs(CalcSignedArea(polygon));
                     }
                 }
-                item.Value.GetComponent<Text>().text = item.Key + ": " + score.ToString();
+                item.Value.GetComponent<Text>().text = item.Key + ": " + score.ToString("0");
                 item.Value.GetComponent<RectTransform>().offsetMax = new Vector2(0, -offset);
                 offset += 60.0f;
             }

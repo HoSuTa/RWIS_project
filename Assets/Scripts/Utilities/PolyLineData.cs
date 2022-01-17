@@ -17,8 +17,9 @@ public class PolyLineData
 
     public PolyLineData(UserData userData, int areaId, List<Vector3> positions)
     {
-        var tPositions= new List<Vector3>();
-        foreach(var position in positions){
+        var tPositions = new List<Vector3>();
+        foreach (var position in positions)
+        {
             tPositions.Add(ConvertXYZToXZ0(position));
         }
         float score = Mathf.Abs(CalcSignedArea(tPositions));
@@ -32,14 +33,14 @@ public class PolyLineData
         _scoreTextObject.transform.name = userData._userName + " " + areaId;
         _scoreTextObject.transform.localScale = new Vector3(1, 1, 1);
         _scoreText = _scoreTextObject.AddComponent<Text>();
-        _scoreText.text = "Score: " + score.ToString();
+        _scoreText.text = "Score: " + score.ToString("0");
         _scoreText.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
-        _scoreText.fontSize = 14;
+        _scoreText.fontSize = 28;
         _scoreText.color = Color.black;
-        var centroid  = CalcCentroid(tPositions);
-        _centroid     = ConvertXYZToX0Y(centroid);
+        var centroid = CalcCentroid(tPositions);
+        _centroid = ConvertXYZToX0Y(centroid);
         ResetScorePosition();
-        _scoreText.rectTransform.sizeDelta = new Vector2(200.0f, 30.0f);
+        _scoreText.rectTransform.sizeDelta = new Vector2(300.0f, 40.0f);
 
 
         _lineObject = new GameObject();
@@ -71,8 +72,8 @@ public class PolyLineData
     public void ResetScorePosition()
     {
         var screenPos = Camera.main.WorldToScreenPoint(_centroid);
-        screenPos     = new Vector3(screenPos.x,screenPos.y,1.0f);
-        _scoreText.rectTransform.position  = screenPos;
+        screenPos = new Vector3(screenPos.x, screenPos.y, 1.0f);
+        _scoreText.rectTransform.position = screenPos;
     }
     public void RefreshPolyLine()
     {
@@ -81,11 +82,11 @@ public class PolyLineData
     }
     static Vector3 ConvertXYZToXZ0(Vector3 xyz)
     {
-        return new Vector3(xyz.x,xyz.z,0.0f);
+        return new Vector3(xyz.x, xyz.z, 0.0f);
     }
     static Vector3 ConvertXYZToX0Y(Vector3 xyz)
     {
-        return new Vector3(xyz.x,0.0f,xyz.y);
+        return new Vector3(xyz.x, 0.0f, xyz.y);
     }
     static Vector3 CalcCentroid(List<Vector3> points)
     {

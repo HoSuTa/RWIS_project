@@ -737,7 +737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _localPlayer:
-    _userName: tester1
+    _userName: tester0
     _color: {r: 0.06897471, g: 0.5849056, b: 0.15445669, a: 0}
 --- !u!114 &2025085181
 MonoBehaviour:

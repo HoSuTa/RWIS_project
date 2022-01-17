@@ -26,7 +26,7 @@ public class GpsDataManager : MonoBehaviour
     PolyLineDataManager _polyLineDataManager;
     LineDataManager _lineDataManager;
 
-    private float _saveInterval = 5.0f;
+    private float _saveInterval = 4.0f;
     private float _distanceUntilUpdate = 1.5f;
     //Making y big to make the initial save always valid.
     private Vector3 _lastUnityPos = _outlierPos;
@@ -100,7 +100,7 @@ public class GpsDataManager : MonoBehaviour
         return allPolygonVertices;
     }
     //String _userName
-    static bool IsClosedPoint(Vector3 x1, Vector3 x2, float r_epsilon = 1)
+    static bool IsClosedPoint(Vector3 x1, Vector3 x2, float r_epsilon = 5)
     {
         return Vector3.Distance(x1, x2) < r_epsilon;
     }
@@ -284,6 +284,14 @@ public class GpsDataManager : MonoBehaviour
 
     private void RelatedToClosedLine(Vector3 newPos)
     {
+        if (_areaDataManager._userCurrentArea.Count > 0)
+        {
+            if (_areaDataManager._userCurrentArea[0].isClosed)
+            {
+                return;
+            }
+        }
+
         var linePositions = _areaDataManager.GetCurrentAreaDatasAsVector();
         var allPolygonPositions = GetAllPolygonPositions();
         do
@@ -396,13 +404,27 @@ public class GpsDataManager : MonoBehaviour
                         }
                     }
                 }
-                foreach (var (userName, areaId) in removeIndices)
+
+
+
+                _areaDataManager.UpdateCurrentAreaDatas(_userDataManager.LocalPlayerName, tPositions);
+
+                if (removeIndices.Count > 0)
                 {
-                    _gssDbHub.RemoveArea(userName, areaId);
+                    _areaDataManager._userCurrentArea[0].isClosed = true;
+
+                    foreach (var (userName, areaId) in removeIndices)
+                    {
+                        _gssDbHub.RemoveArea(userName, areaId, _ => { LineClosedUpdateDatas(_areaDataManager._userCurrentArea); });
+                    }
+                }
+                else
+                {
+                    _areaDataManager._userCurrentArea[0].isClosed = true;
+
+                    LineClosedUpdateDatas(_areaDataManager._userCurrentArea);
                 }
             }
-            _areaDataManager.UpdateCurrentAreaDatas(_userDataManager.LocalPlayerName, tPositions);
-            LineClosedUpdateDatas(_areaDataManager._userCurrentArea);
         }
         else
         {
@@ -417,6 +439,7 @@ public class GpsDataManager : MonoBehaviour
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
             _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub, PolyLineDataManagerUserFeedback, PolyLineDataManagerAreaFeedback));
+
         _areaDataManager.RefreshUserAreaData();
         _lineDataManager.UpdateLineData();
 

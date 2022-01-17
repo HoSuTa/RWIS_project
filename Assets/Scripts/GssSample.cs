@@ -231,6 +231,14 @@ public class GssSample : MonoBehaviour
 
     void RelatedToClosedLine(Vector3 newPos)
     {
+        if (_areaDataManager._userCurrentArea.Count > 0)
+        {
+            if (_areaDataManager._userCurrentArea[0].isClosed)
+            {
+                return;
+            }
+        }
+
         var linePositions = _areaDataManager.GetCurrentAreaDatasAsVector();
         var allPolygonPositions = GetAllPolygonPositions();
         do
@@ -343,13 +351,25 @@ public class GssSample : MonoBehaviour
                         }
                     }
                 }
-                foreach (var (userName, areaId) in removeIndices)
+
+
+
+                _areaDataManager.UpdateCurrentAreaDatas(_userDataManager.LocalPlayerName, tPositions);
+
+                if (removeIndices.Count > 0)
                 {
-                    _gssDbHub.RemoveArea(userName, areaId);
+                    _areaDataManager._userCurrentArea[0].isClosed = true;
+                    foreach (var (userName, areaId) in removeIndices)
+                    {
+                        _gssDbHub.RemoveArea(userName, areaId, _ => { LineClosedUpdateDatas(_areaDataManager._userCurrentArea); });
+                    }
+                }
+                else
+                {
+                    _areaDataManager._userCurrentArea[0].isClosed = true;
+                    LineClosedUpdateDatas(_areaDataManager._userCurrentArea);
                 }
             }
-            _areaDataManager.UpdateCurrentAreaDatas(_userDataManager.LocalPlayerName, tPositions);
-            LineClosedUpdateDatas(_areaDataManager._userCurrentArea);
         }
         else
         {
@@ -364,6 +384,7 @@ public class GssSample : MonoBehaviour
         //Upload the datas, and get all the data by feedback function.
         _gssDbHub.UpdateDatas(_userDataManager.LocalPlayerName, datas,
             _ => LocalDataUpdater.Update(_userDataManager, _areaDataManager, _gssDbHub, PolyLineDataManagerUserFeedback, PolyLineDataManagerAreaFeedback));
+
         _areaDataManager.RefreshUserAreaData();
         _lineDataManager.UpdateLineData();
 
