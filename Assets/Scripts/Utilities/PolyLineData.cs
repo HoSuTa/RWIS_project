@@ -27,7 +27,7 @@ public class PolyLineData
         _scoreTextObject.transform.name = userData._userName + " " + areaId;
         _scoreTextObject.transform.localScale = new Vector3(1, 1, 1);
         _scoreText = _scoreTextObject.AddComponent<Text>();
-        _scoreText.text = "Score: " + score.ToString();
+        _scoreText.text = "Score: " + score.ToString("E");
         _scoreText.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
         _scoreText.fontSize = 14;
         _scoreText.color = Color.black;
@@ -71,7 +71,7 @@ public class PolyLineData
         UnityEngine.Object.Destroy(_lineObject);
         UnityEngine.Object.Destroy(_scoreTextObject);
     }
-    void RefreshPolyLine()
+    public void RefreshPolyLine()
     {
         UnityEngine.Object.Destroy(_scoreTextObject);
         UnityEngine.Object.Destroy(_lineObject);
