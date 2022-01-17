@@ -8,6 +8,7 @@ public class PolyLineData
     public UserData _userData;
     public int _areaId;
     public float _score;
+    public Vector3 _centroid;
     private Transform _canvasTransform;
     public GameObject _scoreTextObject;
     private Text _scoreText;
@@ -16,7 +17,11 @@ public class PolyLineData
 
     public PolyLineData(UserData userData, int areaId, List<Vector3> positions)
     {
-        float score = Mathf.Abs(CalcSignedArea(positions));
+        var tPositions= new List<Vector3>();
+        foreach(var position in positions){
+            tPositions.Add(ConvertXYZToXZ0(position));
+        }
+        float score = Mathf.Abs(CalcSignedArea(tPositions));
         _userData = userData;
         _areaId = areaId;
         _score = score;
@@ -27,20 +32,13 @@ public class PolyLineData
         _scoreTextObject.transform.name = userData._userName + " " + areaId;
         _scoreTextObject.transform.localScale = new Vector3(1, 1, 1);
         _scoreText = _scoreTextObject.AddComponent<Text>();
-        _scoreText.text = "Score: " + score.ToString("E");
+        _scoreText.text = "Score: " + score.ToString();
         _scoreText.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
         _scoreText.fontSize = 14;
         _scoreText.color = Color.black;
-        var tPositions= new List<Vector3>();
-        foreach(var position in positions){
-            tPositions.Add(ConvertXYZToXZ0(position));
-        }
         var centroid  = CalcCentroid(tPositions);
-        centroid      = ConvertXYZToX0Y(centroid);
-        var screenPos = Camera.main.WorldToScreenPoint(centroid);
-        screenPos     = new Vector3(screenPos.x,screenPos.y,1.0f);
-        Debug.Log("centroid "+centroid.ToString() + " screenPos "+screenPos.ToString());
-        _scoreText.rectTransform.position  = screenPos;
+        _centroid     = ConvertXYZToX0Y(centroid);
+        ResetScorePosition();
         _scoreText.rectTransform.sizeDelta = new Vector2(200.0f, 30.0f);
 
 
@@ -63,13 +61,18 @@ public class PolyLineData
 
         _lineRenderer.positionCount = positions.Count;
         _lineRenderer.SetPositions(positions.ToArray());
-
     }
 
     ~PolyLineData()
     {
         UnityEngine.Object.Destroy(_lineObject);
         UnityEngine.Object.Destroy(_scoreTextObject);
+    }
+    public void ResetScorePosition()
+    {
+        var screenPos = Camera.main.WorldToScreenPoint(_centroid);
+        screenPos     = new Vector3(screenPos.x,screenPos.y,1.0f);
+        _scoreText.rectTransform.position  = screenPos;
     }
     public void RefreshPolyLine()
     {

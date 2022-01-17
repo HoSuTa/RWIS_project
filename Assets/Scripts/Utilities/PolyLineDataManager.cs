@@ -18,7 +18,13 @@ public class PolyLineDataManager : MonoBehaviour
         if (_userDataManager == null) _userDataManager = GetComponent<UserDataManager>();
 
     }
-
+    void Update()
+    {
+        foreach (var polyLineData in _polyLineDatas)
+        {
+            polyLineData.ResetScorePosition();
+        }
+    }
 
     public Dictionary<string, HashSet<int>> GetAllAreaIdMap()
     {
