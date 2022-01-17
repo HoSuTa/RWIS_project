@@ -691,7 +691,6 @@ GameObject:
   - component: {fileID: 2025085188}
   - component: {fileID: 2025085187}
   - component: {fileID: 2025085178}
-  - component: {fileID: 2025085189}
   m_Layer: 0
   m_Name: MANAGER
   m_TagString: Manager
@@ -708,12 +707,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2025085177}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 556b37ddea942b34e8563f2026fcd537, type: 3}
+  m_Script: {fileID: 11500000, guid: f07799b052ab63e459ac63e47c5881f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _userDataManager: {fileID: 0}
-  _polyLineDataManager: {fileID: 0}
-  _textBGTransform: {fileID: 0}
 --- !u!4 &2025085179
 Transform:
   m_ObjectHideFlags: 0
@@ -938,18 +934,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 976be47ee3c478b4fa21ab712ece9651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2025085189
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2025085177}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 556b37ddea942b34e8563f2026fcd537, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _userDataManager: {fileID: 0}
-  _polyLineDataManager: {fileID: 0}
-  _textBGTransform: {fileID: 0}
