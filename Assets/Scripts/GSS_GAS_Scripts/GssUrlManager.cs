@@ -10,12 +10,12 @@ public static class GssUrlManager
             return;
         }
 
-        KeyManager.SaveKey(KeyManager.GSS_URL_PATH, gssUrl);
+        KeyManager.SaveKey(KeyManager.GetDataPathGssUrl(), gssUrl);
     }
 
     public static string GetUrl()
     {
-        return KeyManager.GetKeyData(KeyManager.GSS_URL_PATH);
+        return KeyManager.GetKeyData(KeyManager.GetDataPathGssUrl());
     }
 
     public static bool IsUrlAssigned()
@@ -26,6 +26,6 @@ public static class GssUrlManager
 
     public static void ResetUrl()
     {
-        KeyManager.RemoveKeyFile(KeyManager.GSS_URL_PATH);
+        KeyManager.RemoveKeyFile(KeyManager.GetDataPathGssUrl());
     }
 }

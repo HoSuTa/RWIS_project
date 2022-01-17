@@ -6,6 +6,40 @@ public static class KeyManager
 {
     public const string GSS_URL_PATH = "Assets/Resources/gssUrl.json";
     public const string GAS_URL_PATH = "Assets/Resources/gasUrl.json";
+
+    public static string GetDataPathGssUrl()
+    {
+#if !UNITY_EDITOR && UNITY_ANDROID
+        using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+        using (var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+        using (var getFilesDir = currentActivity.Call<AndroidJavaObject>("getFilesDir"))
+        {
+            string secureDataPathForAndroid = getFilesDir.Call<string>("getCanonicalPath");
+            return Path.Combine(secureDataPathForAndroid, "gssUrl.json");
+        }
+#else
+        // TODO: 本来は各プラットフォームに対応した処理が必要
+        return "Assets/Resources/gssUrl.json";
+#endif
+    }
+
+    public static string GetDataPathGasUrl()
+    {
+#if !UNITY_EDITOR && UNITY_ANDROID
+        using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+        using (var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+        using (var getFilesDir = currentActivity.Call<AndroidJavaObject>("getFilesDir"))
+        {
+            string secureDataPathForAndroid = getFilesDir.Call<string>("getCanonicalPath");
+            return Path.Combine(secureDataPathForAndroid, "gasUrl.json");
+        }
+#else
+        // TODO: 本来は各プラットフォームに対応した処理が必要
+        return "Assets/Resources/gasUrl.json";
+#endif
+    }
+
+
     //https://blog.mbaas.nifcloud.com/entry/9044
     public static string GetKeyData(string filePath, Action feedbackHandler = null)
     {

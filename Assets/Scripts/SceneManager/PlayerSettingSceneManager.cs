@@ -26,7 +26,7 @@ public class PlayerSettingSceneManager : MonoBehaviour
     public void LoadGameScene()
     {
         SceneManager.sceneLoaded += GameSceneLoaded;
-        SceneManager.LoadScene("TestingAlgo");
+        SceneManager.LoadScene("TestingGame");
     }
 
     private void GameSceneLoaded(Scene next, LoadSceneMode mode)

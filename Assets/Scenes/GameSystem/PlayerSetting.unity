@@ -261,13 +261,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 314970436}
-  - component: {fileID: 314970434}
-  - component: {fileID: 314970440}
-  - component: {fileID: 314970433}
-  - component: {fileID: 314970437}
-  - component: {fileID: 314970435}
   - component: {fileID: 314970439}
   - component: {fileID: 314970438}
+  - component: {fileID: 314970434}
+  - component: {fileID: 314970437}
+  - component: {fileID: 314970440}
+  - component: {fileID: 314970435}
+  - component: {fileID: 314970433}
   m_Layer: 0
   m_Name: MANAGER
   m_TagString: Manager
