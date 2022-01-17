@@ -10,6 +10,8 @@ public class LineData
     public GameObject _lineObject;
     private LineRenderer _lineRenderer;
 
+    private GameObject _lastPosUserObj;
+
     public LineData(UserData userData, List<Vector3> positions)
     {
         _userData = userData;
@@ -31,15 +33,22 @@ public class LineData
 
         _lineRenderer.positionCount = positions.Count;
         _lineRenderer.SetPositions(positions.ToArray());
+
+        _lastPosUserObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        _lastPosUserObj.transform.position = positions[positions.Count - 1];
+        _lastPosUserObj.transform.localScale *= 12;
+        _lastPosUserObj.GetComponent<MeshRenderer>().material = material;
     }
 
     ~LineData()
     {
         UnityEngine.Object.Destroy(_lineObject);
+        UnityEngine.Object.Destroy(_lastPosUserObj);
     }
     public void RefreshLine()
     {
         UnityEngine.Object.Destroy(_lineObject);
+        UnityEngine.Object.Destroy(_lastPosUserObj);
     }
 
 }
