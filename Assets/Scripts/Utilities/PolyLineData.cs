@@ -31,12 +31,17 @@ public class PolyLineData
         _scoreText.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
         _scoreText.fontSize = 14;
         _scoreText.color = Color.black;
-        var centroid = CalcCentroid(positions);
+        var tPositions= new List<Vector3>();
+        foreach(var position in positions){
+            tPositions.Add(ConvertXYZToXZ0(position));
+        }
+        var centroid  = CalcCentroid(tPositions);
+        centroid      = ConvertXYZToX0Y(centroid);
         var screenPos = Camera.main.WorldToScreenPoint(centroid);
-        screenPos.z = 1.0f;
-        _scoreText.rectTransform.position = screenPos;
-        _scoreText.rectTransform.sizeDelta = new Vector2(100.0f, 30.0f);
-
+        screenPos     = new Vector3(screenPos.x,screenPos.y,1.0f);
+        Debug.Log("centroid "+centroid.ToString() + " screenPos "+screenPos.ToString());
+        _scoreText.rectTransform.position  = screenPos;
+        _scoreText.rectTransform.sizeDelta = new Vector2(200.0f, 30.0f);
 
 
         _lineObject = new GameObject();
@@ -70,6 +75,14 @@ public class PolyLineData
     {
         UnityEngine.Object.Destroy(_scoreTextObject);
         UnityEngine.Object.Destroy(_lineObject);
+    }
+    static Vector3 ConvertXYZToXZ0(Vector3 xyz)
+    {
+        return new Vector3(xyz.x,xyz.z,0.0f);
+    }
+    static Vector3 ConvertXYZToX0Y(Vector3 xyz)
+    {
+        return new Vector3(xyz.x,0.0f,xyz.y);
     }
     static Vector3 CalcCentroid(List<Vector3> points)
     {
