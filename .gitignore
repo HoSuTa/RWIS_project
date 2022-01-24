@@ -54,6 +54,8 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Custom
+Assets/Scripts/Utilities/SetGasUrlAuto.cs
+Assets/Scripts/Utilities/SetGasUrlAuto.cs.meta
 Assets/Resources/gasUrl.json
 Assets/Resources/gasUrl.json.meta
 Assets/Resources/gssUrl.json

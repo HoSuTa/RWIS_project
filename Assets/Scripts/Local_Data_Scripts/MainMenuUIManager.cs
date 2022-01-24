@@ -55,10 +55,11 @@ public class MainMenuUIManager : MonoBehaviour
         {
             UpdateKeyRelatedUI(GssUrlManager.IsUrlAssigned, GssUrlManager.GetUrl);
         }
+        /*
         else if (_keySelectDropDown.options[_keySelectDropDown.value].text == _keyList[1])
         {
             UpdateKeyRelatedUI(GasUrlManager.IsUrlAssigned, GasUrlManager.GetUrl);
-        }
+        }*/
     }
 
     private void Update()
@@ -99,6 +100,7 @@ public class MainMenuUIManager : MonoBehaviour
             UpdateKeyRelatedUI(GssUrlManager.IsUrlAssigned, GssUrlManager.GetUrl);
 
         }
+        /*
         else if (keySelectDropDown.options[keySelectDropDown.value].text == _keyList[1])
         {
             if (_runSaveKey)
@@ -121,6 +123,7 @@ public class MainMenuUIManager : MonoBehaviour
             }
             UpdateKeyRelatedUI(GasUrlManager.IsUrlAssigned, GasUrlManager.GetUrl);
         }
+        */
 
         _runUpdateUI = false;
     }
