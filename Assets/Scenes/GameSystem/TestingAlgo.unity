@@ -737,7 +737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _localPlayer:
-    _userName: tester0
+    _userName: new_tester
     _color: {r: 0.06897471, g: 0.5849056, b: 0.15445669, a: 0}
 --- !u!114 &2025085181
 MonoBehaviour:
@@ -790,7 +790,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _options:
     locationOptions:
-      latitudeLongitude: 0,0
+      latitudeLongitude: 35.552127065597,139.6471512444
       zoom: 18.2
     extentOptions:
       extentType: 1
@@ -896,8 +896,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fc2e97d7e9559144bec6c660cb4fdda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lonLatFromPlayerSetting: {x: 0, y: 0}
-  _zoomSize: 16.5
+  _lonLatFromPlayerSetting: {x: 35.552128, y: 139.64716}
+  _zoomSize: 18
 --- !u!114 &2025085186
 MonoBehaviour:
   m_ObjectHideFlags: 0

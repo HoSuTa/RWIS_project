@@ -48,7 +48,7 @@ public class PolyLineData
 
         _lineRenderer = _lineObject.AddComponent<LineRenderer>();
 
-        Material material = new Material(Shader.Find("Diffuse"));
+        Material material = new Material(Shader.Find("Unlit/Color"));
         material.color = userData._color;
 
         _lineRenderer.material = material;

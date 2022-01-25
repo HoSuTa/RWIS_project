@@ -47,7 +47,7 @@ public class PlayerSettingUIManager : MonoBehaviour
 
         _nextSceneButton.SetActive(false);
         _playerNameField.readOnly = false;
-        _checkUserButton.SetActive(true);
+        _checkUserButton.SetActive(false);
 
         UpdateUserDataList();
     }
@@ -68,7 +68,13 @@ public class PlayerSettingUIManager : MonoBehaviour
             StartCoroutine(PlayerNameValidationUIEffect());
             _playerNameValidanceCheck = false;
         }*/
-        if (_lonLatGetter.CanGetLonLat() && !_userDataManager.IsUpdating && _checkButtonPressed)
+
+        if (!_userDataManager.IsUpdating && !_checkButtonPressed && !string.IsNullOrWhiteSpace(_playerNameField.text))
+        {
+            _checkUserButton.SetActive(true);
+        }
+
+        if (_lonLatGetter.CanGetLonLat() && _checkButtonPressed)
         {
             _nextSceneButton.SetActive(true);
         }

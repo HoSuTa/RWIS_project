@@ -23,7 +23,7 @@ public class LineData
         _lineRenderer.useWorldSpace = true;
 
 
-        Material material = new Material(Shader.Find("Diffuse"));
+        Material material = new Material(Shader.Find("Unlit/Color"));
         material.color = userData._color;
 
         _lineRenderer.material = material;
